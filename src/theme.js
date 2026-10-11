@@ -4,8 +4,10 @@
 // palette serves both looks.
 import * as THREE from 'three';
 
-export const THEME = document.documentElement.dataset.theme === 'watercolor' ? 'watercolor' : 'ink';
-export const WATERCOLOR = THEME === 'watercolor';
+// Live bindings: importers see the new value after applyTheme(), so the whole page can
+// switch between ink and watercolor without reloading.
+export let THEME = document.documentElement.dataset.theme === 'watercolor' ? 'watercolor' : 'ink';
+export let WATERCOLOR = THEME === 'watercolor';
 
 export const PAPER = '#f2ead9';
 export const INK = '#2a231e';
@@ -38,11 +40,32 @@ export function tint(color) {
   return `#${_c.getHexString()}`;
 }
 
-export const BLENDING = WATERCOLOR ? THREE.NormalBlending : THREE.AdditiveBlending;
+export let BLENDING = WATERCOLOR ? THREE.NormalBlending : THREE.AdditiveBlending;
 
-export function setTheme(next) {
+const listeners = [];
+// Run `fn` now and again every time the theme changes (re-tint a material, recolor a chart…).
+export function themed(fn) {
+  fn();
+  listeners.push(fn);
+}
+// Run `fn` only on theme changes.
+export const onTheme = (fn) => listeners.push(fn);
+
+const remember = (next) => {
   try { localStorage.setItem('theme', next); } catch { /* storage unavailable */ }
   const url = new URL(location.href);
   url.searchParams.set('theme', next);
-  location.href = url.toString();
+  history.replaceState(null, '', url);
+};
+
+// Switch themes in place. The caller sequences the visual transition around this.
+export function applyTheme(next) {
+  if (next === THEME) return;
+  THEME = next;
+  WATERCOLOR = next === 'watercolor';
+  BLENDING = WATERCOLOR ? THREE.NormalBlending : THREE.AdditiveBlending;
+  if (WATERCOLOR) document.documentElement.dataset.theme = 'watercolor';
+  else delete document.documentElement.dataset.theme;
+  remember(next);
+  for (const fn of listeners) fn();
 }

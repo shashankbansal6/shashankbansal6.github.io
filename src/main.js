@@ -23,10 +23,10 @@ import { initModalities } from './ui/modalities.js';
 import { initDecode } from './ui/decode.js';
 import { initLabels } from './ui/labels.js';
 import { initSpikeSorter } from './game/spikesorter.js';
-import { WATERCOLOR, PAPER, tint, setTheme } from './theme.js';
+import { WATERCOLOR, PAPER, tint, applyTheme, themed, onTheme } from './theme.js';
 import { watercolorPass } from './scene/watercolor.js';
 
-if (WATERCOLOR) import('./watercolor.css');
+import './watercolor.css'; // every rule is scoped to [data-theme='watercolor']
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const mobile = matchMedia('(max-width: 900px)').matches;
@@ -38,7 +38,6 @@ const canvas = $('#gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
 const dpr = Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
 renderer.setPixelRatio(dpr);
-renderer.setClearColor(WATERCOLOR ? PAPER : '#0d0d0c', 1);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.005, 200);
 const root = new THREE.Group();
@@ -46,10 +45,8 @@ scene.add(root);
 
 const brain = buildBrain(mobile ? 60000 : 125000);
 root.add(brain.points);
-// watercolor underpainting: large, faint washes scattered over the cortex
-let wash = null;
-if (WATERCOLOR) {
-  brain.material.uniforms.uSize.value = 21;
+// watercolor underpainting: large, faint washes scattered over the cortex (paper theme only)
+const wash = (() => {
   const src = brain.points.geometry.attributes.position;
   const n = 900;
   const pos = new Float32Array(n * 3);
@@ -61,9 +58,11 @@ if (WATERCOLOR) {
     pos.set([src.getX(k), src.getY(k), src.getZ(k)], i * 3);
     pal[Math.floor(Math.random() * pal.length)].toArray(col, i * 3);
   }
-  wash = glowPoints(pos, { size: 0.46, opacity: 0.08, twinkle: 0, colors: col });
-  root.add(wash);
-}
+  const w = glowPoints(pos, { size: 0.46, opacity: 0.08, twinkle: 0, colors: col });
+  root.add(w);
+  return w;
+})();
+themed(() => { wash.visible = WATERCOLOR; });
 const { group: overlayGroup, layers } = buildOverlays();
 root.add(overlayGroup);
 const ecog = layers.ecog;
@@ -86,38 +85,63 @@ link.layer.set(0);
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 40);
     a.set([v.x, v.y, v.z], i * 3);
   }
-  scene.add(glowPoints(a, { color: WATERCOLOR ? '#8a7d6a' : '#57534a', size: 0.09, opacity: WATERCOLOR ? 0.35 : 0.7, twinkle: 0.5 }));
+  const dust = glowPoints(a, { color: '#57534a', size: 0.09, opacity: 0.7, twinkle: 0.5 });
+  scene.add(dust);
+  themed(() => {
+    dust.material.uniforms.uColor.value.set(WATERCOLOR ? '#8a7d6a' : '#57534a');
+    dust.material.uniforms.uOpacity.value = WATERCOLOR ? 0.35 : 0.7;
+  });
 }
 
+// ── post-processing: one pipeline per theme, built on first use ───────────────
 let composer = null;
 let bloom = null;
 let wc = null;
-if (WATERCOLOR) {
-  // paint every frame through the watercolor pass (cheap enough for mobile too)
-  composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  wc = watercolorPass();
-  composer.addPass(wc);
-  composer.addPass(new OutputPass());
-  // see docs/development.md: the clear into the RT is encoded once more
-  renderer.setClearColor(new THREE.Color(PAPER).convertSRGBToLinear(), 1);
-} else if (!mobile && new URLSearchParams(location.search).get('bloom') !== '0') {
-  composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
+const pipelines = {};
+const clearColor = (hex, linearize) => {
+  const c = new THREE.Color(hex);
+  renderer.setClearColor(linearize ? c.convertSRGBToLinear() : c, 1);
+};
+function buildPipeline(wcTheme) {
+  if (wcTheme) {
+    // paint every frame through the watercolor pass (cheap enough for mobile too)
+    const c = new EffectComposer(renderer);
+    c.addPass(new RenderPass(scene, camera));
+    const pass = watercolorPass();
+    c.addPass(pass);
+    c.addPass(new OutputPass());
+    return { composer: c, wc: pass, bloom: null };
+  }
+  if (mobile || new URLSearchParams(location.search).get('bloom') === '0') return { composer: null, wc: null, bloom: null };
+  const c = new EffectComposer(renderer);
+  c.addPass(new RenderPass(scene, camera));
   // Thousands of additive particles push HDR values far above 1; clamp them so
   // the bloom's widest mip doesn't smear a grey haze across the whole screen.
-  composer.addPass(new ShaderPass({
+  c.addPass(new ShaderPass({
     uniforms: { tDiffuse: { value: null } },
     vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: 'uniform sampler2D tDiffuse; varying vec2 vUv; void main() { gl_FragColor = min(texture2D(tDiffuse, vUv), vec4(1.0)); }',
   }));
-  bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.6, 0.0, 0.55);
-  composer.addPass(bloom);
-  composer.addPass(new OutputPass());
-  // The clear into the composer's render target gets sRGB-encoded and then
-  // OutputPass encodes again; pre-linearize once more so the page stays on-palette.
-  renderer.setClearColor(new THREE.Color('#0d0d0c').convertSRGBToLinear(), 1);
+  const b = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.6, 0.0, 0.55);
+  c.addPass(b);
+  c.addPass(new OutputPass());
+  return { composer: c, wc: null, bloom: b };
 }
+function sizePipeline() {
+  const w = innerWidth, h = innerHeight;
+  composer?.setSize(w, h);
+  bloom?.resolution.set(w / 2, h / 2);
+  wc?.uniforms.uRes.value.set(w * dpr, h * dpr);
+}
+themed(() => {
+  const key = WATERCOLOR ? 'wc' : 'ink';
+  pipelines[key] ||= buildPipeline(WATERCOLOR);
+  ({ composer, wc, bloom } = pipelines[key]);
+  // The clear into a composer's render target gets sRGB-encoded and then OutputPass
+  // encodes again, so pre-linearize once more to keep the page on-palette.
+  clearColor(WATERCOLOR ? PAPER : '#0d0d0c', !!composer);
+  sizePipeline();
+});
 
 // ── camera keyframes + scene state per chapter ───────────────────────────────
 const UP = new THREE.Vector3(0, 1, 0);
@@ -217,11 +241,11 @@ const modalities = initModalities($('#s-landscape'), (sel) => {
   if (non) manualOverlays.scalp = 0.7;
 });
 
-const sigScope = new Scope(
-  $('.sig-scope'),
-  Array.from({ length: 12 }, (_, i) => ({ gen: new Gen('neural', i * 0.37), color: WATERCOLOR ? `hsl(${200 + i * 7}, 45%, ${28 + (i % 3) * 5}%)` : `hsl(${185 + i * 8}, 95%, ${62 + (i % 3) * 6}%)` })),
-  { pxPerSec: 110, gain: 0.55 },
-);
+const sigChannels = Array.from({ length: 12 }, (_, i) => ({ gen: new Gen('neural', i * 0.37), color: '' }));
+themed(() => sigChannels.forEach((ch, i) => {
+  ch.color = WATERCOLOR ? `hsl(${200 + i * 7}, 45%, ${28 + (i % 3) * 5}%)` : `hsl(${185 + i * 8}, 95%, ${62 + (i % 3) * 6}%)`;
+}));
+const sigScope = new Scope($('.sig-scope'), sigChannels, { pxPerSec: 110, gain: 0.55 });
 
 let ripple = -1;
 const decode = initDecode($('#s-decode'), {
@@ -305,12 +329,59 @@ $('#timeline').innerHTML = EXPERIENCE.map((e) => `
   </li>`).join('');
 $('#year').textContent = new Date().getFullYear();
 initSpikeSorter($('#play .ss'));
-// theme switch: a two-option control in the middle of the top bar
-document.querySelectorAll('.theme-switch button').forEach((b) => {
-  const on = b.dataset.set === (WATERCOLOR ? 'watercolor' : 'ink');
-  b.setAttribute('aria-pressed', String(on));
-  b.addEventListener('click', () => { if (!on) setTheme(b.dataset.set); });
+// ── theme switch ──────────────────────────────────────────────────────────────
+// No reload: freeze the current 3D frame in an overlay, dip the page text, swap every
+// material/pipeline/stylesheet to the other theme in place (scroll position, camera and
+// chapter untouched), then fade the frozen frame out over the live new one.
+const themeBtns = [...document.querySelectorAll('.theme-switch button')];
+const syncSwitch = () => themeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.set === (WATERCOLOR ? 'watercolor' : 'ink'))));
+syncSwitch();
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const nextFrames = (n = 2) => new Promise((r) => { const f = () => (--n <= 0 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+let switching = false;
+async function switchTheme(next) {
+  if (switching || next === (WATERCOLOR ? 'watercolor' : 'ink')) return;
+  switching = true;
+  const html = document.documentElement;
+  const xf = $('#xfade');
+  if (!reduced) {
+    // freeze this frame (a WebGL canvas can only be copied in the same task it was drawn)
+    if (composer) composer.render(0); else renderer.render(scene, camera);
+    xf.width = canvas.width;
+    xf.height = canvas.height;
+    xf.getContext('2d').drawImage(canvas, 0, 0);
+    xf.style.transition = 'none';
+    xf.style.opacity = '1';
+    html.classList.add('theme-dip');
+    await wait(260);
+  }
+  // keep whatever is mid-screen exactly where it was, even though fonts change the layout
+  const anchor = document.elementFromPoint(innerWidth / 2, innerHeight * 0.4)?.closest('.block, .stage, .footer');
+  const before = anchor?.getBoundingClientRect().top ?? 0;
+  const y0 = scrollY;
+  applyTheme(next);
+  syncSwitch();
+  await Promise.race([document.fonts.ready, wait(350)]);
+  layout();
+  const delta = anchor ? anchor.getBoundingClientRect().top - before : 0;
+  if (Math.abs(delta) > 1) {
+    if (lenis) lenis.scrollTo(y0 + delta, { immediate: true, force: true });
+    else window.scrollTo(0, y0 + delta);
+  }
+  await nextFrames(2); // let the new pipeline draw (and compile) before revealing it
+  html.classList.remove('theme-dip');
+  xf.style.transition = 'opacity 0.9s ease';
+  xf.style.opacity = '0';
+  await wait(reduced ? 0 : 950);
+  switching = false;
+}
+themeBtns.forEach((b) => b.addEventListener('click', () => switchTheme(b.dataset.set)));
+// warm the other theme's faces so the first switch never waits on the network
+(window.requestIdleCallback || setTimeout)(() => {
+  ['400 1em "Newsreader"', 'italic 400 1em "Newsreader"', '500 1em "Newsreader"', '400 1em "Noto Serif Devanagari"', '500 1em "Space Grotesk"', '400 1em "Noto Sans Devanagari"']
+    .forEach((f) => document.fonts.load(f, 'Aa अ').catch(() => {}));
 });
+document.documentElement.classList.add('theme-ready');
 
 // ── interaction: drag to rotate, hover chip blocks ───────────────────────────
 let yaw = 0, pitch = 0, yawVel = 0, dragging = false, lastX = 0, lastY = 0;
@@ -364,9 +435,7 @@ function updateHover() {
 function resize() {
   const w = innerWidth, h = innerHeight;
   renderer.setSize(w, h, false);
-  composer?.setSize(w, h);
-  bloom?.resolution.set(w / 2, h / 2);
-  wc?.uniforms.uRes.value.set(w * dpr, h * dpr);
+  sizePipeline();
   camera.aspect = w / h;
   uPixelRatio.value = dpr * Math.max(0.7, h / 900);
   layout();

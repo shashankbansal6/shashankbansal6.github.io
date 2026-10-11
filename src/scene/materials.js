@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { tint, BLENDING, WATERCOLOR } from '../theme.js';
+import { tint, BLENDING, WATERCOLOR, themed, onTheme } from '../theme.js';
 
 export const COLORS = {
   cyan: '#3ef0ff',
@@ -27,6 +27,7 @@ export function additive(color, opacity = 1, extra = {}) {
     ...extra,
   });
   m.userData.base = opacity;
+  themed(() => { m.color.set(tint(color)); m.blending = BLENDING; m.needsUpdate = true; });
   return m;
 }
 
@@ -35,7 +36,20 @@ export function lineMat(color, opacity = 1) {
     color: tint(color), transparent: true, opacity, blending: BLENDING, depthWrite: false,
   });
   m.userData.base = opacity;
+  themed(() => { m.color.set(tint(color)); m.blending = BLENDING; m.needsUpdate = true; });
   return m;
+}
+
+// Re-skin a ShaderMaterial for the current theme: color uniform, blending, WATERCOLOR define.
+function themeShader(mat, color) {
+  themed(() => {
+    if (color && mat.uniforms.uColor) mat.uniforms.uColor.value.set(tint(color));
+    mat.blending = BLENDING;
+    if (mat.defines && 'WATERCOLOR' in mat.defines !== WATERCOLOR) {
+      if (WATERCOLOR) mat.defines.WATERCOLOR = ''; else delete mat.defines.WATERCOLOR;
+    }
+    mat.needsUpdate = true;
+  });
 }
 
 // Soft round glowing sprites, size in world units (perspective attenuated).
@@ -100,6 +114,7 @@ export function glowPoints(positions, { color = COLORS.cyan, size = 0.05, opacit
     blending: BLENDING,
   });
   mat.userData.base = opacity;
+  themeShader(mat, colors ? null : color);
   const pts = new THREE.Points(geo, mat);
   pts.frustumCulled = false;
   return pts;
@@ -154,6 +169,7 @@ export function flowLines(polylines, { color = COLORS.cyan, opacity = 1, speed =
     blending: BLENDING,
   });
   mat.userData.base = opacity;
+  themeShader(mat, color);
   const seg = new THREE.LineSegments(geo, mat);
   seg.frustumCulled = false;
   return seg;
@@ -161,7 +177,11 @@ export function flowLines(polylines, { color = COLORS.cyan, opacity = 1, speed =
 
 // Thin tubes with the same flowing-dash look, readable from further away.
 export function flowTubes(curves, { radius = 0.004, color = COLORS.magenta, opacity = 1, speed = 0.8, freq = 6, sharp = 2 } = {}) {
-  const geo = mergeGeometries(curves.map((c) => new THREE.TubeGeometry(c, 64, radius, 5, false)));
+  // `radius` is a number, or { ink, wc } when the tubes should be thicker on paper
+  const radii = typeof radius === 'number' ? { ink: radius, wc: radius } : radius;
+  const build = (r) => mergeGeometries(curves.map((c) => new THREE.TubeGeometry(c, 64, r, 5, false)));
+  const geos = { ink: build(radii.ink), wc: radii.wc === radii.ink ? null : build(radii.wc) };
+  const geo = geos.ink;
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uTime,
@@ -192,10 +212,14 @@ export function flowTubes(curves, { radius = 0.004, color = COLORS.magenta, opac
     blending: BLENDING,
   });
   mat.userData.base = opacity;
+  themeShader(mat, color);
   const mesh = new THREE.Mesh(geo, mat);
   mesh.frustumCulled = false;
+  themed(() => { mesh.geometry = (WATERCOLOR && geos.wc) || geos.ink; });
   return mesh;
 }
+
+const PAPER_BOOST = 2.4; // pigment needs ~2.4x the opacity that additive light does
 
 // A named layer whose materials fade together.
 export class Layer {
@@ -206,6 +230,7 @@ export class Layer {
     this.mats = [];
     this.value = -1;
     this.labels = [];
+    onTheme(() => { const v = this.value; this.value = -1; if (v >= 0) this.set(v); }); // re-apply boosted opacity
   }
   // Registers obj's materials for fading; parents it only if it has no parent
   // yet (so objects nested in a transformed sub-group stay where they are).
@@ -216,9 +241,13 @@ export class Layer {
       for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
         // opacities were tuned for additive light; pigment on paper needs more
         if (m.userData.base === undefined) m.userData.base = m.uniforms?.uOpacity?.value ?? m.opacity;
-        if (WATERCOLOR && !m.userData.boosted) {
-          m.userData.base = Math.min(1, m.userData.base * 2.4);
+        if (!m.userData.boosted) {
           m.userData.boosted = true;
+          let ink = m.userData.base;
+          Object.defineProperty(m.userData, 'base', {
+            get: () => Math.min(1, ink * (WATERCOLOR ? PAPER_BOOST : 1)),
+            set: (v) => { ink = v; },
+          });
         }
         if (!this.mats.includes(m)) this.mats.push(m);
       }

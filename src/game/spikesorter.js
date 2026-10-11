@@ -7,14 +7,18 @@
 // (1 / 2 / 3 or tap). Correct sorts move the cursor the way the user intended;
 // mislabels move it the wrong way, exactly like a decoder error. Artifacts
 // should be left alone. Score = completed requests, plus sorting accuracy.
-import { tint, WATERCOLOR } from '../theme.js';
+import { tint, WATERCOLOR, themed, onTheme } from '../theme.js';
 
-const INK = WATERCOLOR ? '42,35,30' : '236,232,224'; // rgb of trace / UI ink
+let INK = '236,232,224'; // rgb of trace / UI ink (follows the theme)
 const UNITS = [
-  { name: 'Unit 1', type: 'Fast-spiking interneuron', shape: 'narrow, tall', intent: 'left', key: '←', glyph: '●', color: tint('#5eead4'), amp: 1.0, width: 0.5, pos: false },
-  { name: 'Unit 2', type: 'Pyramidal neuron', shape: 'broad, shallow', intent: 'right', key: '→', glyph: '●', color: tint('#ff6fb1'), amp: 0.55, width: 1.45, pos: false },
-  { name: 'Unit 3', type: 'Axonal spike', shape: 'positive-first', intent: 'select', key: '↑', glyph: '●', color: tint('#ffb547'), amp: 0.8, width: 0.85, pos: true },
+  { name: 'Unit 1', type: 'Fast-spiking interneuron', shape: 'narrow, tall', intent: 'left', key: '←', glyph: '●', base: '#5eead4', color: '', amp: 1.0, width: 0.5, pos: false },
+  { name: 'Unit 2', type: 'Pyramidal neuron', shape: 'broad, shallow', intent: 'right', key: '→', glyph: '●', base: '#ff6fb1', color: '', amp: 0.55, width: 1.45, pos: false },
+  { name: 'Unit 3', type: 'Axonal spike', shape: 'positive-first', intent: 'select', key: '↑', glyph: '●', base: '#ffb547', color: '', amp: 0.8, width: 0.85, pos: true },
 ];
+themed(() => {
+  INK = WATERCOLOR ? '42,35,30' : '236,232,224';
+  UNITS.forEach((u) => { u.color = tint(u.base); });
+});
 // ← → ↑ (or 1 2 3) sort a spike as unit 1 / 2 / 3
 const KEYS = { ArrowLeft: 0, ArrowRight: 1, ArrowUp: 2, 1: 0, 2: 1, 3: 2 };
 const ITEMS = ['Water', 'Food', 'Nurse', 'Lights', 'Music'];
@@ -65,23 +69,32 @@ export function initSpikeSorter(root) {
   buttons.forEach((b, i) => {
     const u = UNITS[i];
     b.innerHTML = `
-      <span class="ss-key"><kbd>${u.key}</kbd><em style="color:${u.color}">${u.glyph} ${u.intent}</em></span>
+      <span class="ss-key"><kbd>${u.key}</kbd><em>${u.glyph} ${u.intent}</em></span>
       <canvas width="144" height="64"></canvas>
       <strong>${u.type}</strong>
       <small>${u.shape} · extracellular</small>`;
-    const c = b.querySelector('canvas');
-    const x = c.getContext('2d');
-    x.scale(2, 2);
-    x.strokeStyle = u.color;
-    x.lineWidth = 2;
-    x.beginPath();
-    for (let k = 0; k <= 60; k++) {
-      const t = k / 60;
-      const v = shape(u, t, { amp: 1, width: 1 });
-      if (k) x.lineTo(6 + t * 60, 16 - v * 12); else x.moveTo(6, 16 - v * 12);
-    }
-    x.stroke();
   });
+  function paintTemplates() {
+    buttons.forEach((b, i) => {
+      const u = UNITS[i];
+      b.querySelector('em').style.color = u.color;
+      const c = b.querySelector('canvas');
+      const x = c.getContext('2d');
+      x.setTransform(2, 0, 0, 2, 0, 0);
+      x.clearRect(0, 0, 144, 64);
+      x.strokeStyle = u.color;
+      x.lineWidth = 2;
+      x.beginPath();
+      for (let k = 0; k <= 60; k++) {
+        const t = k / 60;
+        const v = shape(u, t, { amp: 1, width: 1 });
+        if (k) x.lineTo(6 + t * 60, 16 - v * 12); else x.moveTo(6, 16 - v * 12);
+      }
+      x.stroke();
+    });
+  }
+  paintTemplates();
+  onTheme(() => { paintTemplates(); draw(); drawScatter(state === 'over'); });
 
   // ── board ────────────────────────────────────────────────────────────────
   board.innerHTML = ITEMS.map((n) => `<div class="ss-item"><span>${n}</span></div>`).join('');

@@ -14,20 +14,14 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Helvetica,Arial,sans-serif%22 font-weight=%22700%22 font-size=%2246%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Sans+Devanagari:wght@400;500&family=Noto+Serif+Devanagari:wght@400;500&display=swap" rel="stylesheet" />
     <script>
       // pick the theme before anything paints: ?theme= wins, then the saved choice, else watercolor
       (function () {
         var q = new URLSearchParams(location.search).get('theme');
         var t = q;
         try { t = q || localStorage.getItem('theme'); if (q) localStorage.setItem('theme', q); } catch (e) {}
-        if (t !== 'ink') {
-          document.documentElement.dataset.theme = 'watercolor';
-          var l = document.createElement('link');
-          l.rel = 'stylesheet';
-          l.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Serif+Devanagari:wght@400;500&display=swap';
-          document.head.appendChild(l);
-        }
+        if (t !== 'ink') document.documentElement.dataset.theme = 'watercolor';
       })();
     </script>
     <style>
@@ -46,6 +40,7 @@
   </head>
   <body>
     <canvas id="gl" aria-hidden="true"></canvas>
+    <canvas id="xfade" aria-hidden="true"></canvas>
     <div id="labels" aria-hidden="true"></div>
     <div id="chip-tip" role="tooltip"></div>
     <div id="loader"><span>Loading</span></div>

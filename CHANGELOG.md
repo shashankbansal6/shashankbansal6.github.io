@@ -9,6 +9,16 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.3 — 2026-10-11
+
+- **Type scale back to 1.2× the original** (root 16 px → 19.2 px max, was up to 26 px), with
+  the small labels that were genuinely too small (sensing page captions, chip labels,
+  kickers) bumped individually.
+- **Live theme switch**: Watercolor ⇄ Ink no longer reloads. The frame is frozen, the page
+  dips, the theme (materials, shaders, post-processing, game, signals, zoom) is swapped in
+  place, and the new look fades in over the same scroll position and camera angle.
+  The other theme's fonts are preloaded at idle so the first switch doesn't wait.
+
 ## v3.2 — 2026-10-11
 
 - **Watercolor is now the default**; Ink is one click away in a Watercolor | Ink switch in

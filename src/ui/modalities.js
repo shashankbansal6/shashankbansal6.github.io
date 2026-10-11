@@ -3,14 +3,14 @@
 import { MODALITIES } from '../config.js';
 import { Gen, Scope } from './signals.js';
 import { initResolution } from './resolution.js';
-import { tint } from '../theme.js';
+import { tint, onTheme } from '../theme.js';
 
-const TRACE = { non: tint('#5eead4'), inv: tint('#ff6fb1') };
+const TRACE = (stream) => tint(stream === 'non' ? '#5eead4' : '#ff6fb1');
 const MAX_DEFAULT = ['eeg', 'ecog'];
 
 function channelsFor(m) {
   if (m.wave === 'hddot') return [{ gen: new Gen('hddot'), color: tint('#ff7a6b'), color2: tint('#7aa8ff') }];
-  const c = TRACE[m.stream];
+  const c = TRACE(m.stream);
   return [0, 1].map(() => ({ gen: new Gen(m.wave), color: c }));
 }
 
@@ -53,7 +53,7 @@ export function initModalities(root, onChange) {
       gain: m.wave === 'hddot' ? 0.7 : 0.4,
       grid: false,
     });
-    return { el: row, scope };
+    return { el: row, scope, m };
   }
 
   function render() {
@@ -87,6 +87,11 @@ export function initModalities(root, onChange) {
     render();
     onChange(selected);
   }
+
+  // recolor the live traces in place when the theme changes
+  onTheme(() => rows.forEach(({ scope, m }) => scope.channels.forEach((ch) => {
+    if (m.wave === 'hddot') { ch.color = tint('#ff7a6b'); ch.color2 = tint('#7aa8ff'); } else ch.color = TRACE(m.stream);
+  })));
 
   render();
   onChange(selected);

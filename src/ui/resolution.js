@@ -8,10 +8,10 @@
 // in turn (with refractory periods). The wave raises local firing rates.
 import { MODALITIES } from '../config.js';
 import { rng } from '../lib/math.js';
-import { tint } from '../theme.js';
+import { tint, onTheme } from '../theme.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
-const COLOR = { non: tint('#5eead4'), inv: tint('#ff6fb1') };
+const COLOR = { get non() { return tint('#5eead4'); }, get inv() { return tint('#ff6fb1'); } };
 const NEURONS_PER_MM2 = 1e5; // ~16 B neocortical neurons over ~2×10⁵ mm²
 const LEVELS = [
   { span: 100, label: '10 cm of cortex' },
@@ -194,7 +194,9 @@ export function initResolution(root) {
   }
 
   // ── selection-dependent overlays ───────────────────────────────────────
+  let lastSel = new Set();
   function update(selected) {
+    lastSel = selected;
     const sel = MODALITIES.filter((m) => selected.has(m.id) && !m.offMap);
     const byLevel = [[], [], []];
     sel.forEach((m) => byLevel[levelFor(m.spatialMM)].push(m));
@@ -239,6 +241,8 @@ export function initResolution(root) {
     el('text', { x: tX(1), y: axisY + rowsH + 20, class: 'z-tick', 'text-anchor': 'middle' }, time).textContent = 'shaded: one spike (~1 ms)';
     svg.setAttribute('viewBox', `0 0 ${W} ${axisY + rowsH + 26}`);
   }
+
+  onTheme(() => update(lastSel)); // re-tint the blocks and bars
 
   return { update, tick };
 }

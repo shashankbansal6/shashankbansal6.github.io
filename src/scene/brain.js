@@ -5,7 +5,7 @@ import { HEMI, REGION, hemiPoint, hemiCenter, regionOf, centralSulcusZ, sylvianY
 import { noise3 } from '../lib/noise.js';
 import { rng, gaussian, sstep } from '../lib/math.js';
 import { uTime, uPixelRatio, COLORS } from './materials.js';
-import { tint, BLENDING, WATERCOLOR } from '../theme.js';
+import { tint, BLENDING, WATERCOLOR, themed } from '../theme.js';
 
 export function buildBrain(count = 110000) {
   const rand = rng(7);
@@ -171,6 +171,22 @@ export function buildBrain(count = 110000) {
     depthWrite: false,
     blending: BLENDING,
     defines: WATERCOLOR ? { WATERCOLOR: '' } : {},
+  });
+
+  themed(() => {
+    const u = material.uniforms;
+    u.uC1.value.set(tint(COLORS.cyan));
+    u.uC2.value.set(tint(COLORS.violet));
+    u.uC3.value.set(tint(COLORS.amber));
+    u.uRippleColor.value.set(tint(COLORS.amber));
+    u.uBase0.value.set(WATERCOLOR ? '#a39684' : '#1a2a6c');
+    u.uBase1.value.set(WATERCOLOR ? '#4b6590' : '#bfe6ff');
+    u.uSize.value = WATERCOLOR ? 21 : 15;
+    material.blending = BLENDING;
+    if ('WATERCOLOR' in material.defines !== WATERCOLOR) {
+      if (WATERCOLOR) material.defines.WATERCOLOR = ''; else delete material.defines.WATERCOLOR;
+    }
+    material.needsUpdate = true;
   });
 
   const points = new THREE.Points(geo, material);
