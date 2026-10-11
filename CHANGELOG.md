@@ -9,6 +9,14 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.5 — 2026-10-11
+
+- **Photos page is live in the site**: Flickr links removed; the nav, About text and link rows point to
+  `/photos/`. First photo: the CIM chip, a 1 mm² bare die. `node scripts/add-photos.mjs <folder>`
+  turns a folder of "YYYY-MM Title @ Place" sub-folders into timeline chapters.
+- Sensing resolution figure: more space between modality legend entries.
+- Content pages (About, Research, Publications, Experience, Contact, Play) are ~0.88× smaller.
+
 ## v3.4 — 2026-10-11
 
 - **Sensing page**: both side panels are narrower and always fit the window. The live-signals panel

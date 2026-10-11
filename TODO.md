@@ -1,21 +1,13 @@
 # TODO
 
-## Photos page (lower priority)
+## Photos page
 
-A local photo timeline at `/photos/` replaces the Flickr link. The page itself is
-built (`photos/index.html`, `photos.js`, `photos.css`: year rail, justified rows,
-lightbox, both themes); it just has no photos yet (`photos/manifest.json` is empty),
-so the site still links to Flickr.
+Live at `/photos/` (nav + About + link rows). It has one photo so far (the CIM die).
 
-- [ ] Pick the best non-people photos from the Photos library, **up to 2022 only**
-      (before the PhD). Scanning the whole library through AppleScript is very slow
-      (16,891 items; filtering favorites alone ran >10 min), so work from an album or
-      a date range, or export a folder by hand.
-- [ ] Resize each to `public/photos/img/<name>-1100.jpg` (grid) and `-2000.jpg`
-      (lightbox), `sips -Z 1100` / `sips -Z 2000` work.
-- [ ] Add chapters (title, place, date, optional note) and photos
-      (`{ f, w, h, t, d }`) to `photos/manifest.json`.
-- [ ] Point `PROFILE.links` Photos and the About text at `/photos/`.
+- [ ] Add more: export the best non-people photos (pre-2022 for the PhD-start cutoff) from the
+      Photos app into folders named `YYYY-MM Title @ Place`, then
+      `node scripts/add-photos.mjs <folder>` (resizes with sips and updates
+      `photos/manifest.json`). Add captions to the `t` fields by hand if you like.
 
 ## Awards
 

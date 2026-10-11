@@ -210,17 +210,17 @@ export function initResolution(root) {
         const cx = 9 + size / 2 + k * Math.min(26, size + 8);
         const cy = 9 + size / 2 + k * 6;
         el('rect', { x: cx - size / 2, y: cy - size / 2, width: size, height: size, rx: 1.5, class: 'z-block', style: `--c:${COLOR[m.stream]}` }, L.blocks);
-        const row = el('g', { transform: `translate(0,${k * 32})` }, L.legend);
+        const row = el('g', { transform: `translate(0,${k * 42})` }, L.legend);
         el('rect', { x: 0, y: -9, width: 9, height: 9, rx: 1.5, class: 'z-block', style: `--c:${COLOR[m.stream]}` }, row);
         el('text', { x: 14, y: 0, class: 'z-name' }, row).textContent = m.name;
-        el('text', { x: 14, y: 14, class: 'z-count' }, row).textContent = neurons(m);
+        el('text', { x: 14, y: 17, class: 'z-count' }, row).textContent = neurons(m);
       });
     });
 
     // temporal dot plot: one row per modality on a shared log axis
     time.replaceChildren();
     const maxLegend = Math.max(1, ...byLevel.map((l) => l.length));
-    const ty = top + box + 17 + maxLegend * 32 + 14;
+    const ty = top + box + 17 + maxLegend * 42 + 14;
     const ax0 = 116, ax1 = W - 6;
     const tX = (ms) => ax0 + ((Math.log10(ms) + 2) / 6) * (ax1 - ax0);
     el('text', { x: 0, y: ty, class: 'z-label' }, time).textContent = 'One sample spans';

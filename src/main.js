@@ -200,6 +200,7 @@ let keys = [];
 
 // Each content page (About, Research, ...) should fit one window: find the largest zoom
 // (>= 0.55) at which its content is no taller than the viewport. Mobile scrolls normally.
+const PAGE_SCALE = 0.88; // content pages are a touch smaller than the root type scale
 const fitEls = [...document.querySelectorAll('.page-fit')];
 function fitPages() {
   const narrow = matchMedia('(max-width: 900px)').matches;
@@ -209,8 +210,8 @@ function fitPages() {
     const cs = getComputedStyle(el.parentElement);
     const avail = innerHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     const h = (z) => { el.style.zoom = z; return el.getBoundingClientRect().height; };
-    if (h(1) <= avail) { el.style.zoom = ''; continue; }
-    let lo = 0.55, hi = 1;
+    if (h(PAGE_SCALE) <= avail) continue; // already set to the base scale
+    let lo = 0.5, hi = PAGE_SCALE;
     for (let i = 0; i < 6; i++) {
       const mid = (lo + hi) / 2;
       if (h(mid) <= avail) lo = mid; else hi = mid;

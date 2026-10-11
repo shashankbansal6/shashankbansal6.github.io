@@ -123,7 +123,7 @@ export const PROFILE = {
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shashank-bansal-43a9177b/' },
     { label: 'Threads', href: 'https://www.threads.com/@shashank_9543' },
     { label: 'Mastodon', href: 'https://mastodon.social/@shashankb' },
-    { label: 'Photos', href: 'https://www.flickr.com/photos/195984796@N04/' }, // TODO: /photos/ once the local gallery is filled (see TODO.md)
+    { label: 'Photos', href: '/photos/' },
   ],
 };
 

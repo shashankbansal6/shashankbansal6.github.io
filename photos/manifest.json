@@ -1,1 +1,14 @@
-{ "chapters": [] }
+{
+  "chapters": [
+    {
+      "id": "lab-2026",
+      "title": "In the lab",
+      "place": "UC San Diego",
+      "date": "2026-09-30",
+      "note": "The compute-in-memory chip: a 1 mm² bare die, ready for bonding.",
+      "photos": [
+        { "f": "cim-die", "w": 768, "h": 1024, "t": "CIM chip, 1 mm² bare die", "d": "2026-09-30", "alt": "A 1 mm² compute-in-memory die in an open black gel-pak tray, with tweezers beside it" }
+      ]
+    }
+  ]
+}
