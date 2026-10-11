@@ -1,244 +1,207 @@
-<!DOCTYPE HTML>
-<html lang="en"><head>
-  <!-- Google tag (gtag.js) --> 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-5F6N9Q871R"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-  
-    gtag('config', 'G-5F6N9Q871R');
-  </script>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shashank Bansal · Neural sensors & silicon</title>
+    <meta name="description" content="Shashank Bansal is a Bioengineering PhD candidate at UC San Diego building ultra-low-power, high-density neural recording chips and the sensors that feed them." />
+    <link rel="canonical" href="https://shashankbansal.io/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shashankbansal.io/" />
+    <meta property="og:title" content="Shashank Bansal · Neural sensors & silicon" />
+    <meta property="og:description" content="From the whole brain down to a microwatt-per-channel recording chip: an interactive walk through neural engineering." />
+    <meta name="theme-color" content="#0d0d0c" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Georgia,serif%22 font-size=%2252%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      html, body { background: #0d0d0c; color: #ece8e0; margin: 0; }
+      #loader { position: fixed; inset: 0; z-index: 50; background: #0d0d0c; }
+    </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5F6N9Q871R"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-5F6N9Q871R');
+    </script>
+  </head>
+  <body>
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div id="labels" aria-hidden="true"></div>
+    <div id="chip-tip" role="tooltip"></div>
+    <div id="loader"><span>Loading</span></div>
 
-  <title>Shashank Bansal</title>
-  
-  <meta name="author" content="Shashank Bansal शशांक बंसल ">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="Description" content="Shashank Bansal | UCSD | ">
-  <meta name="keywords" content="Shashank Bansal. Stanford, Nvidia, UIUC ECE, Neuromorphic Engineering, Artificial Intelligence,">
+    <header class="nav">
+      <a class="brand" href="#top">Shashank Bansal</a>
+      <nav>
+        <a href="#s-landscape">Journey</a>
+        <a href="#research">Research</a>
+        <a href="#experience">Experience</a>
+        <a href="/ShashankBansal-CV.pdf">CV</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
 
-  
-  <link rel="stylesheet" type="text/css" href="stylesheet.css">
-	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
-</head>
+    <ol class="rail" aria-label="Journey chapters"></ol>
 
-<body>
-  <table style="width:100%;max-width:800px;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-    <tr style="padding:0px">
-      <td style="padding:0px">
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-          <tr style="padding:0px">
-            <td style="padding:2.5%;width:63%;vertical-align:middle">
-              <p style="text-align:center">
-                <name>Shashank Bansal | शशांक बंसल </name>
-              </p>
-              <p>
-                I am a first-gen Bioengineering graduate student at <a href="https://be.ucsd.edu/">University of California, San Diego (UCSD)</a>,
-                where I am working on dynamic interfaces between living and artificial nervous systems. I believe that the human brain
-                is one of the most complex and fascinating system in the world and I am trying to science and engineer the heck out of it.
-              </p>
-              <p>
-                Other than my fascination with the brain, I also love to hike, ski, play squash and take random photos. Some amateur stuff at the end.
-              </p>
-              <p style="text-align:center">
-                <a href="mailto:shashankbansal56@gmail.com">Email</a> &nbsp/&nbsp
-                <a href="data/ShashankBansal-CV.pdf">CV</a> &nbsp/&nbsp
-                <a
-                  href="https://mastodon.social/@shashankb">Mastadon</a> &nbsp/&nbsp
-                <a href="https://twitter.com/shashankbansa16">Twitter</a> &nbsp/&nbsp
-                <a href="https://github.com/shashankbansal6/">Github</a> &nbsp/&nbsp
-                <a href="https://www.linkedin.com/in/shashank-bansal-43a9177b/">LinkedIn</a> 
+    <main id="top">
+      <div id="journey">
+        <section class="stage hero" id="s-hero" data-stage="hero" data-rail="Brain">
+          <div class="hero-inner">
+            <p class="eyebrow">PhD candidate, Bioengineering · UC San Diego</p>
+            <h1>Shashank Bansal</h1>
+            <p class="native" lang="hi">शशांक बंसल</p>
+            <p class="lede">I build the sensors and silicon that listen to the brain: ultra-low-power, high-density recording chips that turn neural activity into action.</p>
+            <p class="hint">Scroll to begin <span aria-hidden="true">↓</span><span class="hint-drag"> · drag the brain to rotate it</span></p>
+          </div>
+        </section>
 
-              </p>
-            </td>
-            <td style="padding:2.5%;width:40%;max-width:40%">
-              <a href="images/ShashankB_profile_pic.jpg"><img
-                style="width:100%;max-width:100%" alt="profile photo"
-                src="images/ShashankB-circle.png" class="hoverZoomLink"></a>
-            </td>
-          </tr>
-        </tbody></table>
+        <section class="stage" id="s-landscape" data-stage="landscape" data-rail="Sensing">
+          <div class="card left wide">
+            <p class="kicker"><span>01</span>Sensing</p>
+            <h2>Two ways to listen</h2>
+            <p>Every brain–computer interface starts with a sensor. Outside the skull you trade resolution for safety; inside, you can hear single neurons. Pick modalities to place them on the head and compare their signals.</p>
+            <div class="streams">
+              <div data-stream="non"><h3><i></i>Non-invasive</h3><div class="chips"></div></div>
+              <div data-stream="inv"><h3><i></i>Invasive</h3><div class="chips"></div></div>
+            </div>
+            <div class="stream-list" aria-live="polite"></div>
+            <details class="res-wrap">
+              <summary>Spatial vs. temporal resolution</summary>
+              <div class="res-map"></div>
+              <p class="fine">Approximate values.</p>
+            </details>
+          </div>
+        </section>
 
-        <!-- workexperience -->
+        <section class="stage" id="s-motor" data-stage="motor" data-rail="Motor">
+          <div class="card right">
+            <p class="kicker"><span>02</span>Motor cortex</p>
+            <h2>Where intention becomes movement</h2>
+            <p>The precentral gyrus maps the body from foot to face, which makes it the classic BCI target. <b>ECoG grids</b> pick up high-gamma power as you plan a reach. <b>Penetrating arrays</b> and <b>flexible threads</b> listen to individual neurons in the hand area.</p>
+            <ul class="tags"><li class="inv">ECoG</li><li class="inv">Utah array</li><li class="inv">Threads</li><li class="non">EEG µ/β</li></ul>
+          </div>
+        </section>
 
-        <button style="border:0px transparent; background-color: transparent;outline:none;"type="button" class="collapsible" data-toggle="collapse" data-target="#content-workexperience" id="workexperience"><heading>Work Experience</heading></button>
-        <div id="content-workexperience" class="collapse in">
+        <section class="stage" id="s-visual" data-stage="visual" data-rail="Visual">
+          <div class="card left">
+            <p class="kicker"><span>03</span>Visual cortex</p>
+            <h2>The back of the brain sees</h2>
+            <p>The occipital lobe turns light into perception. From outside the skull, <b>SSVEP EEG</b> and <b>HD-DOT</b> track what you attend to. Tiled microelectrode arrays can also write patterns back in, as a <b>cortical visual prosthesis</b>.</p>
+            <ul class="tags"><li class="non">HD-DOT</li><li class="non">SSVEP EEG</li><li class="inv">Visual prosthesis</li></ul>
+          </div>
+        </section>
 
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
+        <section class="stage" id="s-language" data-stage="language" data-rail="Language">
+          <div class="card right">
+            <p class="kicker"><span>04</span>Prefrontal &amp; language</p>
+            <h2>Decoding words and plans</h2>
+            <p>Broca's and Wernicke's areas and the ventral sensorimotor strip carry speech. <b>High-density µECoG</b> with hundreds of contacts can decode attempted speech, and <b>fNIRS / HD-DOT</b> reads prefrontal load through the forehead. More channels in less area is exactly what the silicon has to deliver.</p>
+            <ul class="tags"><li class="inv">µECoG · 256 ch</li><li class="non">fNIRS</li><li class="inv">sEEG</li></ul>
+          </div>
+        </section>
 
-        <tr>
-              <td style="padding:20px;width:25%;vertical-align:top">
-                <p>
-                  <papertitle><big> Sept'22 - Current
-                <p>
-              </td>
-              <td style="padding:20px;width:75%;vertical-align:top">
-                  <papertitle><big>Graduate Student Researcher, Integrated
-                    Systems Neuroengineering Lab, University of California, San
-                  Diego </papertitle></big>
-                  <br>
-                  <p><em>Prof. Gert Cauwenberghs </em></p>
-                  <b> Projects:</b> DARPA Massive Cross Correlation,
-                  HD-Few-Shot Learning;
-                  </p>
-              </td>
-          </tr>
+        <section class="stage" id="s-signals" data-stage="signals" data-rail="Signals">
+          <div class="card left">
+            <p class="kicker"><span>05</span>Signals</p>
+            <h2>Microvolts, thousands of times a second</h2>
+            <p>Each electrode carries field potentials, high-gamma bursts and spikes, buried in noise at tens of microvolts. Every channel has to be amplified, filtered and digitized right next to the tissue, in parallel.</p>
+            <div class="scope-panel">
+              <div class="scope-head"><span>12 of 1,024 channels</span><span class="rec">recording</span></div>
+              <canvas class="sig-scope"></canvas>
+              <div class="scope-foot"><span>100 µV</span><span>synthetic signal</span></div>
+            </div>
+          </div>
+        </section>
 
-          <tr>
-              <td style="padding:20px;width:25%;vertical-align:top">
-                <p>
-                  <papertitle><big> Sept'19 - June 2022
-                <p>
-              </td>
-              <td style="padding:20px;width:75%;vertical-align:top">
-                  <papertitle><big>Research Assistant, Poldrack Lab, Stanford University </papertitle></big>
-                  <br>
-                  <p><em>Prof. Russell Poldrack </em></p>
-                  <b> Projects:</b> Non-defaced Detector, NARPS Multiverse Analysis, Fitlins;
-                  </p>
-              </td>
-          </tr>
+        <section class="stage" id="s-chip" data-stage="chip" data-rail="Chip">
+          <div class="card right">
+            <p class="kicker"><span>06</span>The chip I build</p>
+            <h2>A thousand channels at a microwatt each</h2>
+            <p>My neural interface system-on-chip puts a low-noise front-end and digitizer behind every electrode, with impedance monitoring built in. I'm integrating it with transparent <b>Neuro-clear</b> probes for simultaneous electrophysiology and optical imaging. Hover the die to explore it.</p>
+            <div class="stats">
+              <div><b data-count="channels">0</b><span>channels</span></div>
+              <div><b data-count="ppc">0</b><span>µW per channel</span></div>
+              <div><b data-count="nef">0</b><span>noise efficiency factor</span></div>
+              <div><b data-count="total">0</b><span>mW, all channels</span></div>
+            </div>
+            <p class="chip-note"></p>
+          </div>
+        </section>
 
-          <tr>
-              <td style="padding:20px;width:25%;vertical-align:top">
-                <p>
-                  <papertitle><big>Aug '19 - June 2022 
-                <p>
-              </td>
-              <td style="padding:20px;width:75%;vertical-align:top">
-                  <papertitle><big>Systems Software Engineer II, NVIDIA </papertitle></big>
-                  <br>
-                  <p><em>Automation Team </em></p>
-                  <p>
-                     Infrastructure automation, application development, network tools, CI/CD pipelines
-                     Fleet telemetry.
-                  </p>
-              </td>
-          </tr>
+        <section class="stage" id="s-link" data-stage="link" data-rail="Link">
+          <div class="card left">
+            <p class="kicker"><span>07</span>Through the skin</p>
+            <h2>Power in, data out, no wires</h2>
+            <p>The next step is to cut the cable. A pair of coils couples the implant to a wearable across the scalp: the wearable's field <b>powers</b> the chip, and the chip <b>backscatters</b> neural data on the same link. No battery and no wires through the skin.</p>
+            <dl class="specs link-specs"></dl>
+          </div>
+        </section>
 
-          <tr>
-              <td style="padding:20px;width:25%;vertical-align:top">
-                <p>
-                  <papertitle><big>Aug '17 - May 2019
-                <p>
-              </td>
-              <td style="padding:20px;width:75%;vertical-align:top">
-                  <papertitle><big>Undergraduate Teaching Assistant, CS & ECE @ Illinois </papertitle></big>
-                  <br>
-                  <p><em>UIUC ECE</em></p>
-                  <p>
-                    Undergraduate Assistant for courses:
-                    <ul>
-                      <li><a href="https://courses.engr.illinois.edu/cs461/sp2022/" target="_blank"><em>CS 461: Intro to Computer Security</em></a></li>                    
-                      <li><a href="https://courses.engr.illinois.edu/cs460/sp2010/" target="_blank"><em><em>CS 460: Computer Security Lab</em></a></li>
-                      <li><a href="http://publish.illinois.edu/digitalforensics1/" target="_blank"><em><em>CS 498 DF1: Digital Forensics 1</em></a></li>
-                      <li><a href="http://publish.illinois.edu/digitalforensics2/" target="_blank"><em><em>CS 498 DF2: Digital Forensics 2</em></a></li>
-                    </ul>
-                  </p>
-              </td>
-          </tr>
-
-          <tr>
-            <td style="padding:20px;width:25%;vertical-align:top">
-              <p>
-                <papertitle><big>May '18 - Aug 2018
-              <p>
-            </td>
-            <td style="padding:20px;width:75%;vertical-align:top">
-                <papertitle><big> Software Engineer Intern, NVIDIA </papertitle></big>
-                <br>
-                <p><em> Automation Team </em></p>
-                <p>
-                  Network and communication tools
-                </p>
-            </td>
-          </tr>
-
-          <tr>
-            <td style="padding:20px;width:25%;vertical-align:top">
-              <p>
-                <papertitle><big>May '17 - Jan 2018 
-              <p>
-            </td>
-            <td style="padding:20px;width:75%;vertical-align:top">
-                <papertitle><big> Software Engineer Intern, NCSA - Dept. of Atmospheric Sciences, UIUC </papertitle></big>
-                <br>
-                <p><em>Prof. Larry Girolamo</em></p>
-                <p>
-                  NASA-funded Terra Data Fusion Project, Big-data analysis, visualization software, and data processing.
-                </p>
-            </td>
-          </tr>
-
-          <tr>
-              <td style="padding:20px;width:25%;vertical-align:top">
-                <p>
-                  <papertitle><big>Aug 2018 - May'19
-                <p>
-              </td>
-              <td style="padding:20px;width:75%;vertical-align:top">
-                  <papertitle><big> Director - IEEE UIUC </papertitle></big>
-                  <br>
-                  <p><em>Technical Events Committee, ECE@Illinois</em></p>
-                  <p>
-                    Primary contact of IEEE UIUC for scheduling and managing Company relations to host
-                    tech talks and events with the department.
-                  </p>
-              </td>
-          </tr>
-
-        </tbody></table>
-        </div>
-        <hr class="soft">
-
-        <!-- research -->
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-            <tr>
-            <td style="padding:20px;width:100%;vertical-align:middle">
-              <heading>Research</heading>
-              <p>
-                Representative papers coming soon...</span>.
-              </p>
-            </td>
-          </tr>
-        </tbody></table>
+        <section class="stage decode" id="s-decode" data-stage="decode" data-rail="Decode">
+          <div class="card bottom">
+            <div class="decode-head">
+              <div>
+                <p class="kicker"><span>08</span>Decode, act, feed back</p>
+                <h2>Closing the loop</h2>
+              </div>
+              <p>Hundreds of channels stream from the electrodes to the chip in parallel. Features are decoded into intent, which moves a cursor or types words. Each selection sends a <b class="stim">stimulation pulse</b> back to the cortex.</p>
+            </div>
+            <div class="decode-grid">
+              <figure><figcaption>Neural features <span>channel × band</span></figcaption><canvas class="dec-features"></canvas></figure>
+              <figure><figcaption>Decoder <span>intent</span></figcaption><div class="dec-bars"></div></figure>
+              <figure>
+                <figcaption>Output <span class="dec-stim">stimulation</span></figcaption>
+                <canvas class="dec-output"></canvas>
+                <p class="dec-line"><span class="dec-text"></span><span class="caret">▍</span></p>
+              </figure>
+            </div>
+          </div>
+        </section>
       </div>
-      <hr class="soft"> 
 
+      <div class="content">
+        <section id="about" class="block">
+          <div class="about">
+            <img src="/ShashankB-circle.png" alt="Portrait of Shashank Bansal" width="200" height="200" loading="lazy" />
+            <div>
+              <p class="kicker">About</p>
+              <h2>Engineering the interface between brains and machines</h2>
+              <p>I'm a first-generation PhD candidate in Bioengineering at <a href="https://be.ucsd.edu/">UC San Diego</a>, advised by <a href="https://jacobsschool.ucsd.edu/faculty/profile?id=282">Prof. Gert Cauwenberghs</a> in the <a href="https://isn.ucsd.edu/">Integrated Systems Neuroengineering Lab</a>. I work on dynamic interfaces between living and artificial nervous systems.</p>
+              <p>The brain is one of the most complex systems we know of, and I'm trying to science and engineer the heck out of it. My focus is the hardware layer: the sensors, the low-power mixed-signal chips that record from them, and the in-memory and neuromorphic circuits that make sense of the data.</p>
+              <p>Outside the lab I hike, ski, play squash and take <a href="https://www.flickr.com/photos/195984796@N04/">photos</a>.</p>
+              <div class="links" id="profile-links"></div>
+            </div>
+          </div>
+          <ul class="honors" id="honors"></ul>
+        </section>
 
-        <!-- Photo gallery -->
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-          <tr>
-          <td style="padding:20px;width:100%;vertical-align:left;">
-            <heading>Photo Gallery</heading>
-            <p>
+        <section id="research" class="block">
+          <p class="kicker">Research</p>
+          <h2>What I work on</h2>
+          <div class="pillars" id="pillars"></div>
+          <h3 class="subhead">Selected publications &amp; patents</h3>
+          <ol class="pubs" id="pubs"></ol>
+        </section>
 
-              More photos on <a href="https://www.flickr.com/photos/195984796@N04/"> FLICKR </a>
-            </p>
-            <p>
-              <a data-flickr-embed="true" data-header="true" href="https://www.flickr.com/photos/195984796@N04/52186304284/in/dateposted-public/" title="Untitled"><img src="https://live.staticflickr.com/65535/52186304284_44ddfbbfae_z.jpg" width="360" height="640" alt="Untitled"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
-              <a data-flickr-embed="true" data-header="true" href="https://www.flickr.com/photos/195984796@N04/52186054611/in/dateposted-public/" title="Untitled"><img src="https://live.staticflickr.com/65535/52186054611_afdfe232b8_z.jpg" width="360" height="640" alt="Untitled"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
-              <a data-flickr-embed="true" data-header="true" href="https://www.flickr.com/photos/195984796@N04/52186054526/in/dateposted-public/" title="Untitled"><img src="https://live.staticflickr.com/65535/52186054526_8c96c8ccae_z.jpg" width="640" height="480" alt="Untitled"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
-              <a data-flickr-embed="true" data-header="true" href="https://www.flickr.com/photos/195984796@N04/52185033832/in/dateposted-public/" title="Untitled"><img src="https://live.staticflickr.com/65535/52185033832_fb4266e121_z.jpg" width="640" height="480" alt="Untitled"></a><script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
-            </p>
-        </tr>
-      </tbody></table>
+        <section id="experience" class="block">
+          <p class="kicker">Experience</p>
+          <h2>Path so far</h2>
+          <ol class="timeline" id="timeline"></ol>
+        </section>
 
-        <!-- POST SCRIPT-->
-        <table style="width:100%;border:0px;border-spacing:0px;border-collapse:separate;margin-right:auto;margin-left:auto;"><tbody>
-          <tr>
-            <td style="padding:0px">
-              <br>
-              <p style="text-align:center;font-size:small;">
-                Website template borrowed from <a href="https://jonbarron.info/" target="_blank">Jon Barron</al>
-              </p>
-            </td>
-          </tr>
-        </tbody></table>
-      </td>
-    </tr>
-  </table>
-</body>
+        <footer id="contact" class="block footer">
+          <h2>Let's build something that listens.</h2>
+          <a class="email" href="mailto:shashankbansal56@gmail.com">shashankbansal56@gmail.com</a>
+          <div class="links center" id="footer-links"></div>
+          <p class="fine">© <span id="year"></span> Shashank Bansal</p>
+        </footer>
+      </div>
+    </main>
 
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
