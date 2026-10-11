@@ -7,7 +7,37 @@
       "date": "2026-09-30",
       "note": "The compute-in-memory chip: a 1 mm² bare die, ready for bonding.",
       "photos": [
-        { "f": "cim-die", "w": 768, "h": 1024, "t": "CIM chip, 1 mm² bare die", "d": "2026-09-30", "alt": "A 1 mm² compute-in-memory die in an open black gel-pak tray, with tweezers beside it" }
+        {
+          "f": "cim-die",
+          "w": 768,
+          "h": 1024,
+          "t": "CIM chip, 1 mm² bare die",
+          "d": "2026-09-30",
+          "alt": "A 1 mm² compute-in-memory die in an open black gel-pak tray, with tweezers beside it"
+        }
+      ]
+    },
+    {
+      "id": "2020-06-golden-hills",
+      "title": "Golden hills",
+      "date": "2020-06-15",
+      "photos": [
+        {
+          "f": "2020-06-golden-hills-img-0037",
+          "w": 1100,
+          "h": 733,
+          "t": "Dry golden hills under a clear sky",
+          "d": "2020-06-03",
+          "alt": "Rolling golden-brown hills dotted with dark oaks under a deep blue sky"
+        },
+        {
+          "f": "2020-06-golden-hills-img-0046",
+          "w": 1100,
+          "h": 733,
+          "t": "Trail along a ridge",
+          "d": "2020-06-03",
+          "alt": "A dirt trail running along a hillside of pines and oaks above a hazy valley"
+        }
       ]
     }
   ]

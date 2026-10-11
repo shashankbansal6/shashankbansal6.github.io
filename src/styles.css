@@ -345,18 +345,22 @@ h1 {
 .pubs .authors b { color: var(--text); font-weight: 600; }
 .pubs .venue { font-size: 1rem; color: var(--body); font-style: italic; margin-top: 0.15rem; }
 
-.timeline { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; column-gap: 3rem; }
-.timeline > li { display: grid; grid-template-columns: 5rem 1fr; gap: 1.4rem; padding: 1.5rem 0; border-bottom: 1px solid var(--line); align-items: start; }
-.timeline .logo { display: block; width: 5rem; height: 5rem; }
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; max-width: 56rem; }
+.timeline::before { content: ''; position: absolute; left: 1.625rem; top: 1.5rem; bottom: 1.5rem; width: 2px; background: var(--line-2); }
+.timeline > li { display: grid; grid-template-columns: 3.25rem 1fr; gap: 1.5rem; padding: 0 0 2.25rem; align-items: start; position: relative; }
+.timeline > li:last-child { padding-bottom: 0; }
+.timeline .logo { position: relative; z-index: 1; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%; background: #fff; border: 1px solid var(--line-2); overflow: hidden; padding: 0.5rem; box-sizing: border-box; }
 .timeline .logo img { width: 100%; height: 100%; object-fit: contain; display: block; filter: grayscale(1); opacity: 0.85; transition: filter 0.25s, opacity 0.25s; }
 .timeline > li:hover .logo img { filter: none; opacity: 1; }
-.timeline .when { font: 1rem var(--mono); color: var(--accent); }
-.timeline h3 { margin: 0.25rem 0 0.2rem; font: 600 clamp(1.6rem, 2.1vw, 2.3rem)/1.15 var(--display); letter-spacing: -0.02em; }
-.timeline .org { font-size: clamp(1.15rem, 1.4vw, 1.5rem); color: var(--body); text-decoration: none; }
+.timeline .body { padding-top: 0.1rem; }
+.timeline .when { font: 0.9rem var(--mono); color: var(--accent); }
+.timeline h3 { margin: 0.15rem 0 0.1rem; font: 600 clamp(1.25rem, 1.5vw, 1.55rem)/1.2 var(--display); letter-spacing: -0.015em; }
+.timeline .org { font-size: clamp(1rem, 1.15vw, 1.15rem); color: var(--body); text-decoration: none; }
 .timeline .org:hover { text-decoration: underline; text-decoration-color: var(--accent); }
-.timeline .who { color: var(--muted); font-size: 1.1rem; margin-top: 0.1rem; }
-.timeline ul { margin: 0.6rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.25rem 1.2rem; }
-.timeline ul li { font-size: 1.05rem; color: var(--muted); }
+.timeline .who, .timeline .mail { display: block; color: var(--muted); font-size: 0.95rem; margin-top: 0.1rem; }
+.timeline .mail { width: fit-content; }
+.timeline ul { margin: 0.5rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0.2rem 1.1rem; }
+.timeline ul li { font-size: 0.95rem; color: var(--muted); }
 .timeline ul li::before { content: '· '; color: var(--accent); }
 
 /* every content section is one screenful: centered, and shrunk to fit by fitPages() in main.js */
@@ -452,9 +456,7 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
   .theme-switch button { font-size: 0.9rem; padding: 0.25rem 0.65rem; }
   .nav { gap: 0.5rem; }
   .nav nav a:not([href$='.pdf']) { display: none; }
-  .timeline { grid-template-columns: 1fr; }
-  .timeline > li { grid-template-columns: 1fr; gap: 0.9rem; padding: 1.5rem 0; }
-  .timeline .logo { width: 4rem; height: 4rem; }
+  .timeline > li { gap: 1rem; }
   .pubs { grid-template-columns: 1fr; }
   .honors { grid-template-columns: 1fr; }
   .page { min-height: 0; padding-top: 3rem; padding-bottom: 1rem; display: block; }

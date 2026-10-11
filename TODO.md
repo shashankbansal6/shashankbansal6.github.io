@@ -14,3 +14,7 @@ Live at `/photos/` (nav + About + link rows). It has one photo so far (the CIM d
 - [ ] Save the two certificate photos as `public/awards/iscas-2026.jpg` and
       `public/awards/ieee-brain-2023.jpg`. They already show up in the Honors row
       (and enlarge on click) as soon as the files exist.
+
+## Old GitHub Pages address
+
+- [ ] Publish `redirect/` as shashankbansal6.github.io (see README).

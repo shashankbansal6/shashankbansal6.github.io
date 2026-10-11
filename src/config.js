@@ -192,6 +192,7 @@ export const EXPERIENCE = [
     url: 'https://isn.ucsd.edu/',
     logo: '/logos/ucsd.png',
     who: 'Prof. Gert Cauwenberghs',
+    email: 'shbansal@ucsd.edu',
     notes: ['Neuro-clear neural interface SoC', 'Massive Cross-Correlation (MAX) · taped out', 'HiAER-Spike', 'Lead TA, BENG 216'],
   },
   {

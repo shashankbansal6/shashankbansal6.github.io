@@ -359,6 +359,7 @@ $('#timeline').innerHTML = EXPERIENCE.map((e) => `
       <h3>${esc(e.title)}</h3>
       <a class="org" href="${e.url}" target="_blank" rel="noopener">${esc(e.org)}</a>
       ${e.who ? `<div class="who">${esc(e.who)}</div>` : ''}
+      ${e.email ? `<a class="mail" href="mailto:${e.email}">${e.email}</a>` : ''}
       ${e.notes?.length ? `<ul>${e.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
     </div>
   </li>`).join('');
