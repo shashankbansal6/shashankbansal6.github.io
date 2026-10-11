@@ -232,7 +232,7 @@ export const EXPERIENCE = [
     title: 'Research Assistant',
     org: 'NCSA & Atmospheric Sciences, UIUC',
     url: 'https://www.ncsa.illinois.edu/',
-    logo: '/logos/ncsa.png',
+    logo: '/logos/illinois.png',
     who: 'Prof. Larry Di Girolamo',
     notes: ['NASA Terra Data Fusion on Blue Waters'],
   },

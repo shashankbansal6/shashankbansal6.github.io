@@ -11,10 +11,10 @@
     <meta property="og:title" content="Shashank Bansal · Neural sensors & silicon" />
     <meta property="og:description" content="From the whole brain down to a microwatt-per-channel recording chip: an interactive walk through neural engineering." />
     <meta name="theme-color" content="#0d0d0c" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Georgia,serif%22 font-size=%2252%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Helvetica,Arial,sans-serif%22 font-weight=%22700%22 font-size=%2246%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
       html, body { background: #0d0d0c; color: #ece8e0; margin: 0; }
       #loader { position: fixed; inset: 0; z-index: 50; background: #0d0d0c; }
@@ -60,7 +60,8 @@
         </section>
 
         <section class="stage" id="s-landscape" data-stage="landscape" data-rail="Sensing">
-          <div class="card left wide">
+          <div class="duo">
+          <div class="card wide">
             <p class="kicker"><span>01</span>Sensing</p>
             <h2>Two ways to listen</h2>
             <p>Every brain–computer interface starts with a sensor. Outside the skull you trade resolution for safety; inside, you can hear single neurons. Pick modalities to place them on the head and compare their signals.</p>
@@ -68,12 +69,12 @@
               <div data-stream="non"><h3><i></i>Non-invasive</h3><div class="chips"></div></div>
               <div data-stream="inv"><h3><i></i>Invasive</h3><div class="chips"></div></div>
             </div>
+            <div class="res-zoom"></div>
+          </div>
+          <div class="card streams-card">
+            <p class="kicker">Live signals</p>
             <div class="stream-list" aria-live="polite"></div>
-            <details class="res-wrap">
-              <summary>Spatial vs. temporal resolution</summary>
-              <div class="res-map"></div>
-              <p class="fine">Approximate values.</p>
-            </details>
+          </div>
           </div>
         </section>
 

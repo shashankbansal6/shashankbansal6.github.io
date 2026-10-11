@@ -103,7 +103,7 @@ const motorT = ecog.center.p.clone().lerp(new THREE.Vector3(-0.75, 0.95, 0.05), 
 
 const STAGES = {
   hero: { view: view(new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(6.0, 2.2, 4.4), 0.2, mobile ? 0.24 : 0), state: { drag: 1, activity: 0.7 } },
-  landscape: { view: view(new THREE.Vector3(0, 0.1, 0), new THREE.Vector3(-5.6, 3.0, 7.0), 0.21), state: { drag: 1, manual: true } },
+  landscape: { view: view(new THREE.Vector3(0, 0.1, 0), new THREE.Vector3(-6.4, 3.4, 8.0), 0.02), state: { drag: 1, manual: true } },
   motor: { view: view(motorT, ecogN.clone().multiplyScalar(0.8).add(new THREE.Vector3(0, 0.55, 0.35)).setLength(4.5), -0.2), state: { hi: [1, 0, 0], ov: { ecog: 1, utah: 1 } } },
   visual: { view: view(new THREE.Vector3(0, 0.15, -1.45), new THREE.Vector3(-2.7, 2.1, -4.1), 0.2), state: { hi: [0, 1, 0], ov: { visual_array: 1, hddot: 1, scalp: 0.5 } } },
   language: { view: view(layers.uecog.center.p, layers.uecog.center.n.clone().add(new THREE.Vector3(0.05, 0.15, 0.45)).setLength(4.4), -0.2), state: { hi: [0, 0, 1], ov: { uecog: 1, hddot: 0.6, scalp: 0.35 } } },
@@ -131,7 +131,7 @@ function stateVector(st) {
 
 // ── DOM: sections, anchors, rail ─────────────────────────────────────────────
 const sections = [...document.querySelectorAll('.stage')].map((el) => ({
-  el, id: el.dataset.stage, card: el.querySelector('.card'), anchor: 0, half: 1, vis: 0,
+  el, id: el.dataset.stage, cards: [...el.querySelectorAll('.card')], anchor: 0, half: 1, vis: 0,
 }));
 const contentEl = $('.content');
 let keys = [];
@@ -421,9 +421,9 @@ function frame(time) {
   for (const sec of sections) {
     const d = Math.abs(scroll - sec.anchor) / sec.half;
     sec.vis = sec.id === 'hero' ? 1 - sstep(0.15, 0.6, scroll / h) : 1 - sstep(0.62, 0.92, d);
-    if (sec.card) {
-      sec.card.style.opacity = sec.vis.toFixed(3);
-      sec.card.style.pointerEvents = sec.vis > 0.3 ? 'auto' : 'none';
+    for (const card of sec.cards) {
+      card.style.opacity = sec.vis.toFixed(3);
+      card.style.pointerEvents = sec.vis > 0.3 ? 'auto' : 'none';
     }
     if (d < best) { best = d; active = sec; }
   }
