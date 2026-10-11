@@ -9,6 +9,17 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.7 — 2026-10-11
+
+- **Phone fixes**: a three-line menu button opens all the links (Journey, Research, Play,
+  Experience, Photos, CV, Contact); the sensing panels no longer overlap; Closing the loop's
+  communication board has room; the game's Start button fits and its sort buttons sit right under the
+  recording; phones scroll natively (no smooth-scroll library) and ignore address-bar resizes.
+- **Photos**: 20 more photos from the Amateur album (Big Sur, Cambridge, Cascades, San Francisco,
+  Bay Area, Scripps Pier, Ha Long Bay, Catalina, Telluride, Solana Beach), upright with location data
+  stripped; bigger tiles for short chapters.
+- **Experience** is a LinkedIn-style timeline with your UCSD email; `redirect/` holds the old-site redirect.
+
 ## v3.5 — 2026-10-11
 
 - **Photos page is live in the site**: Flickr links removed; the nav, About text and link rows point to

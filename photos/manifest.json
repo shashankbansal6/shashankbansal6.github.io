@@ -18,25 +18,250 @@
       ]
     },
     {
-      "id": "2020-06-golden-hills",
-      "title": "Golden hills",
-      "date": "2020-06-15",
+      "id": "2018-07-big-sur",
+      "title": "Big Sur",
+      "place": "California",
+      "date": "2018-07-15",
       "photos": [
         {
-          "f": "2020-06-golden-hills-img-0037",
+          "f": "2018-07-big-sur-img-1050",
           "w": 1100,
-          "h": 733,
-          "t": "Dry golden hills under a clear sky",
-          "d": "2020-06-03",
-          "alt": "Rolling golden-brown hills dotted with dark oaks under a deep blue sky"
+          "h": 825,
+          "t": "Point Lobos",
+          "d": "2018-07-15",
+          "alt": "A turquoise cove ringed by rocks and cypress above the sea"
         },
         {
-          "f": "2020-06-golden-hills-img-0046",
+          "f": "2018-07-big-sur-img-1058",
           "w": 1100,
-          "h": 733,
-          "t": "Trail along a ridge",
-          "d": "2020-06-03",
-          "alt": "A dirt trail running along a hillside of pines and oaks above a hazy valley"
+          "h": 825,
+          "t": "Rock arches",
+          "d": "2018-07-15",
+          "alt": "Weathered sandstone arches above a rocky shore"
+        },
+        {
+          "f": "2018-07-big-sur-img-1074",
+          "w": 619,
+          "h": 1100,
+          "t": "Big Sur coast",
+          "d": "2018-07-15",
+          "alt": "Green headlands meeting the sea under a bright sky"
+        },
+        {
+          "f": "2018-07-big-sur-img-1086",
+          "w": 1100,
+          "h": 825,
+          "t": "Big Sur coast",
+          "d": "2018-07-15",
+          "alt": "Rugged coastline with a sea stack in dark blue water"
+        },
+        {
+          "f": "2018-07-big-sur-img-1092",
+          "w": 1100,
+          "h": 825,
+          "t": "McWay Falls",
+          "d": "2018-07-15",
+          "alt": "A waterfall dropping onto a turquoise cove beach"
+        },
+        {
+          "f": "2018-07-big-sur-img-1103",
+          "w": 1100,
+          "h": 825,
+          "t": "Garrapata Beach",
+          "d": "2018-07-15",
+          "alt": "Waves rolling onto a wide beach under heavy clouds"
+        }
+      ],
+      "note": "A day driving Highway 1."
+    },
+    {
+      "id": "2018-11-cambridge",
+      "title": "Cambridge",
+      "place": "Massachusetts",
+      "date": "2018-11-15",
+      "photos": [
+        {
+          "f": "2018-11-cambridge-img-1326",
+          "w": 825,
+          "h": 1100,
+          "t": "Graffiti alley",
+          "d": "2018-11-04",
+          "alt": "A narrow alley with a fully painted floor and walls"
+        },
+        {
+          "f": "2018-11-cambridge-img-1333",
+          "w": 1100,
+          "h": 825,
+          "t": "Charles River at dusk",
+          "d": "2018-11-04",
+          "alt": "Silhouetted trees beside a river with a lit bridge in the distance"
+        }
+      ]
+    },
+    {
+      "id": "2019-11-cascades",
+      "title": "Cascades",
+      "place": "Washington",
+      "date": "2019-11-15",
+      "photos": [
+        {
+          "f": "2019-11-cascades-img-4063",
+          "w": 825,
+          "h": 1100,
+          "t": "Light through the forest",
+          "d": "2019-11-15",
+          "alt": "Sunbeams slanting through tall trees"
+        }
+      ]
+    },
+    {
+      "id": "2019-12-san-francisco",
+      "title": "San Francisco",
+      "place": "California",
+      "date": "2019-12-15",
+      "photos": [
+        {
+          "f": "2019-12-san-francisco-img-4244",
+          "w": 1100,
+          "h": 825,
+          "t": "Autumn ginkgos",
+          "d": "2019-12-07",
+          "alt": "Bright yellow ginkgo trees next to a row of bike-share docks"
+        }
+      ]
+    },
+    {
+      "id": "2020-08-bay-area-summer",
+      "title": "Bay Area summer",
+      "date": "2020-08-15",
+      "photos": [
+        {
+          "f": "2020-08-bay-area-summer-img-4714",
+          "w": 1100,
+          "h": 825,
+          "t": "Fog in the redwoods",
+          "d": "2020-06-27",
+          "alt": "Mist drifting between tall trees in a forest"
+        },
+        {
+          "f": "2020-08-bay-area-summer-img-4857",
+          "w": 1100,
+          "h": 825,
+          "t": "Sunset over the pier",
+          "d": "2020-08-15",
+          "alt": "Orange clouds over a long pier and calm water at sunset"
+        },
+        {
+          "f": "2020-08-bay-area-summer-img-4871",
+          "w": 1100,
+          "h": 825,
+          "t": "Smoky sun",
+          "d": "2020-08-17",
+          "alt": "A hazy orange sun over a palm tree and a quiet street"
+        }
+      ]
+    },
+    {
+      "id": "2020-11-first-snow",
+      "title": "First snow",
+      "date": "2020-11-15",
+      "photos": [
+        {
+          "f": "2020-11-first-snow-img-0090",
+          "w": 1100,
+          "h": 825,
+          "t": "First snow",
+          "d": "2020-11-08",
+          "alt": "Snow-covered valley floor with snowy mountains under heavy clouds"
+        }
+      ]
+    },
+    {
+      "id": "2022-04-scripps-pier",
+      "title": "Scripps Pier",
+      "place": "La Jolla",
+      "date": "2022-04-15",
+      "photos": [
+        {
+          "f": "2022-04-scripps-pier-img-0163",
+          "w": 825,
+          "h": 1100,
+          "t": "Under Scripps Pier",
+          "d": "2022-04-11",
+          "alt": "Looking along the concrete pilings under a pier toward the beach"
+        }
+      ]
+    },
+    {
+      "id": "2022-08-ha-long-bay",
+      "title": "Ha Long Bay",
+      "place": "Vietnam",
+      "date": "2022-08-15",
+      "photos": [
+        {
+          "f": "2022-08-ha-long-bay-img-3537",
+          "w": 1100,
+          "h": 825,
+          "t": "Sunset over the bay",
+          "d": "2022-08-29",
+          "alt": "A calm bay at dusk with orange sky and distant hills"
+        }
+      ]
+    },
+    {
+      "id": "2023-03-catalina-island",
+      "title": "Catalina Island",
+      "place": "California",
+      "date": "2023-03-15",
+      "photos": [
+        {
+          "f": "2023-03-catalina-island-img-3289",
+          "w": 825,
+          "h": 1100,
+          "t": "Palms on Catalina",
+          "d": "2023-03-25",
+          "alt": "Tall palm trees against a deep blue sky and the sea"
+        }
+      ]
+    },
+    {
+      "id": "2023-06-telluride",
+      "title": "Telluride",
+      "place": "Colorado",
+      "date": "2023-06-15",
+      "photos": [
+        {
+          "f": "2023-06-telluride-img-4260",
+          "w": 1100,
+          "h": 825,
+          "t": "Telluride at night",
+          "d": "2023-06-27",
+          "alt": "Town lights in a dark mountain valley under a starry sky"
+        },
+        {
+          "f": "2023-06-telluride-img-4380",
+          "w": 825,
+          "h": 1100,
+          "t": "Mountains above Telluride",
+          "d": "2023-07-02",
+          "alt": "Green mountain slopes under a bright blue sky with big clouds"
+        }
+      ],
+      "note": "Telluride Neuromorphic Cognition Engineering Workshop."
+    },
+    {
+      "id": "2023-12-solana-beach",
+      "title": "Solana Beach",
+      "place": "California",
+      "date": "2023-12-15",
+      "photos": [
+        {
+          "f": "2023-12-solana-beach-img-5498",
+          "w": 1100,
+          "h": 825,
+          "t": "Lifeguard tower at sunset",
+          "d": "2023-12-02",
+          "alt": "A white lifeguard tower on a dark beach under an orange and blue sunset"
         }
       ]
     }

@@ -243,7 +243,8 @@ sections.forEach((s) => {
 });
 
 // ── smooth scroll ─────────────────────────────────────────────────────────────
-const lenis = reduced ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, anchors: { offset: 0 } });
+// phones scroll natively (Lenis fights the mobile browser toolbar and causes jumps)
+const lenis = reduced || mobile || matchMedia('(pointer: coarse)').matches ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, anchors: { offset: 0 } });
 const scrollToY = (y) => (lenis ? lenis.scrollTo(y, { duration: 1.6 }) : window.scrollTo({ top: y }));
 document.querySelectorAll('a[href="#s-landscape"]').forEach((a) =>
   a.addEventListener('click', (e) => {
@@ -435,6 +436,14 @@ async function switchTheme(next) {
   switching = false;
 }
 themeBtns.forEach((b) => b.addEventListener('click', () => switchTheme(b.dataset.set)));
+// phone menu (the three-line button)
+const navEl = $('.nav');
+const menuBtn = $('.menu-btn');
+const setMenu = (open) => { navEl.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', String(open)); };
+menuBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(!navEl.classList.contains('open')); });
+$('#site-nav').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+document.addEventListener('click', (e) => { if (!e.target.closest('.nav')) setMenu(false); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 // warm the other theme's faces so the first switch never waits on the network
 (window.requestIdleCallback || setTimeout)(() => {
   ['400 1em "Newsreader"', 'italic 400 1em "Newsreader"', '500 1em "Newsreader"', '400 1em "Noto Serif Devanagari"', '500 1em "Space Grotesk"', '400 1em "Noto Sans Devanagari"']
@@ -491,8 +500,13 @@ function updateHover() {
 }
 
 // ── resize ────────────────────────────────────────────────────────────────────
+let lastW = 0, lastH = 0;
 function resize() {
   const w = innerWidth, h = innerHeight;
+  // a phone's address bar growing/shrinking while scrolling is not a real resize
+  if (lastW === w && lastH && Math.abs(h - lastH) < lastH * 0.25 && matchMedia('(pointer: coarse)').matches) return;
+  lastW = w;
+  lastH = h;
   renderer.setSize(w, h, false);
   sizePipeline();
   camera.aspect = w / h;

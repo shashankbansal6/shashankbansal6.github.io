@@ -41,7 +41,7 @@ chaptersEl.innerHTML += chapters.map((c) => {
       <span class="when">${esc(span(c))}${c.place ? ` · ${esc(c.place)}` : ''} · ${c.photos.length} photo${c.photos.length === 1 ? '' : 's'}</span>
       ${c.note ? `<p class="note">${esc(c.note)}</p>` : ''}
     </header>
-    <div class="grid">${tiles}</div>
+    <div class="grid n${c.photos.length}">${tiles}</div>
   </section>`;
 }).join('');
 

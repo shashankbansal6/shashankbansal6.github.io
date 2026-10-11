@@ -32,6 +32,7 @@ body {
   font: 400 1rem/1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 ::selection { background: var(--accent); color: #0d0d0c; }
 a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 0.1875rem; transition: text-decoration-color 0.2s, color 0.2s; }
@@ -83,6 +84,11 @@ html.theme-dip .nav::before { opacity: 0; transition-duration: 0.25s; }
 .theme-switch button:hover { color: var(--accent); }
 .theme-switch button[aria-pressed='true'] { background: var(--text); color: var(--bg); cursor: default; }
 .nav nav a { color: var(--muted); }
+.menu-btn { display: none; pointer-events: auto; flex-direction: column; justify-content: center; gap: 5px; width: 2.5rem; height: 2.5rem; padding: 0 0.6rem; background: var(--panel); border: 1px solid var(--line-2); border-radius: 99px; cursor: pointer; }
+.menu-btn span { display: block; height: 2px; background: var(--text); border-radius: 2px; transition: transform 0.2s, opacity 0.2s; }
+.nav.open .menu-btn span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav.open .menu-btn span:nth-child(2) { opacity: 0; }
+.nav.open .menu-btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 .rail {
   position: fixed; right: clamp(0.75rem, 2vw, 1.875rem); top: 50%; transform: translateY(-50%);
@@ -428,14 +434,13 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
 
 /* ── responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .nav nav a:not([href^='/']):not([href='#contact']) { display: none; }
   .rail { display: none; }
   .hint-drag { display: none; }
   .card, .card.right, .card.wide {
     top: auto; bottom: 1rem; transform: none; margin: 0 1rem; width: auto;
     max-height: 62vh; overflow-y: auto; padding: 1.25rem;
   }
-  .duo { top: auto; bottom: 1rem; transform: none; flex-direction: column; align-items: stretch; gap: 0.625rem; padding: 0 1rem; max-height: 70vh; overflow-y: auto; pointer-events: auto; }
+  .duo { top: auto; bottom: 1rem; transform: none; flex-direction: column; align-items: stretch; gap: 0.625rem; padding: 0 1rem; max-height: 64vh; overflow-y: auto; pointer-events: auto; }
   .duo .card { max-height: none; overflow: visible; width: auto; }
   .streams-card { display: none; }
   .stage .card { position: sticky; }
@@ -445,17 +450,14 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
   .sig-scope { height: 9.375rem; }
   .decode-head { grid-template-columns: 1fr; gap: 0.375rem; }
   .decode-head p { display: none; }
-  .decode-grid { grid-template-columns: 1fr 1fr; }
-  .decode-grid figure:first-child { display: none; }
   .hero-inner { justify-content: flex-end; padding-bottom: 9vh; }
   h1 { font-size: clamp(2.75rem, 13vw, 4rem); }
   .lede { margin: 1.125rem 0 1.25rem; }
   .about { grid-template-columns: 1fr; gap: 1.5rem; }
   .about img { width: 9rem; height: 9rem; }
-  .brand { font-size: 1.15rem; }
-  .theme-switch button { font-size: 0.9rem; padding: 0.25rem 0.65rem; }
+  .brand { font-size: 1.02rem; white-space: nowrap; }
+  .theme-switch button { font-size: 0.82rem; padding: 0.25rem 0.55rem; }
   .nav { gap: 0.5rem; }
-  .nav nav a:not([href$='.pdf']) { display: none; }
   .timeline > li { gap: 1rem; }
   .pubs { grid-template-columns: 1fr; }
   .honors { grid-template-columns: 1fr; }
@@ -469,14 +471,37 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
   .refs li { grid-template-columns: 4.375rem 1fr; }
   .pubs li { grid-template-columns: 1fr; gap: 2px; }
   .ss { grid-template-columns: 1fr; }
-  .ss-stage { height: 15rem; }
+  .ss-stage { height: 16rem; }
   .ss-item { height: 2.875rem; font-size: 0.8125rem; }
   .ss-units { flex-direction: row; }
   .ss-unit { grid-template-columns: 1fr; padding: 0.5rem; }
   .ss-unit canvas { grid-row: auto; }
   .ss-unit small { display: none; }
-  .dec-board { gap: 0.25rem; }
-  .db-item { height: 3rem; font-size: 0.8125rem; }
+  .dec-board { gap: 0.375rem; }
+  .nav nav {
+    display: none; position: fixed; top: 3.6rem; right: 0.75rem; flex-direction: column; gap: 0; min-width: 12rem;
+    padding: 0.4rem; background: var(--bg); border: 1px solid var(--line-2); border-radius: 0.6rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); pointer-events: auto;
+  }
+  .nav.open nav { display: flex; }
+  .nav nav a { padding: 0.7rem 1rem; font-size: 1.1rem; color: var(--text); border-radius: 0.4rem; }
+  .nav nav a:active { background: var(--panel-2); }
+  .menu-btn { display: flex; }
+  .nav { justify-content: flex-start; }
+  .brand { margin-right: auto; }
+  .block.play { min-height: 0; display: block; padding-top: 3rem; padding-bottom: 1rem; }
+  .ss { display: flex; flex-direction: column; gap: 0.6rem; }
+  .ss-main, .ss-side { display: contents; }
+  .ss-taskbar { order: 1; } .ss-board { order: 2; } .ss-stage { order: 3; } .ss-units { order: 4; }
+  .ss-card { padding: 0.75rem 1rem; }
+  .ss-title { font-size: 1.05rem; margin-bottom: 0.4rem; }
+  .ss-card .ss-sub { font-size: 0.82rem; line-height: 1.4; margin-bottom: 0.6rem; }
+  .ss-card .ss-keys { display: none; }
+  .ss-start { padding: 0.8rem 2rem; font-size: 1.05rem; }
+  .ss-hud { order: 5; } .ss-fig { order: 6; } .ss-scale { order: 7; }
+  .decode-grid { grid-template-columns: 1fr; }
+  .decode-grid figure:not(:last-child) { display: none; }
+  .db-item { height: 2.75rem; font-size: 0.8125rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -492,6 +517,7 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
 .zoom .z-stop { stop-color: var(--accent); }
 .ss.playing .ss-canvas:focus-visible { box-shadow: none; }
 
+@media (min-width: 901px) {
 /* sensing page: both panels always fit the window (no inner scrolling). Adding a
    modality makes every live window a little shorter instead of growing the panel. */
 .duo { align-items: center; }
@@ -510,6 +536,7 @@ kbd { font: 500 0.8125rem var(--mono); padding: 1px 0.375rem; border: 1px solid 
 .stream-list.n6 .sr-meta, .stream-list.n7 .sr-meta { display: none; }
 .stream-list.n5 .stream-row, .stream-list.n6 .stream-row, .stream-list.n7 .stream-row { padding: 0.3rem 0 0.25rem; }
 .stream-list .sr-empty { margin: 0; }
+}
 
 .live-count { display: inline-block; min-width: 4.4ch; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--accent); }
 
