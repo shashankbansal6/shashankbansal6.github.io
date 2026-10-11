@@ -217,7 +217,7 @@ export class Layer {
         // opacities were tuned for additive light; pigment on paper needs more
         if (m.userData.base === undefined) m.userData.base = m.uniforms?.uOpacity?.value ?? m.opacity;
         if (WATERCOLOR && !m.userData.boosted) {
-          m.userData.base = Math.min(1, m.userData.base * 1.9);
+          m.userData.base = Math.min(1, m.userData.base * 2.4);
           m.userData.boosted = true;
         }
         if (!this.mats.includes(m)) this.mats.push(m);

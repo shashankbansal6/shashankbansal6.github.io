@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Photos · Shashank Bansal</title>
+    <meta name="description" content="Landscapes, trails, coastlines and city light, photographed over the years by Shashank Bansal." />
+    <link rel="canonical" href="https://shashankbansal.io/photos/" />
+    <meta property="og:title" content="Photos · Shashank Bansal" />
+    <meta property="og:description" content="Landscapes, trails, coastlines and city light, on a timeline." />
+    <meta name="theme-color" content="#0d0d0c" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Helvetica,Arial,sans-serif%22 font-weight=%22700%22 font-size=%2246%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      // same theme choice as the main page (shared through localStorage)
+      (function () {
+        var q = new URLSearchParams(location.search).get('theme');
+        var t = q;
+        try { t = q || localStorage.getItem('theme'); if (q) localStorage.setItem('theme', q); } catch (e) {}
+        if (t !== 'ink') {
+          document.documentElement.dataset.theme = 'watercolor';
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap';
+          document.head.appendChild(l);
+        }
+      })();
+    </script>
+    <style>
+      html, body { background: #0d0d0c; color: #ece8e0; margin: 0; }
+      html[data-theme='watercolor'], html[data-theme='watercolor'] body { background: #f2ead9; color: #2a231e; }
+    </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5F6N9Q871R"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-5F6N9Q871R');
+    </script>
+  </head>
+  <body>
+    <header class="top">
+      <a class="back" href="/">← Shashank Bansal</a>
+      <nav>
+        <a href="/#about">About</a>
+        <a class="keep" href="/ShashankBansal-CV.pdf">CV</a>
+        <div class="theme-switch" role="group" aria-label="Visual theme">
+          <button type="button" data-set="watercolor" aria-pressed="false">Watercolor</button>
+          <button type="button" data-set="ink" aria-pressed="false">Ink</button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="kicker">Photos</p>
+        <h1>Out of the lab</h1>
+        <p class="lede">Trails, coastlines, mountains and city light, collected along the way. Scroll the timeline, or tap any photo to see it large (arrow keys work too).</p>
+        <p class="meta" id="meta"></p>
+      </section>
+
+      <div class="layout">
+        <ol class="years" id="years" aria-label="Jump to a year"></ol>
+        <div class="chapters" id="chapters"></div>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <a href="/">← Back to the brain</a>
+      <p>© <span id="year"></span> Shashank Bansal</p>
+    </footer>
+
+    <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo viewer">
+      <button type="button" class="lb-x" aria-label="Close">×</button>
+      <button type="button" class="lb-nav prev" aria-label="Previous photo">‹</button>
+      <figure>
+        <img alt="" />
+        <figcaption><b></b><span></span></figcaption>
+      </figure>
+      <button type="button" class="lb-nav next" aria-label="Next photo">›</button>
+    </div>
+
+    <script type="module" src="./photos.js"></script>
+  </body>
+</html>

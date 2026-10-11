@@ -14,18 +14,18 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Helvetica,Arial,sans-serif%22 font-weight=%22700%22 font-size=%2246%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500&display=swap" rel="stylesheet" />
     <script>
-      // pick the theme before anything paints: ?theme= wins, then the saved choice
+      // pick the theme before anything paints: ?theme= wins, then the saved choice, else watercolor
       (function () {
         var q = new URLSearchParams(location.search).get('theme');
         var t = q;
         try { t = q || localStorage.getItem('theme'); if (q) localStorage.setItem('theme', q); } catch (e) {}
-        if (t === 'watercolor') {
+        if (t !== 'ink') {
           document.documentElement.dataset.theme = 'watercolor';
           var l = document.createElement('link');
           l.rel = 'stylesheet';
-          l.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap';
+          l.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Noto+Serif+Devanagari:wght@400;500&display=swap';
           document.head.appendChild(l);
         }
       })();
@@ -52,6 +52,10 @@
 
     <header class="nav">
       <a class="brand" href="#top">Shashank Bansal</a>
+      <div class="theme-switch" role="group" aria-label="Visual theme">
+        <button type="button" data-set="watercolor" aria-pressed="false">Watercolor</button>
+        <button type="button" data-set="ink" aria-pressed="false">Ink</button>
+      </div>
       <nav>
         <a href="#s-landscape">Journey</a>
         <a href="#research">Research</a>
@@ -59,7 +63,6 @@
         <a href="#experience">Experience</a>
         <a href="/ShashankBansal-CV.pdf">CV</a>
         <a href="#contact">Contact</a>
-        <button type="button" class="theme-toggle"></button>
       </nav>
     </header>
 
@@ -186,21 +189,23 @@
         <section id="play" class="block play">
           <p class="kicker"><span>09</span>Your turn</p>
           <h2>Be the decoder</h2>
-          <p>Closing the loop means a real person doing a real task. Here, someone with paralysis wants to ask for something on their communication board. Three neurons on one electrode carry their intent: one fires for <b>left</b>, one for <b>right</b>, one for <b>select</b>. Sort each spike as it enters the window with <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> (or tap), and leave artifacts alone. Mislabel a spike and the cursor goes the wrong way.</p>
+          <p>Closing the loop means a real person doing a real task. Here, someone with paralysis wants to ask for something on their communication board. Three neurons on one electrode carry their intent: one fires for <b>left</b>, one for <b>right</b>, one for <b>select</b>. Sort each spike while it is in the sort window with <kbd>←</kbd> <kbd>→</kbd> <kbd>↑</kbd> (or tap the buttons), and leave artifacts alone. Mislabel a spike and the cursor goes the wrong way.</p>
           <div class="ss" tabindex="-1">
             <div class="ss-main">
               <div class="ss-taskbar"><span>They want: <b data-ss="wants">Water</b></span><span>Requests done: <b data-ss="done">0</b></span></div>
               <div class="ss-board" aria-label="Communication board"></div>
               <div class="ss-stage">
-                <canvas class="ss-canvas" tabindex="0" aria-label="Scrolling extracellular recording. Press 1, 2 or 3 to sort the spike in the sort window."></canvas>
+                <canvas class="ss-canvas" tabindex="0" aria-label="Scrolling extracellular recording. Press the left arrow for unit 1, the right arrow for unit 2, or the up arrow for unit 3 to sort the spike in the sort window."></canvas>
                 <div class="ss-overlay">
                   <div class="ss-card">
                     <p class="ss-title">Three neurons, one electrode, one person</p>
                     <p class="ss-sub">Match each spike's shape to a template on the right. Every correct sort moves their cursor; selecting the item they want completes a request. 60 seconds.</p>
+                    <p class="ss-sub ss-keys"><kbd>←</kbd> unit 1 &nbsp; <kbd>→</kbd> unit 2 &nbsp; <kbd>↑</kbd> unit 3</p>
                     <button type="button" class="ss-start">Start</button>
                   </div>
                 </div>
               </div>
+              <p class="ss-scale"><b>⏱ 1,000× slower than real time.</b> One second of play is one millisecond of recording (see the axis). A real spike lasts about 1.6 ms, far too quick to sort by eye, so the game slows the recording down. Spikes are also packed closer together than a real neuron would fire.</p>
             </div>
             <aside class="ss-side">
               <div class="ss-units">
@@ -221,7 +226,7 @@
 
         <section id="about" class="block">
           <div class="about">
-            <img src="/ShashankB-circle.png" alt="Portrait of Shashank Bansal" width="200" height="200" loading="lazy" />
+            <img src="/shashank.jpg" alt="Portrait of Shashank Bansal in an Illinois cap and sunglasses, on a Catalina cliff above the ocean" width="200" height="200" loading="lazy" />
             <div>
               <p class="kicker">About</p>
               <h2>Engineering the interface between brains and machines</h2>
@@ -238,8 +243,10 @@
           <p class="kicker">Research</p>
           <h2>What I work on</h2>
           <div class="pillars" id="pillars"></div>
-          <h3 class="subhead">Selected publications &amp; patents</h3>
+          <h3 class="subhead">Selected publications</h3>
           <ol class="pubs" id="pubs"></ol>
+          <h3 class="subhead">Patents</h3>
+          <ol class="pubs" id="patents"></ol>
         </section>
 
         <section id="experience" class="block">
@@ -256,6 +263,8 @@
         </footer>
       </div>
     </main>
+
+    <dialog id="cert" aria-label="Certificate"><img alt="" /></dialog>
 
     <script type="module" src="/src/main.js"></script>
   </body>

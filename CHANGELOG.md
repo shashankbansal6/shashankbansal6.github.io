@@ -9,6 +9,33 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.2 — 2026-10-11
+
+- **Watercolor is now the default**; Ink is one click away in a Watercolor | Ink switch in
+  the middle of the top bar (the choice is remembered, `?theme=` still works).
+- Bigger type everywhere: all sizes are rem-based and the root grows with the window
+  (16 px up to ~1000 px wide, ~19 px at 1440, ~22 px at 1920, 26 px max); chapter cards,
+  small labels and the top bar are noticeably larger. Hindi name under the title is ~2.5×
+  bigger, with a Devanagari web font.
+- Experience, publications, "What I work on", About and honors are 1.5–3× larger.
+- Publications and Patents are separate sub-lists.
+- Awards: the IEEE ISCAS 2026 certificate (it reads **Student Paper Award**, so the text now
+  says that rather than "Best Paper") and the IEEE Brain 2023 Best Poster certificate show in
+  the Honors row and enlarge on click. Drop the files at `public/awards/iscas-2026.jpg` and
+  `public/awards/ieee-brain-2023.jpg` (the row hides an image that is missing).
+- Watercolor scene is easier to read: more saturated, mutually distinct pigments for
+  electrodes and hardware, a paler brain, less blur and bleed in the paper pass.
+- About portrait is a color photo (new picture) in both themes.
+- Every link turns fully orange on hover (text and underline).
+- Spike game: runs at **1,000× slower than real time** (1 s of play = 1 ms of recording),
+  with a real-recording-time axis under the trace and a note saying so. The sort window is
+  wider and the speed no longer ramps, so sorts land instead of missing. **← → ↑** sort as
+  unit 1 / 2 / 3 (1 2 3 still work; arrows don't scroll the page during play).
+- A `/photos/` timeline page (year rail, justified rows, lightbox, both themes) is built but
+  not linked yet; see `TODO.md`.
+
+Screenshots: not regenerated for this version.
+
 ## v3.1 — 2026-10-11
 
 - Bigger hero brain on wide screens (camera distance scales with aspect ratio).

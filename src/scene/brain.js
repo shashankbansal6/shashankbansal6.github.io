@@ -103,7 +103,7 @@ export function buildBrain(count = 110000) {
       uC3: { value: new THREE.Color(tint(COLORS.amber)) },
       // watercolor: pale sepia in the sulci → indigo on the gyri
       uBase0: { value: new THREE.Color(WATERCOLOR ? '#a39684' : '#1a2a6c') },
-      uBase1: { value: new THREE.Color(WATERCOLOR ? '#2b4673' : '#bfe6ff') },
+      uBase1: { value: new THREE.Color(WATERCOLOR ? '#4b6590' : '#bfe6ff') },
       uRippleColor: { value: new THREE.Color(tint(COLORS.amber)) },
       uRippleCenter: { value: new THREE.Vector3() },
       uRipple: { value: -1 },
@@ -142,7 +142,7 @@ export function buildBrain(count = 110000) {
         }
         #ifdef WATERCOLOR
         col *= 1.0 - fire * 0.5; // firing reads as a darker dab of pigment
-        vAlpha = ((0.08 + 0.26 * aBright) * tw * dimF + fire * 0.5 + rip * 0.8 + hi * 0.3) * uOpacity;
+        vAlpha = ((0.07 + 0.2 * aBright) * tw * dimF + fire * 0.5 + rip * 0.8 + hi * 0.3) * uOpacity;
         #else
         col += fire * vec3(0.7, 0.95, 1.0);
         vAlpha = ((0.12 + 0.5 * aBright) * tw * dimF + fire * 0.9 + rip + hi * 0.2) * uOpacity * 0.75;

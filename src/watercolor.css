@@ -19,30 +19,34 @@
   --ui: 'Inter', system-ui, sans-serif;
   color-scheme: light;
 }
-[data-theme='watercolor'] body { font-size: 17px; }
+[data-theme='watercolor'] body { font-size: 1.0625rem; }
 [data-theme='watercolor'] ::selection { color: #fffaf0; }
 
 /* paper vignette over everything that isn't the canvas */
 [data-theme='watercolor'] #gl { filter: saturate(1.05); }
 
 [data-theme='watercolor'] .nav { background: linear-gradient(to bottom, rgba(242, 234, 217, 0.92), rgba(242, 234, 217, 0)); }
-[data-theme='watercolor'] .brand { font: 600 22px/1 var(--display); letter-spacing: 0; }
-[data-theme='watercolor'] .nav nav a, [data-theme='watercolor'] .theme-toggle { font-family: var(--ui); }
+[data-theme='watercolor'] .brand { font: 600 1.7rem/1 var(--display); letter-spacing: 0; }
+[data-theme='watercolor'] .native { font-family: 'Noto Serif Devanagari', var(--display); font-weight: 400; }
+[data-theme='watercolor'] .theme-switch { background: rgba(255, 251, 242, 0.85); }
+[data-theme='watercolor'] .nav nav a, [data-theme='watercolor'] .theme-switch button { font-family: var(--ui); }
 
-[data-theme='watercolor'] h1 { font: 500 clamp(56px, 8.6vw, 116px)/0.95 var(--display); letter-spacing: -0.02em; }
-[data-theme='watercolor'] .card h2 { font: 500 clamp(28px, 2.5vw, 34px)/1.12 var(--display); letter-spacing: -0.01em; }
-[data-theme='watercolor'] .block h2 { font: 500 clamp(36px, 4vw, 52px)/1.06 var(--display); letter-spacing: -0.015em; }
-[data-theme='watercolor'] .pillars h3, [data-theme='watercolor'] .subhead { font: 500 25px/1.2 var(--display); letter-spacing: 0; }
-[data-theme='watercolor'] .stats b { font: 500 38px/1.05 var(--display); }
-[data-theme='watercolor'] .card p { font-size: 16px; }
+[data-theme='watercolor'] h1 { font: 500 clamp(3.5rem, 8.6vw, 7.25rem)/0.95 var(--display); letter-spacing: -0.02em; }
+[data-theme='watercolor'] .card h2 { font: 500 clamp(2.1rem, 2.6vw, 2.8rem)/1.1 var(--display); letter-spacing: -0.01em; }
+[data-theme='watercolor'] .block h2 { font: 500 clamp(2.6rem, 3.8vw, 4rem)/1.06 var(--display); letter-spacing: -0.015em; }
+[data-theme='watercolor'] .pillars h3 { font: 500 clamp(1.9rem, 2.4vw, 2.6rem)/1.15 var(--display); letter-spacing: 0; }
+[data-theme='watercolor'] .subhead { font: 500 clamp(2rem, 2.6vw, 2.8rem)/1.15 var(--display); letter-spacing: 0; }
+[data-theme='watercolor'] .timeline h3 { font-weight: 500; }
+[data-theme='watercolor'] .stats b { font: 500 2.7rem/1.05 var(--display); }
+[data-theme='watercolor'] .card p { font-size: 1.2rem; line-height: 1.5; }
 [data-theme='watercolor'] .eyebrow, [data-theme='watercolor'] .hint, [data-theme='watercolor'] .tags li,
 [data-theme='watercolor'] .chip, [data-theme='watercolor'] .streams h3, [data-theme='watercolor'] .stats span,
 [data-theme='watercolor'] .links, [data-theme='watercolor'] .timeline ul li, [data-theme='watercolor'] .refs li { font-family: var(--ui); }
 
 /* cards: deckled paper with a soft cast shadow, no hard border */
 [data-theme='watercolor'] .card {
-  background: var(--panel); border-color: rgba(42, 35, 30, 0.08); border-radius: 3px;
-  box-shadow: 0 1px 0 rgba(42, 35, 30, 0.04), 0 18px 40px -22px rgba(74, 56, 38, 0.35);
+  background: var(--panel); border-color: rgba(42, 35, 30, 0.08); border-radius: 0.1875rem;
+  box-shadow: 0 1px 0 rgba(42, 35, 30, 0.04), 0 1.125rem 2.5rem -22px rgba(74, 56, 38, 0.35);
 }
 [data-theme='watercolor'] .chip.on { background: var(--text); color: #fffaf0; border-color: var(--text); }
 [data-theme='watercolor'] .label3d span { background: rgba(255, 250, 240, 0.9); border-color: rgba(42, 35, 30, 0.14); font-family: var(--ui); }
@@ -50,10 +54,9 @@
 [data-theme='watercolor'] .bar i { background: rgba(42, 35, 30, 0.08); }
 [data-theme='watercolor'] .bar.win b { background: var(--text); }
 [data-theme='watercolor'] .content { background: linear-gradient(to bottom, rgba(242, 234, 217, 0) 0, rgba(242, 234, 217, 0.92) 28vh, var(--bg) 60vh); }
-[data-theme='watercolor'] .about img { filter: sepia(0.35) contrast(1.02); }
 [data-theme='watercolor'] .timeline .logo img { filter: grayscale(1) sepia(0.4); }
 [data-theme='watercolor'] .pubs .venue { font-family: var(--display); }
-[data-theme='watercolor'] .email { font: 500 clamp(22px, 2.6vw, 30px) var(--display); }
+[data-theme='watercolor'] .email { font: 500 clamp(1.375rem, 2.6vw, 1.875rem) var(--display); }
 
 /* resolution zoom on paper */
 [data-theme='watercolor'] .zoom .z-box { fill: rgba(42, 35, 30, 0.025); }
@@ -72,3 +75,8 @@
 [data-theme='watercolor'] .ss-item.cursor, [data-theme='watercolor'] .db-item.cursor { background: rgba(42, 35, 30, 0.06); }
 [data-theme='watercolor'] .ss-unit.hit { animation-name: hitpaper; }
 @keyframes hitpaper { 0% { background: rgba(42, 35, 30, 0.1); } 100% { background: transparent; } }
+
+@media (max-width: 900px) {
+  [data-theme='watercolor'] .card p { font-size: 1.05rem; }
+  [data-theme='watercolor'] .card h2 { font-size: 1.8rem; }
+}

@@ -10,7 +10,7 @@ Almost everything a visitor reads about you is in **`src/config.js`**.
 | Social links (CV, GitHub, LinkedIn, Threads…) | `PROFILE.links` |
 | Honors row under About | `HONORS` |
 | "What I work on" pillars + their paper/patent links | `RESEARCH` |
-| Selected publications list | `PUBLICATIONS` (authors accept `<b>` for your name) |
+| Selected publications and patents | `PUBLICATIONS` (authors accept `<b>` for your name; `type: 'patent'` files it under Patents) |
 | Experience timeline | `EXPERIENCE` (`logo` points into `public/logos/`) |
 
 Chapter copy (the cards in the 3D journey) and the About text live in **`index.html`**.
@@ -18,7 +18,8 @@ Chapter copy (the cards in the 3D journey) and the About text live in **`index.h
 ## Files in `public/`
 
 - `ShashankBansal-CV.pdf` — replace with a newer CV (keep the filename).
-- `ShashankB-circle.png` — portrait.
+- `shashank.jpg` — About portrait (square crop, shown as a circle).
+- `awards/*.jpg` — certificate photos for `HONORS` entries that have an `img`.
 - `logos/*.png` — square organization logos, shown at 40 px. Keep them the same
   style: square, mark centered with padding, white background.
 - `404.html` — not-found page.

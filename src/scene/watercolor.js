@@ -47,15 +47,15 @@ export function watercolorPass() {
         vec2 q = vUv * vec2(aspect, 1.0);
 
         // bleeding: displace lookups with slow noise (drifts very slightly)
-        vec2 wob = (vec2(fbm(q * 5.0 + uTime * 0.02), fbm(q * 5.0 + 9.1 - uTime * 0.02)) - 0.5) * 0.006;
+        vec2 wob = (vec2(fbm(q * 5.0 + uTime * 0.02), fbm(q * 5.0 + 9.1 - uTime * 0.02)) - 0.5) * 0.0035;
         vec2 uv = vUv + wob;
 
         // wet-in-wet blur
-        vec3 c = tex(uv) * 0.4;
-        c += tex(uv + vec2(px.x * 2.0, 0.0)) * 0.15;
-        c += tex(uv - vec2(px.x * 2.0, 0.0)) * 0.15;
-        c += tex(uv + vec2(0.0, px.y * 2.0)) * 0.15;
-        c += tex(uv - vec2(0.0, px.y * 2.0)) * 0.15;
+        vec3 c = tex(uv) * 0.52;
+        c += tex(uv + vec2(px.x * 1.4, 0.0)) * 0.12;
+        c += tex(uv - vec2(px.x * 1.4, 0.0)) * 0.12;
+        c += tex(uv + vec2(0.0, px.y * 1.4)) * 0.12;
+        c += tex(uv - vec2(0.0, px.y * 1.4)) * 0.12;
 
         // wet edges: gradient of pigment density
         float dx = dens(tex(uv + vec2(px.x * 3.0, 0.0))) - dens(tex(uv - vec2(px.x * 3.0, 0.0)));

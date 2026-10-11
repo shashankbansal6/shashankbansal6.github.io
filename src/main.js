@@ -262,7 +262,18 @@ const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const linkList = PROFILE.links.map((l) => `<a href="${l.href}">${l.label}</a>`).join('') + `<a href="mailto:${PROFILE.email}">Email</a>`;
 $('#profile-links').innerHTML = linkList;
 $('#footer-links').innerHTML = linkList;
-$('#honors').innerHTML = HONORS.map((h) => `<li><span>${h.year}</span>${esc(h.text)}</li>`).join('');
+$('#honors').innerHTML = HONORS.map((h) => `<li class="${h.img ? 'has-img' : ''}">
+  ${h.img ? `<button type="button" class="honor-img" data-full="${h.img}" data-alt="${esc(h.alt || h.text)}" aria-label="View certificate larger"><img src="${h.img}" alt="${esc(h.alt || h.text)}" loading="lazy" onerror="this.closest('button').remove()" /></button>` : ''}
+  <div><span>${h.year}</span>${esc(h.text)}</div></li>`).join('');
+const certDlg = $('#cert');
+$('#honors').addEventListener('click', (e) => {
+  const b = e.target.closest('.honor-img');
+  if (!b) return;
+  $('img', certDlg).src = b.dataset.full;
+  $('img', certDlg).alt = b.dataset.alt;
+  certDlg.showModal();
+});
+certDlg.addEventListener('click', () => certDlg.close());
 $('#pillars').innerHTML = RESEARCH.map((r, i) => `
   <article>
     <span class="num">${String(i + 1).padStart(2, '0')}</span>
@@ -270,7 +281,7 @@ $('#pillars').innerHTML = RESEARCH.map((r, i) => `
     <p>${esc(r.text)}</p>
     <ul class="refs">${r.refs.map((x) => `<li><span class="kind">${x.kind}</span>${x.href ? `<a href="${x.href}" target="_blank" rel="noopener">${esc(x.label)} ↗</a>` : `<em>${esc(x.label)}</em>`}</li>`).join('')}</ul>
   </article>`).join('');
-$('#pubs').innerHTML = PUBLICATIONS.map((p) => `
+const pubItem = (p) => `
   <li>
     <span class="year">${p.year}</span>
     <div>
@@ -278,7 +289,9 @@ $('#pubs').innerHTML = PUBLICATIONS.map((p) => `
       <div class="authors">${p.authors}</div>
       <div class="venue">${esc(p.venue)}</div>
     </div>
-  </li>`).join('');
+  </li>`;
+$('#pubs').innerHTML = PUBLICATIONS.filter((p) => p.type !== 'patent').map(pubItem).join('');
+$('#patents').innerHTML = PUBLICATIONS.filter((p) => p.type === 'patent').map(pubItem).join('');
 $('#timeline').innerHTML = EXPERIENCE.map((e) => `
   <li>
     <a class="logo" href="${e.url}" target="_blank" rel="noopener" aria-label="${esc(e.org)}"><img src="${e.logo}" alt="" width="36" height="36" loading="lazy" /></a>
@@ -292,10 +305,12 @@ $('#timeline').innerHTML = EXPERIENCE.map((e) => `
   </li>`).join('');
 $('#year').textContent = new Date().getFullYear();
 initSpikeSorter($('#play .ss'));
-const themeBtn = $('.theme-toggle');
-themeBtn.textContent = WATERCOLOR ? 'Ink' : 'Watercolor';
-themeBtn.title = WATERCOLOR ? 'Switch to the dark ink version' : 'Switch to the watercolor version';
-themeBtn.addEventListener('click', () => setTheme(WATERCOLOR ? 'ink' : 'watercolor'));
+// theme switch: a two-option control in the middle of the top bar
+document.querySelectorAll('.theme-switch button').forEach((b) => {
+  const on = b.dataset.set === (WATERCOLOR ? 'watercolor' : 'ink');
+  b.setAttribute('aria-pressed', String(on));
+  b.addEventListener('click', () => { if (!on) setTheme(b.dataset.set); });
+});
 
 // ── interaction: drag to rotate, hover chip blocks ───────────────────────────
 let yaw = 0, pitch = 0, yawVel = 0, dragging = false, lastX = 0, lastY = 0;

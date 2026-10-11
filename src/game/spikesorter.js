@@ -11,15 +11,26 @@ import { tint, WATERCOLOR } from '../theme.js';
 
 const INK = WATERCOLOR ? '42,35,30' : '236,232,224'; // rgb of trace / UI ink
 const UNITS = [
-  { name: 'Unit 1', type: 'Fast-spiking interneuron', shape: 'narrow, tall', intent: 'left', glyph: '◀', color: tint('#5eead4'), amp: 1.0, width: 0.5, pos: false },
-  { name: 'Unit 2', type: 'Pyramidal neuron', shape: 'broad, shallow', intent: 'right', glyph: '▶', color: tint('#ff6fb1'), amp: 0.55, width: 1.45, pos: false },
-  { name: 'Unit 3', type: 'Axonal spike', shape: 'positive-first', intent: 'select', glyph: '●', color: tint('#ffb547'), amp: 0.8, width: 0.85, pos: true },
+  { name: 'Unit 1', type: 'Fast-spiking interneuron', shape: 'narrow, tall', intent: 'left', key: '←', glyph: '●', color: tint('#5eead4'), amp: 1.0, width: 0.5, pos: false },
+  { name: 'Unit 2', type: 'Pyramidal neuron', shape: 'broad, shallow', intent: 'right', key: '→', glyph: '●', color: tint('#ff6fb1'), amp: 0.55, width: 1.45, pos: false },
+  { name: 'Unit 3', type: 'Axonal spike', shape: 'positive-first', intent: 'select', key: '↑', glyph: '●', color: tint('#ffb547'), amp: 0.8, width: 0.85, pos: true },
 ];
+// ← → ↑ (or 1 2 3) sort a spike as unit 1 / 2 / 3
+const KEYS = { ArrowLeft: 0, ArrowRight: 1, ArrowUp: 2, 1: 0, 2: 1, 3: 2 };
 const ITEMS = ['Water', 'Food', 'Nurse', 'Lights', 'Music'];
 const DURATION = 60;
 const BEST_KEY = 'spikesorter.best.v2';
 const SPIKE_PX = 120; // on-screen width of one spike
-const WINDOW_W = 92;
+
+// Time scale. A real extracellular spike lasts ~1.6 ms, so SPIKE_PX pixels = 1.6 ms of
+// recording. The game scrolls at 1 s of play per 1 ms of recording, i.e. it runs
+// SLOWDOWN times slower than the brain, so a human has time to see and sort each spike.
+const SPIKE_MS = 1.6;
+const PX_PER_MS = SPIKE_PX / SPIKE_MS; // 75 px per ms of recording
+const SLOWDOWN = 1000;
+const SPEED = PX_PER_MS * (1000 / SLOWDOWN); // px per second of play
+const WINDOW_W = 170; // sort window: ~2.3 s to sort each spike
+const AXIS_H = 30; // time axis strip at the bottom of the trace
 
 // waveform of unit u at phase t (0..1 across the spike), roughly −1..1
 function shape(u, t, j) {
@@ -54,7 +65,7 @@ export function initSpikeSorter(root) {
   buttons.forEach((b, i) => {
     const u = UNITS[i];
     b.innerHTML = `
-      <span class="ss-key"><kbd>${i + 1}</kbd><em style="color:${u.color}">${u.glyph} ${u.intent}</em></span>
+      <span class="ss-key"><kbd>${u.key}</kbd><em style="color:${u.color}">${u.glyph} ${u.intent}</em></span>
       <canvas width="144" height="64"></canvas>
       <strong>${u.type}</strong>
       <small>${u.shape} · extracellular</small>`;
@@ -77,7 +88,9 @@ export function initSpikeSorter(root) {
   const cells = [...board.children];
 
   let W = 0, H = 0, SW = 0, SH = 0;
+  let U = 1; // canvas text follows the page's rem scale
   function resize() {
+    U = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
     const dpr = Math.min(devicePixelRatio, 2);
     const r = canvas.getBoundingClientRect();
     if (!r.width) return;
@@ -104,7 +117,7 @@ export function initSpikeSorter(root) {
   hud.best.textContent = best;
 
   const windowX = () => W * 0.28;
-  const speed = () => 140 + Math.min(1, t / DURATION) * 150; // px/s
+  const speed = () => SPEED;
 
   function renderBoard(pulse) {
     cells.forEach((c, i) => {
@@ -170,7 +183,7 @@ export function initSpikeSorter(root) {
       j: { amp: 0.88 + Math.random() * 0.24, width: 0.88 + Math.random() * 0.24 },
       done: false,
     });
-    nextAt += 150 + Math.random() * (180 - Math.min(1, t / DURATION) * 60);
+    nextAt += 140 + Math.random() * (110 - Math.min(1, t / DURATION) * 40);
   }
   function signalAt(wx) {
     let v = noise[Math.floor(Math.abs(wx)) % noise.length];
@@ -231,7 +244,7 @@ export function initSpikeSorter(root) {
       combo = 0;
       wrong++;
       score = Math.max(0, score - 5);
-      flash = { text: e.u < 0 ? 'that was an artifact' : `that was a ${UNITS[e.u].type.toLowerCase()}`, color: 'accent', at: t };
+      flash = { text: e.u < 0 ? 'that was an artifact' : `that was ${/^[aeiou]/i.test(UNITS[e.u].type) ? 'an' : 'a'} ${UNITS[e.u].type.toLowerCase()}`, color: 'accent', at: t };
     }
     if (e.u >= 0) sorted.push({ u: e.u, as: i, amp: UNITS[e.u].amp * e.j.amp, w: UNITS[e.u].width * e.j.width });
     act(i); // the decoder acts on *your* label, right or wrong
@@ -276,17 +289,17 @@ export function initSpikeSorter(root) {
   function draw() {
     if (!W) return;
     ctx.clearRect(0, 0, W, H);
-    const mid = H * 0.55, gain = H * 0.3;
+    const mid = (H - AXIS_H) * 0.55, gain = (H - AXIS_H) * 0.3;
     const wx = windowX();
     const live = state === 'playing' ? activeEvent() : null;
     ctx.fillStyle = `rgba(${INK},${live ? 0.1 : 0.04})`;
-    ctx.fillRect(wx, 0, WINDOW_W, H);
+    ctx.fillRect(wx, 0, WINDOW_W, H - AXIS_H);
     ctx.strokeStyle = `rgba(${INK},0.3)`;
     ctx.setLineDash([3, 4]);
-    ctx.strokeRect(wx + 0.5, 0.5, WINDOW_W - 1, H - 1);
+    ctx.strokeRect(wx + 0.5, 0.5, WINDOW_W - 1, H - AXIS_H - 1);
     ctx.setLineDash([]);
     ctx.fillStyle = `rgba(${INK},0.6)`;
-    ctx.font = '13px Inter, sans-serif';
+    ctx.font = `${13 * U}px Inter, sans-serif`;
     ctx.fillText('sort window', wx + 8, 20);
     // trace
     ctx.lineWidth = 1.6;
@@ -312,13 +325,37 @@ export function initSpikeSorter(root) {
       }
       ctx.stroke();
     }
+    drawAxis();
     if (flash && t - flash.at < 1.1) {
       ctx.globalAlpha = 1 - (t - flash.at) / 1.1;
       ctx.fillStyle = flash.color === 'accent' ? accent() : flash.color;
-      ctx.font = WATERCOLOR ? 'italic 500 18px Newsreader, serif' : '600 16px "Space Grotesk", sans-serif';
-      ctx.fillText(flash.text, wx, H - 16 - (t - flash.at) * 16);
+      ctx.font = WATERCOLOR ? `italic 500 ${18 * U}px Newsreader, serif` : `600 ${16 * U}px "Space Grotesk", sans-serif`;
+      ctx.fillText(flash.text, wx, H - AXIS_H - 14 - (t - flash.at) * 16);
       ctx.globalAlpha = 1;
     }
+  }
+
+  // time axis in real recording milliseconds (the trace scrolls at 1 s of play = 1 ms)
+  function drawAxis() {
+    const y = H - AXIS_H;
+    ctx.strokeStyle = `rgba(${INK},0.25)`;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke();
+    ctx.fillStyle = `rgba(${INK},0.6)`;
+    ctx.font = `${12 * U}px Inter, sans-serif`;
+    ctx.textAlign = 'center';
+    const step = 0.25; // ms
+    const k0 = Math.floor(offset / PX_PER_MS / step);
+    for (let k = k0; ; k++) {
+      const x = k * step * PX_PER_MS - offset;
+      if (x > W) break;
+      const major = k % 4 === 0;
+      ctx.beginPath(); ctx.moveTo(x + 0.5, y); ctx.lineTo(x + 0.5, y + (major ? 7 : 4)); ctx.stroke();
+      if (major && x > 14 && x < W - 150) ctx.fillText(`${k * step} ms`, x, y + 14 + 5 * U);
+    }
+    ctx.textAlign = 'right';
+    ctx.fillText('real recording time', W - 8, y + 14 + 5 * U);
+    ctx.textAlign = 'left';
   }
 
   function drawScatter(reveal) {
@@ -331,7 +368,7 @@ export function initSpikeSorter(root) {
     sctx.moveTo(16, 8); sctx.lineTo(16, SH - 16); sctx.lineTo(SW - 6, SH - 16);
     sctx.stroke();
     sctx.fillStyle = `rgba(${INK},0.5)`;
-    sctx.font = '11px Inter, sans-serif';
+    sctx.font = `${11 * U}px Inter, sans-serif`;
     sctx.fillText('spike width →', SW - 82, SH - 3);
     sctx.save(); sctx.translate(11, 76); sctx.rotate(-Math.PI / 2); sctx.fillText('amplitude →', 0, 0); sctx.restore();
     if (reveal) {
@@ -392,7 +429,7 @@ export function initSpikeSorter(root) {
     } else if (state === 'idle') {
       // attract mode behind the start card
       t = (t + dt) % 30;
-      offset += 80 * dt;
+      offset += SPEED * dt;
       while (nextAt < offset + W + 200) spawn();
       events = events.filter((e) => e.x - offset > -SPIKE_PX * 2);
     }
@@ -408,14 +445,15 @@ export function initSpikeSorter(root) {
   }
 
   // ── input ────────────────────────────────────────────────────────────────
-  const keyIndex = (e) => ['1', '2', '3'].indexOf(e.key);
   window.addEventListener('keydown', (e) => {
-    if (!visible || e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (!visible || e.metaKey || e.ctrlKey || e.altKey) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
-    const i = keyIndex(e);
+    const i = e.key in KEYS ? KEYS[e.key] : -1;
     if (i >= 0 && state === 'playing') {
-      e.preventDefault();
-      sort(i);
+      e.preventDefault(); // arrows must not scroll the page mid-game, even when held
+      if (!e.repeat) sort(i);
+    } else if (e.repeat) {
+      return;
     } else if ((e.key === 'Enter' || e.key === ' ') && state !== 'playing' && e.target === canvas) {
       e.preventDefault();
       start();

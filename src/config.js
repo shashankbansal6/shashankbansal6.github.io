@@ -123,15 +123,15 @@ export const PROFILE = {
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shashank-bansal-43a9177b/' },
     { label: 'Threads', href: 'https://www.threads.com/@shashank_9543' },
     { label: 'Mastodon', href: 'https://mastodon.social/@shashankb' },
-    { label: 'Photos', href: 'https://www.flickr.com/photos/195984796@N04/' },
+    { label: 'Photos', href: 'https://www.flickr.com/photos/195984796@N04/' }, // TODO: /photos/ once the local gallery is filled (see TODO.md)
   ],
 };
 
 export const HONORS = [
-  { year: '2026', text: 'Best Paper Award, Neural Systems & Applications TC — IEEE ISCAS (Shanghai)' },
+  { year: '2026', text: 'Student Paper Award, Neural Systems & Applications TC · IEEE ISCAS 2026 (Shanghai)', img: '/awards/iscas-2026.jpg', alt: 'IEEE ISCAS 2026 Student Paper Award certificate' },
   { year: '2026', text: 'US Patent 12,676,185 granted — energy-efficient compute-in-memory SRAM-C architecture' },
   { year: '2025', text: 'Oral, International Materials Research Congress (Cancún) · 2 posters, SfN' },
-  { year: '2023', text: 'Best Poster Award, IEEE Brain Conference (Washington, DC)' },
+  { year: '2023', text: 'Best Poster Award, First Place · IEEE Brain Discovery & Neurotechnology Workshop (Washington, DC)', img: '/awards/ieee-brain-2023.jpg', alt: 'IEEE Brain Best Poster Award, First Place, certificate' },
   { year: '2023', text: 'Telluride Neuromorphic Cognition Engineering Workshop' },
 ];
 
@@ -157,7 +157,7 @@ export const RESEARCH = [
     title: 'Compute-in-memory',
     text: 'Adiabatic, energy-recycling charge-redistribution arrays for massively parallel cross-correlation: designed, verified and taped out.',
     refs: [
-      { kind: 'Paper', label: 'Adiabatic energy-recycling charge-redistribution array · ISCAS 2026 · Best Paper (NSA)', href: doi('10.1109/iscas66217.2026.11562109') },
+      { kind: 'Paper', label: 'Adiabatic energy-recycling charge-redistribution array · ISCAS 2026 · Student Paper Award (NSA TC)', href: doi('10.1109/iscas66217.2026.11562109') },
       { kind: 'Patent', label: 'US 12,676,185 B2 · Energy-efficient CIM SRAM-C circuit architecture', href: PATENT_URL },
       { kind: 'Paper', label: 'Where to cut: ADC quantization for analog in-memory computing · ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043960') },
     ],
@@ -174,8 +174,8 @@ export const RESEARCH = [
 ];
 
 export const PUBLICATIONS = [
-  { year: 2026, title: 'Adiabatic Energy-Recycling Charge-Redistribution Array for Ultra-Low Power Massively Parallel Cross-Correlation', authors: '<b>S. Bansal</b>, P. G. Hogganvik, S. Jain, G. Hota, et al.', venue: 'IEEE ISCAS 2026 · Best Paper, NSA TC', href: doi('10.1109/iscas66217.2026.11562109') },
-  { year: 2026, title: 'Energy Efficient Compute-in-Memory SRAM-C Circuit Architecture', authors: '<b>S. Bansal</b>, B. Cherif, G. Cauwenberghs, G. Hota, S. Jain', venue: 'US Patent 12,676,185 B2', href: PATENT_URL },
+  { year: 2026, title: 'Adiabatic Energy-Recycling Charge-Redistribution Array for Ultra-Low Power Massively Parallel Cross-Correlation', authors: '<b>S. Bansal</b>, P. G. Hogganvik, S. Jain, G. Hota, et al.', venue: 'IEEE ISCAS 2026 · Student Paper Award, NSA TC', href: doi('10.1109/iscas66217.2026.11562109') },
+  { type: 'patent', year: 2026, title: 'Energy Efficient Compute-in-Memory SRAM-C Circuit Architecture', authors: '<b>S. Bansal</b>, B. Cherif, G. Cauwenberghs, G. Hota, S. Jain', venue: 'US Patent 12,676,185 B2', href: PATENT_URL },
   { year: 2025, title: 'A Dynamic Spike Sorter for Multiscale Nanoelectrode Array Recordings', authors: 'S. Shukla, C. Walsh, <b>S. Bansal</b>, J. Leugering, et al.', venue: 'Advanced Materials Interfaces', href: doi('10.1002/admi.202500158') },
   { year: 2025, title: 'Where to Cut: Efficient ADC Quantization for Analog In-Memory Computing with Discrete Values', authors: 'J. Leugering, <b>S. Bansal</b>, Z. Liu, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043960') },
   { year: 2025, title: 'A Highly PVT Invariant Low Power Scalable Analog Dynamic Current-Mode Translinear Matrix-Vector Multiplier', authors: 'G. Gennis, B. Cherif, <b>S. Bansal</b>, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043721') },

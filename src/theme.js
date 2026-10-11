@@ -12,14 +12,15 @@ export const INK = '#2a231e';
 
 // Known neon → pigment pairs (cerulean, viridian, alizarin, sienna…).
 const PIGMENTS = {
-  '#3ef0ff': '#2f6f9f', // cyan → cerulean
-  '#5eead4': '#2f7f74', // teal → viridian
-  '#ff4fa3': '#b0365f', // magenta → alizarin crimson
-  '#ff6fb1': '#b0365f',
-  '#a78bfa': '#5b4b8a', // violet → dioxazine
-  '#ffb547': '#b9772a', // amber → raw sienna
-  '#ff5a5a': '#b8402f', // red → cadmium red deep
-  '#e8f3ff': '#4a5560',
+  // saturated, mutually distinct pigments so hardware reads clearly against the indigo brain
+  '#3ef0ff': '#0b7f93', // cyan → peacock blue-green
+  '#5eead4': '#1e8a5e', // teal → viridian green
+  '#ff4fa3': '#c4155c', // magenta → alizarin crimson
+  '#ff6fb1': '#c4155c',
+  '#a78bfa': '#6a3fb5', // violet → dioxazine
+  '#ffb547': '#d97a0f', // amber → cadmium orange
+  '#ff5a5a': '#cf2b2b', // red → cadmium red
+  '#e8f3ff': '#3d4a58',
   '#ffffff': PAPER,
 };
 
