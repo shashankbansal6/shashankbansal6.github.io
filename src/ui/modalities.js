@@ -95,6 +95,7 @@ export function initModalities(root, onChange) {
     selected,
     resize: () => rows.forEach((r) => r.scope.resize()),
     update(dt) {
+      zoom.tick(dt);
       rows.forEach((r) => r.scope.step(dt));
     },
   };

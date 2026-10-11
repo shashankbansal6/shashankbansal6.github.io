@@ -129,7 +129,7 @@
             <h2>Microvolts, thousands of times a second</h2>
             <p>Each electrode carries field potentials, high-gamma bursts and spikes, buried in noise at tens of microvolts. Every channel has to be amplified, filtered and digitized right next to the tissue, in parallel.</p>
             <div class="scope-panel">
-              <div class="scope-head"><span>12 of 1,024 channels</span><span class="rec">recording</span></div>
+              <div class="scope-head"><span>12 channels shown</span><span class="rec">recording</span></div>
               <canvas class="sig-scope"></canvas>
               <div class="scope-foot"><span>100 µV</span><span>synthetic signal</span></div>
             </div>
@@ -139,13 +139,13 @@
         <section class="stage" id="s-chip" data-stage="chip" data-rail="Chip">
           <div class="card right">
             <p class="kicker"><span>06</span>The chip I build</p>
-            <h2>A thousand channels at a microwatt each</h2>
+            <h2>Up to a thousand channels, a microwatt each</h2>
             <p>My neural interface system-on-chip puts a low-noise front-end and digitizer behind every electrode, with impedance monitoring built in. I'm integrating it with transparent <b>Neuro-clear</b> probes for simultaneous electrophysiology and optical imaging. Hover the die to explore it.</p>
             <div class="stats">
-              <div><b data-count="channels">0</b><span>channels</span></div>
+              <div><b><small>up to</small> <span data-count="channels">0</span></b><span>channels</span></div>
               <div><b data-count="ppc">0</b><span>µW per channel</span></div>
               <div><b data-count="nef">0</b><span>noise efficiency factor</span></div>
-              <div><b data-count="total">0</b><span>mW, all channels</span></div>
+              <div><b data-count="total">0</b><span>mW at 1,024 channels</span></div>
             </div>
             <p class="chip-note"></p>
           </div>
@@ -167,14 +167,14 @@
                 <p class="kicker"><span>08</span>Decode, act, feed back</p>
                 <h2>Closing the loop</h2>
               </div>
-              <p>Hundreds of channels stream from the electrodes to the chip in parallel. Features are decoded into intent, which moves a cursor or types words. Each selection sends a <b class="stim">stimulation pulse</b> back to the cortex.</p>
+              <p>Hundreds of channels stream to the chip in parallel and are decoded into intent. Here, a person with paralysis moves a cursor across their communication board and selects what they need, and every selection sends a <b class="stim">stimulation pulse</b> back to the cortex as feedback. <a href="#play" class="try">Try being the decoder ↓</a></p>
             </div>
             <div class="decode-grid">
               <figure><figcaption>Neural features <span>channel × band</span></figcaption><canvas class="dec-features"></canvas></figure>
               <figure><figcaption>Decoder <span>intent</span></figcaption><div class="dec-bars"></div></figure>
               <figure>
-                <figcaption>Output <span class="dec-stim">stimulation</span></figcaption>
-                <canvas class="dec-output"></canvas>
+                <figcaption>Communication board <span class="dec-stim">stimulation</span></figcaption>
+                <div class="dec-board"></div>
                 <p class="dec-line"><span class="dec-text"></span><span class="caret">▍</span></p>
               </figure>
             </div>
@@ -183,6 +183,42 @@
       </div>
 
       <div class="content">
+        <section id="play" class="block play">
+          <p class="kicker"><span>09</span>Your turn</p>
+          <h2>Be the decoder</h2>
+          <p>Closing the loop means a real person doing a real task. Here, someone with paralysis wants to ask for something on their communication board. Three neurons on one electrode carry their intent: one fires for <b>left</b>, one for <b>right</b>, one for <b>select</b>. Sort each spike as it enters the window with <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> (or tap), and leave artifacts alone. Mislabel a spike and the cursor goes the wrong way.</p>
+          <div class="ss" tabindex="-1">
+            <div class="ss-main">
+              <div class="ss-taskbar"><span>They want: <b data-ss="wants">Water</b></span><span>Requests done: <b data-ss="done">0</b></span></div>
+              <div class="ss-board" aria-label="Communication board"></div>
+              <div class="ss-stage">
+                <canvas class="ss-canvas" tabindex="0" aria-label="Scrolling extracellular recording. Press 1, 2 or 3 to sort the spike in the sort window."></canvas>
+                <div class="ss-overlay">
+                  <div class="ss-card">
+                    <p class="ss-title">Three neurons, one electrode, one person</p>
+                    <p class="ss-sub">Match each spike's shape to a template on the right. Every correct sort moves their cursor; selecting the item they want completes a request. 60 seconds.</p>
+                    <button type="button" class="ss-start">Start</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <aside class="ss-side">
+              <div class="ss-units">
+                <button type="button" class="ss-unit"></button>
+                <button type="button" class="ss-unit"></button>
+                <button type="button" class="ss-unit"></button>
+              </div>
+              <dl class="ss-hud">
+                <div><dt>Score</dt><dd data-ss="score">0</dd></div>
+                <div><dt>Time</dt><dd data-ss="time">60</dd></div>
+                <div><dt>Accuracy</dt><dd data-ss="acc">—</dd></div>
+                <div><dt>Best</dt><dd data-ss="best">0</dd></div>
+              </dl>
+              <figure class="ss-fig"><figcaption>Feature space: your sorted spikes</figcaption><canvas class="ss-scatter"></canvas></figure>
+            </aside>
+          </div>
+        </section>
+
         <section id="about" class="block">
           <div class="about">
             <img src="/ShashankB-circle.png" alt="Portrait of Shashank Bansal" width="200" height="200" loading="lazy" />
@@ -204,39 +240,6 @@
           <div class="pillars" id="pillars"></div>
           <h3 class="subhead">Selected publications &amp; patents</h3>
           <ol class="pubs" id="pubs"></ol>
-        </section>
-
-        <section id="play" class="block">
-          <p class="kicker">Play</p>
-          <h2>Spike Sorter</h2>
-          <p>Every electrode hears several neurons at once. Before you can decode anything, each spike has to be assigned to the neuron that fired it. Try it: when a spike enters the sort window, press <kbd>1</kbd>, <kbd>2</kbd> or <kbd>3</kbd> (or tap its template). Leave artifacts alone. You have 60 seconds.</p>
-          <div class="ss" tabindex="-1">
-            <div class="ss-stage">
-              <canvas class="ss-canvas" tabindex="0" aria-label="Scrolling neural recording. Press 1, 2 or 3 to sort the spike in the sort window."></canvas>
-              <div class="ss-overlay">
-                <div class="ss-card">
-                  <p class="ss-title">Three neurons, one electrode</p>
-                  <p class="ss-sub">Match each spike's shape to a template. Faster sorting earns combos; mislabels and misses cost points.</p>
-                  <button type="button" class="ss-start">Start recording</button>
-                </div>
-              </div>
-            </div>
-            <aside class="ss-side">
-              <div class="ss-units">
-                <button type="button" class="ss-unit"><kbd>1</kbd><canvas></canvas></button>
-                <button type="button" class="ss-unit"><kbd>2</kbd><canvas></canvas></button>
-                <button type="button" class="ss-unit"><kbd>3</kbd><canvas></canvas></button>
-              </div>
-              <dl class="ss-hud">
-                <div><dt>Score</dt><dd data-ss="score">0</dd></div>
-                <div><dt>Time</dt><dd data-ss="time">60</dd></div>
-                <div><dt>Accuracy</dt><dd data-ss="acc">—</dd></div>
-                <div><dt>Combo</dt><dd data-ss="combo">×1</dd></div>
-              </dl>
-              <figure class="ss-fig"><figcaption>Feature space</figcaption><canvas class="ss-scatter"></canvas></figure>
-              <p class="ss-best">Your best: <span data-ss="best">0</span></p>
-            </aside>
-          </div>
         </section>
 
         <section id="experience" class="block">

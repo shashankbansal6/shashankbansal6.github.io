@@ -150,7 +150,7 @@ export const RESEARCH = [
   },
   {
     title: 'Neural recording silicon',
-    text: 'A 1,024-channel neural interface SoC at 1 µW per channel with NEF 1.8 and on-chip impedance monitoring, now being integrated with transparent Neuro-clear probes.',
+    text: 'A neural interface SoC with up to 1,024 channels at 1 µW per channel with NEF 1.8 and on-chip impedance monitoring, now being integrated with transparent Neuro-clear probes.',
     refs: [{ kind: 'In progress', label: 'Neuro-clear: simultaneous electrophysiology + optical recording' }],
   },
   {

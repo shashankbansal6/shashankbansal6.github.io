@@ -9,6 +9,27 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.1 — 2026-10-11
+
+- Bigger hero brain on wide screens (camera distance scales with aspect ratio).
+- Closing the loop is now a real task: in chapter 08 a person with paralysis moves a
+  cursor across a communication board (Water, Food, Nurse, Lights, Music) and
+  selects what they need; each selection triggers the stimulation pulse.
+- The game became chapter 09, **Be the decoder**: three neurons tuned to left / right /
+  select, labelled by type (fast-spiking interneuron, pyramidal neuron, axonal spike;
+  all extracellular). Your labels drive the person's cursor; mislabels move it the wrong
+  way. The simulated user plans ahead for spikes already in flight and queues requests.
+- Game robustness: one animation loop, pauses off-screen with no time jump, re-measures
+  on visibility/resize, pointerdown input, no double-firing keys. Verified with a bot
+  over two back-to-back 60 s rounds: steady 60 fps, zero long frames, zero errors.
+- Resolution zoom shows live activity: a traveling wave across the 10 cm view, columns
+  lighting up at 1 cm, and at 1 mm individual neurons firing with spikes propagating
+  along axons (refractory periods, probabilistic transmission).
+- "Up to 1,024 channels" wording on the chip chapter and research pillar.
+- Larger text throughout (zoom labels ~13 px, UI labels ≥ 13 px).
+
+Screenshots: [`docs/versions/v3.1`](docs/versions/v3.1).
+
 ## v3-watercolor — 2026-10-11
 
 A second theme of the same site, switchable from the nav ("Watercolor" / "Ink") or

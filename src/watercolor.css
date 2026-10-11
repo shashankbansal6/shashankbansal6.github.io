@@ -59,7 +59,8 @@
 [data-theme='watercolor'] .zoom .z-box { fill: rgba(42, 35, 30, 0.025); }
 [data-theme='watercolor'] .zoom .z-tex path { stroke: rgba(42, 35, 30, 0.12); }
 [data-theme='watercolor'] .zoom .z-tex circle { fill: rgba(42, 35, 30, 0.1); }
-[data-theme='watercolor'] .zoom .z-neuron { fill: rgba(42, 35, 30, 0.22); }
+[data-theme='watercolor'] .zoom .z-neuron { fill: rgba(42, 35, 30, 0.3); }
+[data-theme='watercolor'] .zoom .z-axons line { stroke: rgba(42, 35, 30, 0.14); }
 [data-theme='watercolor'] .zoom .z-spikeband { fill: rgba(196, 86, 31, 0.1); }
 
 /* game on paper */
@@ -68,3 +69,6 @@
 [data-theme='watercolor'] .ss-start { background: var(--text); color: #fffaf0; font-family: var(--ui); }
 [data-theme='watercolor'] .ss-unit.hit { background: rgba(42, 35, 30, 0.08); }
 [data-theme='watercolor'] kbd { background: #fffaf0; }
+[data-theme='watercolor'] .ss-item.cursor, [data-theme='watercolor'] .db-item.cursor { background: rgba(42, 35, 30, 0.06); }
+[data-theme='watercolor'] .ss-unit.hit { animation-name: hitpaper; }
+@keyframes hitpaper { 0% { background: rgba(42, 35, 30, 0.1); } 100% { background: transparent; } }

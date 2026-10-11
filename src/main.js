@@ -136,8 +136,11 @@ const view = (target, offset, sx = 0, sy = 0, mobileZoom = 1.3) => ({
 const ecogN = ecog.center.n;
 const motorT = ecog.center.p.clone().lerp(new THREE.Vector3(-0.75, 0.95, 0.05), 0.35);
 
+// Wide desktop screens: bring the hero camera closer so the brain fills more of the view.
+const heroZoom = mobile ? 1 : Math.min(0.92, Math.max(0.68, 1.3 / (innerWidth / innerHeight)));
+
 const STAGES = {
-  hero: { view: view(new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(6.0, 2.2, 4.4), 0.2, mobile ? 0.24 : 0), state: { drag: 1, activity: 0.7 } },
+  hero: { view: view(new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(6.0, 2.2, 4.4).multiplyScalar(heroZoom), 0.22, mobile ? 0.24 : 0), state: { drag: 1, activity: 0.7 } },
   landscape: { view: view(new THREE.Vector3(0, 0.1, 0), new THREE.Vector3(-6.4, 3.4, 8.0), 0.02), state: { drag: 1, manual: true } },
   motor: { view: view(motorT, ecogN.clone().multiplyScalar(0.8).add(new THREE.Vector3(0, 0.55, 0.35)).setLength(4.5), -0.2), state: { hi: [1, 0, 0], ov: { ecog: 1, utah: 1 } } },
   visual: { view: view(new THREE.Vector3(0, 0.15, -1.45), new THREE.Vector3(-2.7, 2.1, -4.1), 0.2), state: { hi: [0, 1, 0], ov: { visual_array: 1, hddot: 1, scalp: 0.5 } } },
