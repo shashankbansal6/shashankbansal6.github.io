@@ -39,6 +39,7 @@
       <nav>
         <a href="#s-landscape">Journey</a>
         <a href="#research">Research</a>
+        <a href="#play">Play</a>
         <a href="#experience">Experience</a>
         <a href="/ShashankBansal-CV.pdf">CV</a>
         <a href="#contact">Contact</a>
@@ -186,6 +187,39 @@
           <div class="pillars" id="pillars"></div>
           <h3 class="subhead">Selected publications &amp; patents</h3>
           <ol class="pubs" id="pubs"></ol>
+        </section>
+
+        <section id="play" class="block">
+          <p class="kicker">Play</p>
+          <h2>Spike Sorter</h2>
+          <p>Every electrode hears several neurons at once. Before you can decode anything, each spike has to be assigned to the neuron that fired it. Try it: when a spike enters the sort window, press <kbd>1</kbd>, <kbd>2</kbd> or <kbd>3</kbd> (or tap its template). Leave artifacts alone. You have 60 seconds.</p>
+          <div class="ss" tabindex="-1">
+            <div class="ss-stage">
+              <canvas class="ss-canvas" tabindex="0" aria-label="Scrolling neural recording. Press 1, 2 or 3 to sort the spike in the sort window."></canvas>
+              <div class="ss-overlay">
+                <div class="ss-card">
+                  <p class="ss-title">Three neurons, one electrode</p>
+                  <p class="ss-sub">Match each spike's shape to a template. Faster sorting earns combos; mislabels and misses cost points.</p>
+                  <button type="button" class="ss-start">Start recording</button>
+                </div>
+              </div>
+            </div>
+            <aside class="ss-side">
+              <div class="ss-units">
+                <button type="button" class="ss-unit"><kbd>1</kbd><canvas></canvas></button>
+                <button type="button" class="ss-unit"><kbd>2</kbd><canvas></canvas></button>
+                <button type="button" class="ss-unit"><kbd>3</kbd><canvas></canvas></button>
+              </div>
+              <dl class="ss-hud">
+                <div><dt>Score</dt><dd data-ss="score">0</dd></div>
+                <div><dt>Time</dt><dd data-ss="time">60</dd></div>
+                <div><dt>Accuracy</dt><dd data-ss="acc">—</dd></div>
+                <div><dt>Combo</dt><dd data-ss="combo">×1</dd></div>
+              </dl>
+              <figure class="ss-fig"><figcaption>Feature space</figcaption><canvas class="ss-scatter"></canvas></figure>
+              <p class="ss-best">Your best: <span data-ss="best">0</span></p>
+            </aside>
+          </div>
         </section>
 
         <section id="experience" class="block">

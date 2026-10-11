@@ -22,6 +22,7 @@ import { Gen, Scope } from './ui/signals.js';
 import { initModalities } from './ui/modalities.js';
 import { initDecode } from './ui/decode.js';
 import { initLabels } from './ui/labels.js';
+import { initSpikeSorter } from './game/spikesorter.js';
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const mobile = matchMedia('(max-width: 900px)').matches;
@@ -253,6 +254,7 @@ $('#timeline').innerHTML = EXPERIENCE.map((e) => `
     </div>
   </li>`).join('');
 $('#year').textContent = new Date().getFullYear();
+initSpikeSorter($('#play .ss'));
 
 // ── interaction: drag to rotate, hover chip blocks ───────────────────────────
 let yaw = 0, pitch = 0, yawVel = 0, dragging = false, lastX = 0, lastY = 0;
