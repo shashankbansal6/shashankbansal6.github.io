@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { CHIP, CHIP_BLOCKS } from '../config.js';
 import { Layer, additive, lineMat, flowLines, COLORS } from './materials.js';
 import { rng } from '../lib/math.js';
+import { tint, WATERCOLOR, PAPER } from '../theme.js';
 
 const Y = new THREE.Vector3(0, 1, 0);
 export const DIE_SIZE = 0.24; // world units
@@ -35,7 +36,7 @@ export function buildChip(anchor) {
   // substrate (opaque so the die reads as a solid object)
   const sub = new THREE.Mesh(
     new THREE.BoxGeometry(1, 0.06, 1).translate(0, -0.03, 0),
-    new THREE.MeshBasicMaterial({ color: '#060a14', transparent: true, opacity: 0.94 }),
+    new THREE.MeshBasicMaterial({ color: WATERCOLOR ? '#e6dcc8' : '#060a14', transparent: true, opacity: 0.94 }),
   );
   die.add(sub);
   L.add(sub);
@@ -83,9 +84,9 @@ export function buildChip(anchor) {
       tilePos.push([x, z]);
     }
   }
-  const base = new THREE.Color('#0d2236');
-  const hot = new THREE.Color(COLORS.cyan);
-  const white = new THREE.Color('#ffffff');
+  const base = new THREE.Color(WATERCOLOR ? '#d3c7b1' : '#0d2236');
+  const hot = new THREE.Color(tint(COLORS.cyan));
+  const white = new THREE.Color(WATERCOLOR ? '#1f3550' : '#ffffff');
   const col = new THREE.Color();
   for (let k = 0; k < side * side; k++) tiles.setColorAt(k, base);
   die.add(tiles);

@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { Layer, flowTubes, glowPoints, COLORS } from './materials.js';
 import { DIE_SIZE } from './chip.js';
+import { tint, WATERCOLOR } from '../theme.js';
 
 const N_STREAMS = 16;
 const PULSES_PER = 3;
@@ -37,13 +38,13 @@ export function buildPathway(ecog, chipAnchor) {
   });
   curves.forEach((cv) => cv.arcLengthDivisions = 60);
 
-  L.add(flowTubes(curves, { radius: 0.0035, color: COLORS.magenta, opacity: 0.7, speed: 0.9, freq: 5, sharp: 2 }));
+  L.add(flowTubes(curves, { radius: WATERCOLOR ? 0.006 : 0.0035, color: COLORS.magenta, opacity: 0.7, speed: 0.9, freq: 5, sharp: 2 }));
 
   // signal pulses, a few per channel
   const n = curves.length * PULSES_PER;
   const colors = new Float32Array(n * 3);
-  const pink = new THREE.Color('#ff7cc0');
-  const cyan = new THREE.Color(COLORS.cyan);
+  const pink = new THREE.Color(tint('#ff7cc0'));
+  const cyan = new THREE.Color(tint(COLORS.cyan));
   for (let i = 0; i < n; i++) (i % 3 === 0 ? cyan : pink).toArray(colors, i * 3);
   const up = glowPoints(new Float32Array(n * 3), { size: 0.016, opacity: 1, twinkle: 0, colors });
   const upT = Float32Array.from({ length: n }, () => Math.random());

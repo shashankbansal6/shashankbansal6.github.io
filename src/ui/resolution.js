@@ -5,9 +5,10 @@
 // A log time strip below compares each modality's sample window with a spike.
 import { MODALITIES } from '../config.js';
 import { rng } from '../lib/math.js';
+import { tint } from '../theme.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
-const COLOR = { non: '#5eead4', inv: '#ff6fb1' };
+const COLOR = { non: tint('#5eead4'), inv: tint('#ff6fb1') };
 const NEURONS_PER_MM2 = 1e5; // ~16 B neocortical neurons over ~2×10⁵ mm²
 
 // view width in mm for each level

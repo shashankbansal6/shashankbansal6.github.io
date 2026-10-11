@@ -5,10 +5,13 @@
 // unit; leave artifacts alone. Sorted spikes land in a feature-space scatter
 // (peak-to-trough width × amplitude), so the clusters form as you play.
 
+import { tint, WATERCOLOR } from '../theme.js';
+
+const INK = WATERCOLOR ? '42,35,30' : '236,232,224'; // rgb of the trace / UI ink
 const UNITS = [
-  { key: '1', name: 'Unit 1', color: '#5eead4', amp: 1.0, width: 0.5, pos: false }, // tall, sharp
-  { key: '2', name: 'Unit 2', color: '#ff6fb1', amp: 0.55, width: 1.45, pos: false }, // short, broad
-  { key: '3', name: 'Unit 3', color: '#ffb547', amp: 0.8, width: 0.85, pos: true }, // positive-first
+  { key: '1', name: 'Unit 1', color: tint('#5eead4'), amp: 1.0, width: 0.5, pos: false }, // tall, sharp
+  { key: '2', name: 'Unit 2', color: tint('#ff6fb1'), amp: 0.55, width: 1.45, pos: false }, // short, broad
+  { key: '3', name: 'Unit 3', color: tint('#ffb547'), amp: 0.8, width: 0.85, pos: true }, // positive-first
 ];
 const DURATION = 60;
 const BEST_KEY = 'spikesorter.best';
@@ -203,9 +206,9 @@ export function initSpikeSorter(root) {
     // sort window
     const wx = windowX();
     const act = state === 'playing' ? activeEvent() : null;
-    ctx.fillStyle = act ? 'rgba(236,232,224,0.09)' : 'rgba(236,232,224,0.04)';
+    ctx.fillStyle = act ? `rgba(${INK},0.09)` : `rgba(${INK},0.04)`;
     ctx.fillRect(wx, 0, windowW, H);
-    ctx.strokeStyle = 'rgba(236,232,224,0.25)';
+    ctx.strokeStyle = `rgba(${INK},0.25)`;
     ctx.setLineDash([3, 4]);
     ctx.strokeRect(wx + 0.5, 0.5, windowW - 1, H - 1);
     ctx.setLineDash([]);
@@ -220,7 +223,7 @@ export function initSpikeSorter(root) {
     ctx.stroke();
     // trace
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = '#ece8e0';
+    ctx.strokeStyle = `rgb(${INK})`;
     ctx.beginPath();
     for (let x = 0; x <= W; x += 1.5) {
       const v = signalAt(offset + x);
@@ -246,7 +249,7 @@ export function initSpikeSorter(root) {
     if (flash && t - flash.at < 0.9) {
       ctx.globalAlpha = 1 - (t - flash.at) / 0.9;
       ctx.fillStyle = flash.color;
-      ctx.font = '600 15px "Space Grotesk", sans-serif';
+      ctx.font = WATERCOLOR ? 'italic 500 16px Newsreader, serif' : '600 15px "Space Grotesk", sans-serif';
       ctx.fillText(flash.text, wx, H - 14 - (t - flash.at) * 18);
       ctx.globalAlpha = 1;
     }
@@ -257,7 +260,7 @@ export function initSpikeSorter(root) {
     sctx.clearRect(0, 0, SW, SH);
     const px = (w) => 18 + ((w - 0.3) / 1.4) * (SW - 30);
     const py = (a) => SH - 18 - ((a - 0.4) / 0.8) * (SH - 30);
-    sctx.strokeStyle = 'rgba(236,232,224,0.15)';
+    sctx.strokeStyle = `rgba(${INK},0.15)`;
     sctx.beginPath();
     sctx.moveTo(14, 8); sctx.lineTo(14, SH - 14); sctx.lineTo(SW - 6, SH - 14);
     sctx.stroke();

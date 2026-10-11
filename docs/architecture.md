@@ -40,6 +40,16 @@ mobile. The clamp pass caps HDR values at 1 so thousands of additive particles d
 make bloom smear a grey haze over the page. The clear color is pre-linearized twice in
 the composer path (see [development.md](development.md#gotchas)).
 
+## Themes
+
+`src/theme.js` reads `<html data-theme>` (set by an inline script in `index.html`
+from `?theme=` or localStorage). In the watercolor theme:
+
+- every material factory routes colors through `tint()` (neon → pigment) and uses
+  normal instead of additive blending; point shaders switch to a "pigment dab" shape;
+- `src/scene/watercolor.js` replaces bloom with a watercolor post-process;
+- `src/watercolor.css` overrides tokens and type (Newsreader on paper).
+
 ## UI modules (`src/ui/`)
 
 | File | Role |
@@ -48,3 +58,5 @@ the composer path (see [development.md](development.md#gotchas)).
 | `modalities.js` | Sensing chapter: toggles, one stream window per modality, resolution chart. |
 | `decode.js` | Closed-loop HUD: features heatmap, decoder bars, cursor task, typed text; fires `onSelect` → stimulation. |
 | `labels.js` | HTML labels pinned to 3D points, fading with their layer. |
+| `resolution.js` | Sensing "powers of ten" zoom + temporal dot plot. |
+| `../game/spikesorter.js` | Spike Sorter game (Play section). |

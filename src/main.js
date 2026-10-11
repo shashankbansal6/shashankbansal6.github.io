@@ -23,6 +23,10 @@ import { initModalities } from './ui/modalities.js';
 import { initDecode } from './ui/decode.js';
 import { initLabels } from './ui/labels.js';
 import { initSpikeSorter } from './game/spikesorter.js';
+import { WATERCOLOR, PAPER, tint, setTheme } from './theme.js';
+import { watercolorPass } from './scene/watercolor.js';
+
+if (WATERCOLOR) import('./watercolor.css');
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const mobile = matchMedia('(max-width: 900px)').matches;
@@ -34,7 +38,7 @@ const canvas = $('#gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
 const dpr = Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
 renderer.setPixelRatio(dpr);
-renderer.setClearColor('#0d0d0c', 1);
+renderer.setClearColor(WATERCOLOR ? PAPER : '#0d0d0c', 1);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.005, 200);
 const root = new THREE.Group();
@@ -42,6 +46,24 @@ scene.add(root);
 
 const brain = buildBrain(mobile ? 60000 : 125000);
 root.add(brain.points);
+// watercolor underpainting: large, faint washes scattered over the cortex
+let wash = null;
+if (WATERCOLOR) {
+  brain.material.uniforms.uSize.value = 21;
+  const src = brain.points.geometry.attributes.position;
+  const n = 900;
+  const pos = new Float32Array(n * 3);
+  const col = new Float32Array(n * 3);
+  // indigo, cerulean, rose madder, yellow ochre — weighted toward the cool blues
+  const pal = ['#34507a', '#34507a', '#4f86b8', '#4f86b8', '#b8687c', '#c99a55'].map((h) => new THREE.Color(h));
+  for (let i = 0; i < n; i++) {
+    const k = Math.floor(Math.random() * src.count * 0.8); // cortex particles come first
+    pos.set([src.getX(k), src.getY(k), src.getZ(k)], i * 3);
+    pal[Math.floor(Math.random() * pal.length)].toArray(col, i * 3);
+  }
+  wash = glowPoints(pos, { size: 0.46, opacity: 0.08, twinkle: 0, colors: col });
+  root.add(wash);
+}
 const { group: overlayGroup, layers } = buildOverlays();
 root.add(overlayGroup);
 const ecog = layers.ecog;
@@ -50,6 +72,8 @@ const chip = buildChip(chipAnchor);
 const pathway = buildPathway(ecog, chipAnchor);
 const link = buildLink(chipAnchor);
 root.add(chip.layer.group, pathway.layer.group, link.layer.group);
+// hardware paints over the brain (matters for normal-blended watercolor)
+for (const g of [overlayGroup, pathway.layer.group, link.layer.group]) g.traverse((o) => (o.renderOrder = Math.max(o.renderOrder, 2)));
 chip.layer.set(0);
 pathway.layer.set(0);
 link.layer.set(0);
@@ -62,12 +86,22 @@ link.layer.set(0);
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 40);
     a.set([v.x, v.y, v.z], i * 3);
   }
-  scene.add(glowPoints(a, { color: '#57534a', size: 0.09, opacity: 0.7, twinkle: 0.5 }));
+  scene.add(glowPoints(a, { color: WATERCOLOR ? '#8a7d6a' : '#57534a', size: 0.09, opacity: WATERCOLOR ? 0.35 : 0.7, twinkle: 0.5 }));
 }
 
 let composer = null;
 let bloom = null;
-if (!mobile && new URLSearchParams(location.search).get('bloom') !== '0') {
+let wc = null;
+if (WATERCOLOR) {
+  // paint every frame through the watercolor pass (cheap enough for mobile too)
+  composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  wc = watercolorPass();
+  composer.addPass(wc);
+  composer.addPass(new OutputPass());
+  // see docs/development.md: the clear into the RT is encoded once more
+  renderer.setClearColor(new THREE.Color(PAPER).convertSRGBToLinear(), 1);
+} else if (!mobile && new URLSearchParams(location.search).get('bloom') !== '0') {
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   // Thousands of additive particles push HDR values far above 1; clamp them so
@@ -81,7 +115,7 @@ if (!mobile && new URLSearchParams(location.search).get('bloom') !== '0') {
   composer.addPass(bloom);
   composer.addPass(new OutputPass());
   // The clear into the composer's render target gets sRGB-encoded and then
-  // OutputPass encodes again; pre-linearize once more so the page stays #05060a.
+  // OutputPass encodes again; pre-linearize once more so the page stays on-palette.
   renderer.setClearColor(new THREE.Color('#0d0d0c').convertSRGBToLinear(), 1);
 }
 
@@ -182,7 +216,7 @@ const modalities = initModalities($('#s-landscape'), (sel) => {
 
 const sigScope = new Scope(
   $('.sig-scope'),
-  Array.from({ length: 12 }, (_, i) => ({ gen: new Gen('neural', i * 0.37), color: `hsl(${185 + i * 8}, 95%, ${62 + (i % 3) * 6}%)` })),
+  Array.from({ length: 12 }, (_, i) => ({ gen: new Gen('neural', i * 0.37), color: WATERCOLOR ? `hsl(${200 + i * 7}, 45%, ${28 + (i % 3) * 5}%)` : `hsl(${185 + i * 8}, 95%, ${62 + (i % 3) * 6}%)` })),
   { pxPerSec: 110, gain: 0.55 },
 );
 
@@ -255,6 +289,10 @@ $('#timeline').innerHTML = EXPERIENCE.map((e) => `
   </li>`).join('');
 $('#year').textContent = new Date().getFullYear();
 initSpikeSorter($('#play .ss'));
+const themeBtn = $('.theme-toggle');
+themeBtn.textContent = WATERCOLOR ? 'Ink' : 'Watercolor';
+themeBtn.title = WATERCOLOR ? 'Switch to the dark ink version' : 'Switch to the watercolor version';
+themeBtn.addEventListener('click', () => setTheme(WATERCOLOR ? 'ink' : 'watercolor'));
 
 // ── interaction: drag to rotate, hover chip blocks ───────────────────────────
 let yaw = 0, pitch = 0, yawVel = 0, dragging = false, lastX = 0, lastY = 0;
@@ -310,6 +348,7 @@ function resize() {
   renderer.setSize(w, h, false);
   composer?.setSize(w, h);
   bloom?.resolution.set(w / 2, h / 2);
+  wc?.uniforms.uRes.value.set(w * dpr, h * dpr);
   camera.aspect = w / h;
   uPixelRatio.value = dpr * Math.max(0.7, h / 900);
   layout();
@@ -354,6 +393,7 @@ function frame(time) {
   clock.update(time);
   const dt = Math.max(0, Math.min(0.05, clock.getDelta()));
   uTime.value += dt;
+  if (wc) wc.uniforms.uTime.value = uTime.value;
   lenis?.raf(time);
   const scroll = window.scrollY;
   const w = innerWidth, h = innerHeight;
@@ -405,6 +445,7 @@ function frame(time) {
   const u = brain.material.uniforms;
   u.uHi.value.set(cur.h0, cur.h1, cur.h2);
   u.uOpacity.value = cur.brain;
+  if (wash) wash.material.uniforms.uOpacity.value = 0.08 * cur.brain;
   u.uActivity.value = cur.activity;
   if (ripple >= 0) {
     ripple += dt;

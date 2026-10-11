@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { tint, BLENDING, WATERCOLOR } from '../theme.js';
 
 export const COLORS = {
   cyan: '#3ef0ff',
@@ -17,10 +18,10 @@ export const uPixelRatio = { value: Math.min(window.devicePixelRatio, 2) };
 
 export function additive(color, opacity = 1, extra = {}) {
   const m = new THREE.MeshBasicMaterial({
-    color,
+    color: tint(color),
     transparent: true,
     opacity,
-    blending: THREE.AdditiveBlending,
+    blending: BLENDING,
     depthWrite: false,
     side: THREE.DoubleSide,
     ...extra,
@@ -31,7 +32,7 @@ export function additive(color, opacity = 1, extra = {}) {
 
 export function lineMat(color, opacity = 1) {
   const m = new THREE.LineBasicMaterial({
-    color, transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false,
+    color: tint(color), transparent: true, opacity, blending: BLENDING, depthWrite: false,
   });
   m.userData.base = opacity;
   return m;
@@ -50,12 +51,12 @@ export function glowPoints(positions, { color = COLORS.cyan, size = 0.05, opacit
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uTime, uPixelRatio,
-      uColor: { value: new THREE.Color(color) },
+      uColor: { value: new THREE.Color(tint(color)) },
       uSize: { value: size },
       uOpacity: { value: opacity },
       uTwinkle: { value: twinkle },
     },
-    defines: colors ? { USE_ACOLOR: '' } : {},
+    defines: { ...(colors ? { USE_ACOLOR: '' } : {}), ...(WATERCOLOR ? { WATERCOLOR: '' } : {}) },
     vertexShader: /* glsl */ `
       attribute float aRand;
       #ifdef USE_ACOLOR
@@ -84,13 +85,19 @@ export function glowPoints(positions, { color = COLORS.cyan, size = 0.05, opacit
       void main() {
         float d = length(gl_PointCoord - 0.5);
         if (d > 0.5) discard;
+        #ifdef WATERCOLOR
+        // pigment dab: flat wash with a darker wet edge
+        float a = smoothstep(0.5, 0.36, d) * (0.7 + 0.5 * smoothstep(0.15, 0.45, d));
+        gl_FragColor = vec4(vC * (1.0 - 0.3 * smoothstep(0.2, 0.46, d)), a * vA * uOpacity);
+        #else
         float a = pow(smoothstep(0.5, 0.0, d), 1.6);
         gl_FragColor = vec4(vC, a * vA * uOpacity);
+        #endif
         #include <colorspace_fragment>
       }`,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: BLENDING,
   });
   mat.userData.base = opacity;
   const pts = new THREE.Points(geo, mat);
@@ -119,7 +126,7 @@ export function flowLines(polylines, { color = COLORS.cyan, opacity = 1, speed =
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uTime,
-      uColor: { value: new THREE.Color(color) },
+      uColor: { value: new THREE.Color(tint(color)) },
       uOpacity: { value: opacity },
       uSpeed: { value: speed },
       uFreq: { value: freq },
@@ -144,7 +151,7 @@ export function flowLines(polylines, { color = COLORS.cyan, opacity = 1, speed =
       }`,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: BLENDING,
   });
   mat.userData.base = opacity;
   const seg = new THREE.LineSegments(geo, mat);
@@ -158,7 +165,7 @@ export function flowTubes(curves, { radius = 0.004, color = COLORS.magenta, opac
   const mat = new THREE.ShaderMaterial({
     uniforms: {
       uTime,
-      uColor: { value: new THREE.Color(color) },
+      uColor: { value: new THREE.Color(tint(color)) },
       uOpacity: { value: opacity },
       uSpeed: { value: speed },
       uFreq: { value: freq },
@@ -182,7 +189,7 @@ export function flowTubes(curves, { radius = 0.004, color = COLORS.magenta, opac
       }`,
     transparent: true,
     depthWrite: false,
-    blending: THREE.AdditiveBlending,
+    blending: BLENDING,
   });
   mat.userData.base = opacity;
   const mesh = new THREE.Mesh(geo, mat);
@@ -207,7 +214,12 @@ export class Layer {
     obj.traverse((o) => {
       if (!o.material) return;
       for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        // opacities were tuned for additive light; pigment on paper needs more
         if (m.userData.base === undefined) m.userData.base = m.uniforms?.uOpacity?.value ?? m.opacity;
+        if (WATERCOLOR && !m.userData.boosted) {
+          m.userData.base = Math.min(1, m.userData.base * 1.9);
+          m.userData.boosted = true;
+        }
         if (!this.mats.includes(m)) this.mats.push(m);
       }
     });

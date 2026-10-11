@@ -3,12 +3,13 @@
 import { MODALITIES } from '../config.js';
 import { Gen, Scope } from './signals.js';
 import { initResolution } from './resolution.js';
+import { tint } from '../theme.js';
 
-const TRACE = { non: '#5eead4', inv: '#ff6fb1' };
+const TRACE = { non: tint('#5eead4'), inv: tint('#ff6fb1') };
 const MAX_DEFAULT = ['eeg', 'ecog'];
 
 function channelsFor(m) {
-  if (m.wave === 'hddot') return [{ gen: new Gen('hddot'), color: '#ff7a6b', color2: '#7aa8ff' }];
+  if (m.wave === 'hddot') return [{ gen: new Gen('hddot'), color: tint('#ff7a6b'), color2: tint('#7aa8ff') }];
   const c = TRACE[m.stream];
   return [0, 1].map(() => ({ gen: new Gen(m.wave), color: c }));
 }

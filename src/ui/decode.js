@@ -1,5 +1,11 @@
 // Closed-loop finale HUD: neural features → decoder → cursor + decoded text,
 // with a callback each time an action is "selected" (drives stimulation).
+import { tint, WATERCOLOR } from '../theme.js';
+
+const CURSOR = tint('#3ef0ff');
+const TARGET = tint('#ffb547');
+const FAINT = WATERCOLOR ? 'rgba(42,35,30,0.25)' : 'rgba(255,255,255,0.18)';
+
 const CLASSES = ['left', 'right', 'up', 'down', 'select'];
 const PHRASES = [
   'hello from the motor cortex',
@@ -78,7 +84,7 @@ export function initDecode(root, { onSelect } = {}) {
     for (let c = 0; c < CH; c++) {
       for (let b = 0; b < BANDS; b++) {
         const v = features[c * BANDS + b];
-        fctx.fillStyle = `hsl(38, ${10 + v * 20}%, ${9 + v * 76}%)`;
+        fctx.fillStyle = WATERCOLOR ? `hsl(${30 - v * 10}, ${20 + v * 30}%, ${90 - v * 62}%)` : `hsl(38, ${10 + v * 20}%, ${9 + v * 76}%)`;
         fctx.fillRect(c * cw + 1, (BANDS - 1 - b) * ch + 1, cw - 2, ch - 2);
       }
     }
@@ -122,22 +128,22 @@ export function initDecode(root, { onSelect } = {}) {
     targets.forEach(([x, y], i) => {
       octx.beginPath();
       octx.arc(x * ow, y * oh, 10, 0, Math.PI * 2);
-      octx.strokeStyle = i === target ? '#ffb547' : 'rgba(255,255,255,0.18)';
+      octx.strokeStyle = i === target ? TARGET : FAINT;
       octx.lineWidth = i === target ? 2 : 1;
       octx.stroke();
       if (i === target && dwell > 0) {
         octx.beginPath();
         octx.arc(x * ow, y * oh, 10, -Math.PI / 2, -Math.PI / 2 + (dwell / 0.45) * Math.PI * 2);
-        octx.strokeStyle = '#3ef0ff';
+        octx.strokeStyle = CURSOR;
         octx.lineWidth = 3;
         octx.stroke();
       }
     });
     octx.beginPath();
     octx.arc(cursor.x * ow, cursor.y * oh, 5, 0, Math.PI * 2);
-    octx.fillStyle = '#3ef0ff';
-    octx.shadowColor = '#3ef0ff';
-    octx.shadowBlur = 14;
+    octx.fillStyle = CURSOR;
+    octx.shadowColor = CURSOR;
+    octx.shadowBlur = WATERCOLOR ? 0 : 14;
     octx.fill();
     octx.shadowBlur = 0;
 

@@ -15,9 +15,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script>
+      // pick the theme before anything paints: ?theme= wins, then the saved choice
+      (function () {
+        var q = new URLSearchParams(location.search).get('theme');
+        var t = q;
+        try { t = q || localStorage.getItem('theme'); if (q) localStorage.setItem('theme', q); } catch (e) {}
+        if (t === 'watercolor') {
+          document.documentElement.dataset.theme = 'watercolor';
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = 'https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap';
+          document.head.appendChild(l);
+        }
+      })();
+    </script>
     <style>
       html, body { background: #0d0d0c; color: #ece8e0; margin: 0; }
       #loader { position: fixed; inset: 0; z-index: 50; background: #0d0d0c; }
+      html[data-theme='watercolor'], html[data-theme='watercolor'] body, html[data-theme='watercolor'] #loader { background: #f2ead9; color: #2a231e; }
     </style>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-5F6N9Q871R"></script>
@@ -43,6 +59,7 @@
         <a href="#experience">Experience</a>
         <a href="/ShashankBansal-CV.pdf">CV</a>
         <a href="#contact">Contact</a>
+        <button type="button" class="theme-toggle"></button>
       </nav>
     </header>
 

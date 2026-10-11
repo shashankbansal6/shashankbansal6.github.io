@@ -11,6 +11,7 @@ npm run build        # → dist/
 `?at=<chapter>` jumps straight to a chapter and skips the intro:
 `hero`, `landscape`, `motor`, `visual`, `language`, `signals`, `chip`, `link`, `decode`.
 `?at=<number>` jumps to a raw scroll offset. `?bloom=0` disables bloom.
+`?theme=watercolor` / `?theme=ink` picks the theme (remembered in localStorage).
 
 In dev builds, `window.__site` exposes the scene, camera, renderer and state for debugging.
 

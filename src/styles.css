@@ -384,3 +384,10 @@ kbd { font: 500 12px var(--mono); padding: 1px 6px; border: 1px solid var(--line
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
 }
+
+/* theme switch (both themes) */
+.theme-toggle {
+  pointer-events: auto; font: 500 13px var(--ui); color: var(--muted); background: none;
+  border: 1px solid var(--line-2); border-radius: 99px; padding: 3px 11px; cursor: pointer; margin-left: 4px;
+}
+.theme-toggle:hover { color: var(--text); border-color: var(--text); }
