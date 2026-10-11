@@ -46,7 +46,7 @@ export function initModalities(root, onChange) {
         <button type="button" class="sr-close" aria-label="Remove ${m.name}">×</button>
       </div>
       <p class="sr-desc">${m.measures}. <span>${m.where}.</span></p>
-      <canvas></canvas>`;
+      <div class="sr-plot"><canvas></canvas></div>`;
     row.querySelector('.sr-close').addEventListener('click', () => toggle(m));
     const scope = new Scope(row.querySelector('canvas'), channelsFor(m), {
       pxPerSec: m.wave === 'hddot' ? 30 : m.wave === 'spikes' ? 150 : 70,
@@ -73,8 +73,9 @@ export function initModalities(root, onChange) {
       const r = rows.get(m.id);
       if (r) list.appendChild(r.el);
     }
-    // size new windows once they're in the DOM
-    for (const id of added) rows.get(id).scope.resize();
+    // every window changes height when one is added or removed, so re-measure them all
+    list.className = `stream-list n${rows.size}`;
+    requestAnimationFrame(() => rows.forEach((r) => r.scope.resize()));
     zoom.update(selected);
     list.classList.toggle('empty', rows.size === 0);
     if (!rows.size) list.innerHTML = '<p class="sr-empty">Select a modality above to see its signal.</p>';

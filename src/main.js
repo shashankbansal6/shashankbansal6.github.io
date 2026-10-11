@@ -198,7 +198,29 @@ const sections = [...document.querySelectorAll('.stage')].map((el) => ({
 const contentEl = $('.content');
 let keys = [];
 
+// Each content page (About, Research, ...) should fit one window: find the largest zoom
+// (>= 0.55) at which its content is no taller than the viewport. Mobile scrolls normally.
+const fitEls = [...document.querySelectorAll('.page-fit')];
+function fitPages() {
+  const narrow = matchMedia('(max-width: 900px)').matches;
+  for (const el of fitEls) {
+    el.style.zoom = '';
+    if (narrow) continue;
+    const cs = getComputedStyle(el.parentElement);
+    const avail = innerHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    const h = (z) => { el.style.zoom = z; return el.getBoundingClientRect().height; };
+    if (h(1) <= avail) { el.style.zoom = ''; continue; }
+    let lo = 0.55, hi = 1;
+    for (let i = 0; i < 6; i++) {
+      const mid = (lo + hi) / 2;
+      if (h(mid) <= avail) lo = mid; else hi = mid;
+    }
+    el.style.zoom = lo.toFixed(3);
+  }
+}
+
 function layout() {
+  fitPages();
   const vh = innerHeight;
   for (const s of sections) {
     const top = s.el.getBoundingClientRect().top + scrollY;
@@ -302,9 +324,21 @@ $('#pillars').innerHTML = RESEARCH.map((r, i) => `
   <article>
     <span class="num">${String(i + 1).padStart(2, '0')}</span>
     <h3>${esc(r.title)}</h3>
-    <p>${esc(r.text)}</p>
+    <p>${esc(r.text).replace(/1,024/g, '<span class="live-count" data-to="1024">1,024</span>')}</p>
     <ul class="refs">${r.refs.map((x) => `<li><span class="kind">${x.kind}</span>${x.href ? `<a href="${x.href}" target="_blank" rel="noopener">${esc(x.label)} ↗</a>` : `<em>${esc(x.label)}</em>`}</li>`).join('')}</ul>
   </article>`).join('');
+// "1,024 channels" counts up the first time it scrolls into view
+document.querySelectorAll('.live-count').forEach((el) => {
+  if (reduced || !('IntersectionObserver' in window)) return;
+  el.textContent = '0';
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    const o = { v: 0 };
+    gsap.to(o, { v: +el.dataset.to, duration: 2.2, ease: 'power2.out', onUpdate: () => (el.textContent = fmt(o.v)) });
+  }, { threshold: 1 });
+  io.observe(el);
+});
 const pubItem = (p) => `
   <li>
     <span class="year">${p.year}</span>
@@ -344,6 +378,29 @@ async function switchTheme(next) {
   switching = true;
   const html = document.documentElement;
   const xf = $('#xfade');
+  // Best path: the View Transitions API crossfades a snapshot of the whole page (text and
+  // WebGL together) while the swap, shader recompiles and relayout happen out of sight.
+  if (!reduced && document.startViewTransition) {
+    const t = document.startViewTransition(async () => {
+      const anchor = document.elementFromPoint(innerWidth / 2, innerHeight * 0.4)?.closest('.block, .stage, .footer');
+      const before = anchor?.getBoundingClientRect().top ?? 0;
+      const y0 = scrollY;
+      applyTheme(next);
+      syncSwitch();
+      await Promise.race([document.fonts.ready, wait(350)]);
+      layout();
+      const delta = anchor ? anchor.getBoundingClientRect().top - before : 0;
+      if (Math.abs(delta) > 1) {
+        if (lenis) lenis.scrollTo(y0 + delta, { immediate: true, force: true });
+        else window.scrollTo(0, y0 + delta);
+      }
+      if (composer) composer.render(0.016); else renderer.render(scene, camera); // new look is ready before the fade starts
+    });
+    t.ready.catch(() => {}); // rejects (harmlessly) when the tab is hidden and the browser skips the animation
+    await t.finished.catch(() => {});
+    switching = false;
+    return;
+  }
   if (!reduced) {
     // freeze this frame (a WebGL canvas can only be copied in the same task it was drawn)
     if (composer) composer.render(0); else renderer.render(scene, camera);

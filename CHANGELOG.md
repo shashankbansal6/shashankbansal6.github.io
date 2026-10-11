@@ -9,6 +9,20 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.4 — 2026-10-11
+
+- **Sensing page**: both side panels are narrower and always fit the window. The live-signals panel
+  no longer scrolls: every modality you add makes the other signal windows shorter (and hides the
+  descriptions past 3), and the resolution figure scales down to fit the left panel.
+- **Content pages fit one screen**: About, Research, Publications + Patents, Experience, Be the
+  decoder and Contact are each one window tall (Publications and Experience are two-column; the
+  page content is zoomed down just enough to fit short windows; mobile scrolls normally).
+- **"1,024 channels"** in the research section counts up from 0 when scrolled into view.
+- **Smoother theme switch**: uses the View Transitions API to crossfade the whole page
+  (text and 3D together) while the theme swap and shader recompiles happen out of sight;
+  browsers without it use the previous freeze-frame fade.
+- Award certificate thumbnails sit beside each honor (once `public/awards/*.jpg` exist).
+
 ## v3.3 — 2026-10-11
 
 - **Type scale back to 1.2× the original** (root 16 px → 19.2 px max, was up to 26 px), with

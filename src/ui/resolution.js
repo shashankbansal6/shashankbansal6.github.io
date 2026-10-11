@@ -240,7 +240,19 @@ export function initResolution(root) {
     });
     el('text', { x: tX(1), y: axisY + rowsH + 20, class: 'z-tick', 'text-anchor': 'middle' }, time).textContent = 'shaded: one spike (~1 ms)';
     svg.setAttribute('viewBox', `0 0 ${W} ${axisY + rowsH + 26}`);
+    requestAnimationFrame(fit);
   }
+
+  // shrink the whole figure (not the panel) when it would not fit in the window
+  function fit() {
+    const card = root.closest('.card');
+    if (!card || !svg.isConnected) return;
+    svg.style.maxHeight = 'none';
+    const limit = parseFloat(getComputedStyle(card).maxHeight);
+    const over = card.scrollHeight - (Number.isFinite(limit) ? Math.min(limit, card.clientHeight) : card.clientHeight);
+    svg.style.maxHeight = over > 1 ? `${Math.max(120, svg.getBoundingClientRect().height - over)}px` : 'none';
+  }
+  addEventListener('resize', fit);
 
   onTheme(() => update(lastSel)); // re-tint the blocks and bars
 
