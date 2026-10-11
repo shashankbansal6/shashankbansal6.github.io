@@ -127,8 +127,21 @@ export function initResolution(root) {
     el('line', { x1: ax + s, y1: ay + s, x2: bx, y2: top + box, class: 'z-line' });
   }
 
-  const time = el('g', {});
-  root.appendChild(svg);
+  const time = el('g', { class: 'z-timeg' });
+  // two views of the same figure, one at a time, so the card stays roomy
+  let view = 'space';
+  const tabs = document.createElement('div');
+  tabs.className = 'z-tabs';
+  tabs.setAttribute('role', 'group');
+  tabs.setAttribute('aria-label', 'Resolution view');
+  tabs.innerHTML = '<button type="button" data-v="space">Space: what it hears</button><button type="button" data-v="time">Time: how fast</button>';
+  tabs.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b || b.dataset.v === view) return;
+    view = b.dataset.v;
+    update(lastSel);
+  });
+  root.append(tabs, svg);
 
   // ── live activity ──────────────────────────────────────────────────────
   // One wave crosses the 10 cm view every PERIOD seconds (slowed ~10×). The
@@ -221,7 +234,7 @@ export function initResolution(root) {
     time.replaceChildren();
     const maxLegend = Math.max(1, ...byLevel.map((l) => l.length));
     const ty = top + box + 17 + maxLegend * 42 + 14;
-    const ax0 = 116, ax1 = W - 6;
+    const ax0 = 150, ax1 = W - 8;
     const tX = (ms) => ax0 + ((Math.log10(ms) + 2) / 6) * (ax1 - ax0);
     el('text', { x: 0, y: ty, class: 'z-label' }, time).textContent = 'One sample spans';
     const axisY = ty + 20;
@@ -239,7 +252,15 @@ export function initResolution(root) {
       el('circle', { cx: tX(m.temporalMS), cy: y, r: 4.5, class: 'z-dot', style: `--c:${COLOR[m.stream]}` }, time);
     });
     el('text', { x: tX(1), y: axisY + rowsH + 20, class: 'z-tick', 'text-anchor': 'middle' }, time).textContent = 'shaded: one spike (~1 ms)';
-    svg.setAttribute('viewBox', `0 0 ${W} ${axisY + rowsH + 26}`);
+    svg.dataset.view = view;
+    tabs.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === view)));
+    if (view === 'space') {
+      time.removeAttribute('transform');
+      svg.setAttribute('viewBox', `0 0 ${W} ${ty - 14}`);
+    } else {
+      time.setAttribute('transform', `translate(0,${-(ty - top - 4)})`);
+      svg.setAttribute('viewBox', `0 0 ${W} ${axisY + rowsH + 26 - (ty - top - 4)}`);
+    }
     requestAnimationFrame(fit);
   }
 

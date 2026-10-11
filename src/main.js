@@ -291,11 +291,15 @@ const statTargets = {
   total: [totalPowerMW(), 2],
 };
 let statsShown = false;
+function resetStats() {
+  statsShown = false;
+  document.querySelectorAll('.stats [data-count]').forEach((el) => { gsap.killTweensOf(el.__o); el.textContent = '0'; });
+}
 function showStats() {
   statsShown = true;
   document.querySelectorAll('[data-count]').forEach((el) => {
     const [v, d] = statTargets[el.dataset.count];
-    const o = { v: 0 };
+    const o = (el.__o = { v: 0 });
     gsap.to(o, { v, duration: 1.6, ease: 'power3.out', onUpdate: () => (el.textContent = fmt(o.v, d)) });
   });
 }
@@ -640,6 +644,7 @@ function frame(time) {
   if (vis.signals > 0.01) sigScope.step(dt);
   if (vis.decode > 0.01) decode.update(dt);
   if (vis.chip > 0.5 && !statsShown) showStats();
+  else if (vis.chip < 0.15 && statsShown) resetStats(); // count again on the next pass
 
   root.updateMatrixWorld();
   labels.update(w, h, 1 - Math.max(vis.decode, vis.chip));

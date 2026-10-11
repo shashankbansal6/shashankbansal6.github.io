@@ -24,6 +24,7 @@ export function initModalities(root, onChange) {
     non: root.querySelector('[data-stream="non"] .chips'),
     inv: root.querySelector('[data-stream="inv"] .chips'),
   };
+  Object.values(cols).forEach((c) => c.classList.add('nudge'));
   const buttons = {};
   for (const m of MODALITIES) {
     const b = document.createElement('button');
@@ -83,6 +84,7 @@ export function initModalities(root, onChange) {
   }
 
   function toggle(m) {
+    Object.values(cols).forEach((c) => c.classList.remove('nudge')); // stop the hint once they have played
     if (selected.has(m.id)) selected.delete(m.id);
     else selected.add(m.id);
     render();
