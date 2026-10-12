@@ -15,6 +15,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import Lenis from 'lenis';
 import { adaptiveScale } from '../src/perf.js';
+import { fitCards } from '../src/phone.js';
 
 import { sstep, damp, lerp } from '../src/lib/math.js';
 import { hemiFrame, ANCHORS } from '../src/scene/anatomy.js';
@@ -249,6 +250,7 @@ const contentEl = $('.content');
 let keys = [];
 function layout() {
   const vh = innerHeight;
+  fitCards(mobile, sections.flatMap((x) => x.cards));
   for (const s of sections) {
     if (s.beat) s.el.style.height = `${mobile ? 150 : 170}vh`;
     const top = s.el.getBoundingClientRect().top + scrollY;
@@ -481,8 +483,9 @@ function frame(time) {
     const d = Math.abs(scroll - sec.anchor) / sec.half;
     sec.vis = sec.id === 'hero' ? 1 - sstep(0.15, 0.6, scroll / h) : 1 - sstep(0.62, 0.92, d);
     for (const card of sec.cards) {
-      card.style.opacity = sec.vis.toFixed(3);
-      card.style.pointerEvents = sec.vis > 0.3 ? 'auto' : 'none';
+      const loose = card.classList.contains('flow');
+      card.style.opacity = loose ? '1' : sec.vis.toFixed(3);
+      card.style.pointerEvents = loose || sec.vis > 0.3 ? 'auto' : 'none';
     }
     if (d < best) { best = d; active = sec; }
   }

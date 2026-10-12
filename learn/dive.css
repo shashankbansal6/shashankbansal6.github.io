@@ -27,16 +27,19 @@
 .seg button { font: 500 0.84rem var(--ui); color: var(--muted); background: none; border: 0; border-radius: 99px; padding: 0.35rem 0.95rem; cursor: pointer; }
 .seg button.on { background: var(--text); color: var(--bg); }
 
+/* phone: no pinned stage and no scrolling inside the page. Each step is a normal block (drawing, then text);
+   only the page scrolls, and a slim step bar stays on top to jump around. */
 @media (max-width: 900px) {
-  .dive-sticky { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); padding: 3.9rem 0.9rem 0.8rem; row-gap: 0.55rem; }
-  .dive-views { order: 2; align-self: start; }
-  .dive-cards { order: 3; align-self: stretch; }
-  .dive-view canvas.dive-main { height: clamp(12rem, 31vh, 19rem); }
+  .dive-track.phone { padding: 0 0.9rem 1.5rem; }
+  .dive-track.phone .dive-steps { position: sticky; top: 3.55rem; z-index: 6; margin: 0 0 0.4rem; }
+  .dive-beat { display: flex; flex-direction: column; gap: 0.7rem; padding: 0.9rem 0 1.6rem; }
+  .dive-beat .dive-view { position: static; }
+  .dive-view canvas.dive-main { height: clamp(15rem, 40vh, 22rem); }
   .dive-view canvas.dive-strip { height: 3.3rem; }
-  .dive-view figcaption { display: none; }
-  .dive-card { max-height: 100%; padding: 1rem 1.05rem; }
+  .dive-view figcaption { font-size: 0.74rem; }
+  .dive-card { max-height: none; overflow: visible; padding: 1.05rem 1.1rem; }
   .dive-card h3 { font-size: 1.3rem; }
-  .dive-card > p { font-size: 0.88rem; line-height: 1.45; }
+  .dive-card > p { font-size: 0.92rem; line-height: 1.5; }
   .ctl { grid-template-columns: 1fr 5.5rem; row-gap: 0.1rem; }
   .ctl .ctl-l { grid-column: 1 / -1; }
 }

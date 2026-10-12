@@ -99,7 +99,8 @@ html { scroll-behavior: auto; }
   .steps { top: 3.9rem; padding: 0.3rem 0.35rem 0.3rem 0.8rem; gap: 0.5rem; max-width: calc(100vw - 1.5rem); }
   .steps .sr { font-size: 0.74rem; }
   .steps button { padding: 0.25rem 0.5rem; font-size: 0.74rem; }
-  .beat .card { top: auto; max-height: 62vh; padding: 1.1rem; }
+  .beat .card { top: auto; max-height: none; overflow: visible; padding: 1.1rem; }
+  .beat .card.flow { position: relative; margin-top: auto; margin-bottom: auto; }
   .beat .card > p { font-size: 0.9rem; }
   .foundations .topic-body { grid-template-columns: 1fr; gap: 1.5rem; }
   .popvec { height: 11rem; }

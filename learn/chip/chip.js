@@ -26,19 +26,16 @@ const ctl = startWorld({
     world.draw(dt, scroll, p == null ? 0 : 0.6);
   },
 });
-dive = initDive($('#dive'), { beats: CHIP_BEATS, widgets: WIDGETS, captions: CAPTIONS, label: 'CHIP', strip: chainStrip, stripFrom: 1, mobile: ctl.mobile, scrollToY: ctl.scrollToY });
+dive = initDive($('#dive'), { beats: CHIP_BEATS, widgets: WIDGETS, captions: CAPTIONS, label: 'CHIP', strip: chainStrip, stripFrom: 1, scrollToY: ctl.scrollToY });
 dive.resize();
 $('#w-steps').innerHTML = CHIP_BEATS.map((b, i) => `<li><button type="button" data-i="${i}"><span>${i + 1}</span>${b.step}</button></li>`).join('');
 $('#w-steps').addEventListener('click', (e) => {
   const i = e.target.closest('button')?.dataset.i;
-  if (i == null) return;
-  const track = $('.dive-track');
-  const span = (track.offsetHeight - innerHeight) / CHIP_BEATS.length;
-  ctl.scrollToY(track.getBoundingClientRect().top + scrollY + +i * span + span * 0.5);
+  if (i != null) dive.jump(+i);
 });
 // deep link: ?at=2 opens the third step
 const at = new URLSearchParams(location.search).get('at');
 if (at != null && !Number.isNaN(Number(at))) {
-  const go = () => { const track = $('.dive-track'); const span = (track.offsetHeight - innerHeight) / CHIP_BEATS.length; window.scrollTo(0, track.getBoundingClientRect().top + scrollY + Number(at) * span + span * 0.5); };
+  const go = () => window.scrollTo(0, dive.y(Number(at)));
   setTimeout(go, 150); document.fonts?.ready.then(() => setTimeout(go, 100));
 }

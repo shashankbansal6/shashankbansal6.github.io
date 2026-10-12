@@ -6,6 +6,7 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import Lenis from 'lenis';
 import { adaptiveScale } from './perf.js';
+import { fitCards } from './phone.js';
 import gsap from 'gsap';
 
 import { CHIP, MODALITIES, PROFILE, EXPERIENCE, RESEARCH, PUBLICATIONS, HONORS, totalPowerMW } from './config.js';
@@ -216,6 +217,7 @@ function fitPages() {
 
 function layout() {
   fitPages();
+  fitCards(mobile, [...document.querySelectorAll('#journey > .stage > .card, #journey > .stage > .duo')]);
   const vh = innerHeight;
   for (const s of sections) {
     const top = s.el.getBoundingClientRect().top + scrollY;
@@ -627,8 +629,9 @@ function frame(time) {
     const d = Math.abs(scroll - sec.anchor) / sec.half;
     sec.vis = sec.id === 'hero' ? 1 - sstep(0.15, 0.6, scroll / h) : 1 - sstep(0.62, 0.92, d);
     for (const card of sec.cards) {
-      card.style.opacity = sec.vis.toFixed(3);
-      card.style.pointerEvents = sec.vis > 0.3 ? 'auto' : 'none';
+      const loose = card.closest('.flow'); // a card that scrolls with the page stays fully visible
+      card.style.opacity = loose ? '1' : sec.vis.toFixed(3);
+      card.style.pointerEvents = loose || sec.vis > 0.3 ? 'auto' : 'none';
     }
     if (d < best) { best = d; active = sec; }
   }

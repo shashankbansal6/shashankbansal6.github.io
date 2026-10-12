@@ -31,18 +31,15 @@ const ctl = startWorld({
     acc = 0;
   },
 });
-dive = initDive($('#dive'), { beats: SENSOR_BEATS, widgets: WIDGETS, captions: CAPTIONS, label: 'SENSOR', mobile: ctl.mobile, scrollToY: ctl.scrollToY });
+dive = initDive($('#dive'), { beats: SENSOR_BEATS, widgets: WIDGETS, captions: CAPTIONS, label: 'SENSOR', scrollToY: ctl.scrollToY });
 dive.resize();
 $('#w-steps').innerHTML = SENSOR_BEATS.map((b, i) => `<li><button type="button" data-i="${i}"><span>${i + 1}</span>${b.step}</button></li>`).join('');
 $('#w-steps').addEventListener('click', (e) => {
   const i = e.target.closest('button')?.dataset.i;
-  if (i == null) return;
-  const track = $('.dive-track');
-  const span = (track.offsetHeight - innerHeight) / SENSOR_BEATS.length;
-  ctl.scrollToY(track.getBoundingClientRect().top + scrollY + +i * span + span * 0.5);
+  if (i != null) dive.jump(+i);
 });
 const at = new URLSearchParams(location.search).get('at');
 if (at != null && !Number.isNaN(Number(at))) {
-  const go = () => { const track = $('.dive-track'); const span = (track.offsetHeight - innerHeight) / SENSOR_BEATS.length; window.scrollTo(0, track.getBoundingClientRect().top + scrollY + Number(at) * span + span * 0.5); };
+  const go = () => window.scrollTo(0, dive.y(Number(at)));
   setTimeout(go, 150); document.fonts?.ready.then(() => setTimeout(go, 100));
 }

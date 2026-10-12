@@ -15,6 +15,11 @@ git checkout redesign       # back to the latest
   cyclic on-off keying drawing and its papers (Ha et al., VLSI 2014 and JSSC 2016; Sauer et al., TCAS-I 2005).
   The Radio tile in the chain now opens it instead of jumping back to the first step.
 
+- **One scroll on phones**: nothing scrolls inside the page any more. On Sensor and Chip design each step is a
+  normal block (drawing, then its text) under a slim step bar, instead of a pinned stage with a scrolling text
+  box; on the home and Neuroscience pages a card that is short enough stays pinned over the scene and a tall one
+  scrolls past with the page. Laptops keep the side-by-side layout, and the page switches by itself when the
+  window crosses 900px (rotating a tablet, resizing).
 - **Touch and speed**: swiping over a drawing now scrolls the page (the electrode only grabs a finger that
   lands on it; taps fire on release, not on the first touch); no blur-behind panels on phones; drawings render
   at a lower pixel ratio on touch screens; the sensor backdrop runs at ~30 fps on phones; the 3D scenes step

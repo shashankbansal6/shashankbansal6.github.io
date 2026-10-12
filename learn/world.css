@@ -54,10 +54,9 @@ body.world .then.lab { color: var(--w) !important; }
   body.world .dive-card, body.world .dive-steps { backdrop-filter: none; }
   .w-hero .hero-inner { padding-top: 5rem; }
   .w-tiles { grid-template-columns: 1fr; }
-  body.world .dive-sticky { grid-template-columns: minmax(0, 1fr); }
-  body.world .dive-view canvas.dive-main { height: clamp(14rem, 36vh, 21rem); }
+  body.world .dive-view canvas.dive-main { height: clamp(15rem, 40vh, 22rem); }
 }
 
 /* hold the dive's height until the script builds it, so the page below does not jump (--beats steps: 88vh each + 20vh) */
 .dive:empty { min-height: calc(var(--beats, 7) * 88vh + 20vh); }
-@media (max-width: 900px) { .dive:empty { min-height: calc(var(--beats, 7) * 78vh + 20vh); } }
+@media (max-width: 900px) { .dive:empty { min-height: calc(var(--beats, 7) * 130vh); } }
