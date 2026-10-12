@@ -719,7 +719,7 @@ function radioWidget() {
       // ── the implant coil voltage: three of the four cycles of every symbol ring, one is shorted
       const top = 100, bot = narrow ? H - 130 : H - 118, mid = (top + bot) / 2 + 8, amp = (bot - top) / 2 - 16;
       lay = { x0, cell, n, top, bot };
-      text(f, 'implant coil voltage · 4 carrier cycles = 1 symbol = 2 bits  (click a symbol)', x0, top - 8, { size: 10, a: 0.6 });
+      text(f, narrow ? 'coil voltage · 4 cycles = 2 bits · tap a symbol' : 'implant coil voltage · 4 carrier cycles = 1 symbol = 2 bits  (click a symbol)', x0, top - 8, { size: 10, a: 0.6 });
       const hov = f.mouse.in && f.mouse.y >= top && f.mouse.y <= bot ? Math.floor((f.mouse.x - x0) / cell) : -1;
       const now = Math.floor((f.t * 0.7) % n);
       for (let s = 0; s < n; s++) {
@@ -744,7 +744,7 @@ function radioWidget() {
       }
       ctx.stroke();
       // ── the numbers: COOK against load-shift keying as the coil Q changes (illustrative)
-      const by = bot + 22, bw = W - x0 * 2 - (narrow ? 0 : 150), lsk = Math.min(FC / 2, FC / (Q * 0.8));
+      const by = bot + 22, bw = W - x0 * 2 - (narrow ? 74 : 150), lsk = Math.min(FC / 2, FC / (Q * 0.8));
       const row = (y, label, val, col, txtv) => {
         text(f, label, x0, y - 4, { size: 10.5, weight: 600, a: 0.8 });
         ctx.fillStyle = c.txt(0.07); ctx.fillRect(x0, y, bw, 11);

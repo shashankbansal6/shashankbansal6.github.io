@@ -15,6 +15,11 @@ git checkout redesign       # back to the latest
   cyclic on-off keying drawing and its papers (Ha et al., VLSI 2014 and JSSC 2016; Sauer et al., TCAS-I 2005).
   The Radio tile in the chain now opens it instead of jumping back to the first step.
 
+- **Phone fixes**: the Learn and Explore links were untappable in the phone menu (a fix for the desktop
+  hover bug had switched off pointer events on the flattened panels); the menu button was pushed off-screen
+  at 320px; the menu now scrolls on short landscape phones; the game no longer freezes the page when the
+  board does not fit the screen; the Radio figure fits narrow screens.
+
 ## v3.9
 
 - **Follow-ups**: ECoG cable pulses removed; menu panels no longer catch the pointer while fading (hovering

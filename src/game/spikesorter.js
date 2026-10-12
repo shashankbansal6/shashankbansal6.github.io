@@ -316,6 +316,9 @@ export function initSpikeSorter(root) {
     if (!phone.matches) return;
     const top = root.querySelector('.ss-taskbar').getBoundingClientRect().top + scrollY - 66;
     window.scrollTo({ top, behavior: 'instant' });
+    // a landscape phone is too short to hold the whole board: leave the page scrollable there
+    const last = root.querySelector('.ss-units') || root;
+    if (last.getBoundingClientRect().bottom > innerHeight) return;
     document.documentElement.classList.add('ss-lock');
     document.addEventListener('touchmove', stopScroll, { passive: false });
   }

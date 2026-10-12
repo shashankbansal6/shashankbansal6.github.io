@@ -42,7 +42,7 @@
 
 /* phones: the panel spans the screen under the header (the journey page flattens it into its own menu instead) */
 @media (max-width: 760px) {
-  .menu-panel { position: fixed; top: 3.3rem; left: 1rem; right: 1rem; width: auto; padding-top: 0; transform-origin: 70% 0; }
+  .menu-panel { position: fixed; top: 3.3rem; left: 1rem; right: 1rem; width: auto; padding-top: 0; max-height: calc(100vh - 4rem); max-height: calc(100dvh - 4rem); overflow-y: auto; overscroll-behavior: contain; transform-origin: 70% 0; }
   .top { gap: 8px; }
   .top .back { white-space: nowrap; font-size: 15px; }
   .top nav { gap: 12px; }
