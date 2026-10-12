@@ -18,12 +18,17 @@ $('#w-switch').innerHTML = worldSwitch('sensor');
 $('#next').innerHTML = worldsNext('sensor');
 initDock('sensor');
 const world = sensorWorld($('#world'));
-let dive = null;
+let dive = null, acc = 0;
+const phone = matchMedia('(max-width: 900px)').matches;
 const ctl = startWorld({
   onResize: () => { world.resize(); dive?.resize(); },
   onFrame: (dt, scroll) => {
     const p = dive?.step(dt, scroll);
-    world.draw(dt, scroll, p == null ? 0 : 0.7);
+    // on a phone the backdrop is drawn at ~30 fps: the drawings and scrolling get the rest of the frame
+    acc += dt;
+    if (phone && acc < 1 / 32) return;
+    world.draw(acc, scroll, p == null ? 0 : 0.7);
+    acc = 0;
   },
 });
 dive = initDive($('#dive'), { beats: SENSOR_BEATS, widgets: WIDGETS, captions: CAPTIONS, label: 'SENSOR', mobile: ctl.mobile, scrollToY: ctl.scrollToY });

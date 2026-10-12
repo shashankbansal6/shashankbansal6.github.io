@@ -51,6 +51,7 @@ body.world .then.lab { color: var(--w) !important; }
 .footer .fine { margin-top: 0.8rem; }
 
 @media (max-width: 900px) {
+  body.world .dive-card, body.world .dive-steps { backdrop-filter: none; }
   .w-hero .hero-inner { padding-top: 5rem; }
   .w-tiles { grid-template-columns: 1fr; }
   body.world .dive-sticky { grid-template-columns: minmax(0, 1fr); }

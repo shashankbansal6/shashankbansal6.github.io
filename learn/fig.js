@@ -9,7 +9,7 @@ export const fmt = (v, d = 1) => (Math.abs(v) >= 100 ? v.toFixed(0) : v.toFixed(
 export function makeFig(canvas) {
   const f = { ctx: canvas.getContext('2d'), W: 0, H: 0, t: 0, c: {}, themeKey: '', mouse: { x: -1, y: -1, in: false } };
   const resize = () => {
-    const dpr = Math.min(devicePixelRatio, 2);
+    const dpr = Math.min(devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2);
     const r = canvas.getBoundingClientRect();
     if (!r.width) return;
     f.W = r.width; f.H = r.height;

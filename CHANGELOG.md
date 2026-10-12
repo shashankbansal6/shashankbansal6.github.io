@@ -15,6 +15,11 @@ git checkout redesign       # back to the latest
   cyclic on-off keying drawing and its papers (Ha et al., VLSI 2014 and JSSC 2016; Sauer et al., TCAS-I 2005).
   The Radio tile in the chain now opens it instead of jumping back to the first step.
 
+- **Touch and speed**: swiping over a drawing now scrolls the page (the electrode only grabs a finger that
+  lands on it; taps fire on release, not on the first touch); no blur-behind panels on phones; drawings render
+  at a lower pixel ratio on touch screens; the sensor backdrop runs at ~30 fps on phones; the 3D scenes step
+  their resolution down on slow devices; the chip page backdrop no longer animates signals.
+- **Radio figure**: shorter wave, bits shown under each symbol.
 - **Phone fixes**: the Learn and Explore links were untappable in the phone menu (a fix for the desktop
   hover bug had switched off pointer events on the flattened panels); the menu button was pushed off-screen
   at 320px; the menu now scrolls on short landscape phones; the game no longer freezes the page when the

@@ -157,34 +157,22 @@ export function chipWorld(canvas) {
     }
     return { traces, G };
   });
-  let t = 0;
+  let t = 0, drawn = '';
   return {
-    resize: b.resize,
+    resize: () => { drawn = ''; b.resize(); },
     draw(dt, scroll, boost = 0) {
       const { st, ctx } = b;
       if (!st.scene) b.resize();
-      if (st.themeKey !== document.documentElement.dataset.theme) b.resize();
+      if (st.themeKey !== document.documentElement.dataset.theme) { drawn = ''; b.resize(); }
       t += dt;
-      const { pal } = st, sc = st.scene;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
       const par = -0.2 * st.H * Math.tanh(scroll / (6 * st.H));
+      // the die is still: repaint only when the scroll offset, size or theme changed
+      const key = `${par.toFixed(1)}|${canvas.width}|${st.themeKey}`;
+      if (key === drawn) return;
+      drawn = key;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save(); ctx.translate(0, par * st.dpr); ctx.drawImage(b.off, 0, 0); ctx.restore();
-      ctx.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
-      ctx.save(); ctx.translate(0, par);
-      for (const tr of sc.traces) {
-        tr.u = (tr.u + (dt * tr.speed * (1 + boost)) / tr.len) % 1;
-        for (let k = 0; k < 5; k++) {
-          const d = ((tr.u * tr.len) - k * 7 + tr.len) % tr.len;
-          let i = 1; while (i < tr.cum.length - 1 && tr.cum[i] < d) i++;
-          const q = (d - tr.cum[i - 1]) / Math.max(1, tr.cum[i] - tr.cum[i - 1]);
-          const x = tr.px[i - 1][0] + (tr.px[i][0] - tr.px[i - 1][0]) * q, y = tr.px[i - 1][1] + (tr.px[i][1] - tr.px[i - 1][1]) * q;
-          const col = pal[tr.col], a = (1 - k / 5);
-          if (k === 0) glow(ctx, x, y, 14, col, 0.8);
-          ctx.fillStyle = withAlpha(col, 0.85 * a); ctx.beginPath(); ctx.arc(x, y, k === 0 ? 2.6 : 1.8 * a + 0.4, 0, TAU); ctx.fill();
-        }
-      }
-      ctx.restore();
     },
   };
 }

@@ -23,7 +23,7 @@
 }
 .w-dock a:hover::after, .w-dock a:focus-visible::after { opacity: 1; transform: none; }
 @media (max-width: 900px) {
-  .w-dock { top: 3.55rem; right: 0.6rem; }
+  .w-dock { top: 3.55rem; right: 0.6rem; backdrop-filter: none; background: color-mix(in srgb, var(--bg) 94%, transparent); }
   .w-dock a { width: 1.85rem; height: 1.85rem; }
   body.world .dive-steps { max-width: calc(100% - 6.2rem); }
 }

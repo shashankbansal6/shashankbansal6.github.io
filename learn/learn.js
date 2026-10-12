@@ -14,6 +14,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import Lenis from 'lenis';
+import { adaptiveScale } from '../src/perf.js';
 
 import { sstep, damp, lerp } from '../src/lib/math.js';
 import { hemiFrame, ANCHORS } from '../src/scene/anatomy.js';
@@ -38,7 +39,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 // ── renderer / scene ─────────────────────────────────────────────────────────
 const canvas = $('#gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-const dpr = Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
+let dpr = Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
 renderer.setPixelRatio(dpr);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.005, 200);
@@ -421,7 +422,9 @@ function sample(scroll) {
   return { target, off, sx: lerp(va.sx, vb.sx, t), sy: lerp(va.sy, vb.sy, t), st };
 }
 
+const scaleDown = adaptiveScale({ start: dpr, min: 1, apply: (q) => { dpr = q; renderer.setPixelRatio(q); lastW = 0; resize(); } });
 function frame(time) {
+  scaleDown(time);
   clock.update(time);
   const dt = Math.max(0, Math.min(0.05, clock.getDelta()));
   uTime.value += dt;

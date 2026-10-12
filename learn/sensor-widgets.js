@@ -17,6 +17,7 @@ function fieldWidget() {
   };
   return {
     cursor: 'crosshair',
+    near(f, x, y) { if (!pos) return true; const g = geom(f); return Math.hypot(x - (g.cx + pos.x * g.s), y - (g.cy + pos.y * g.s)) < 64; },
     drag(f, x, y) { const g = geom(f); pos = { x: clamp((x - g.cx) / g.s, -g.fw * 0.45 / g.s, g.fw * 0.5 / g.s), y: clamp((y - g.cy) / g.s, -g.fh * 0.55 / g.s, g.fh * 0.4 / g.s) }; },
     draw(f) {
       const { ctx, W, H, c } = f;

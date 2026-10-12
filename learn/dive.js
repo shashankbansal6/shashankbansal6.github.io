@@ -3,6 +3,21 @@
 import { makeFig, clamp } from './fig.js';
 import { esc, refsHTML } from './refs.js';
 
+// A mouse acts on press. A finger acts on a tap: if the touch turns into a scroll the browser cancels it,
+// so swiping over a drawing scrolls the page instead of poking the drawing.
+function tapOnly(el, fn) {
+  let d = null;
+  el.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return fn(e);
+    d = { x: e.clientX, y: e.clientY, t: e.timeStamp, id: e.pointerId };
+  });
+  el.addEventListener('pointerup', (e) => {
+    if (d && d.id === e.pointerId && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 10 && e.timeStamp - d.t < 600) fn(e);
+    d = null;
+  });
+  el.addEventListener('pointercancel', () => { d = null; });
+}
+
 export function initDive(root, { intro, beats, widgets, captions = {}, label = 'STEP', mobile, scrollToY, onActive, strip, stripFrom = 1 }) {
   const N = beats.length;
   root.innerHTML = `
@@ -36,12 +51,20 @@ export function initDive(root, { intro, beats, widgets, captions = {}, label = '
     const fig = makeFig(canvas);
     const w = widgets[beats[i].widget](api);
     if (w.controls) v.querySelector('.dive-ctl').appendChild(w.controls);
-    if (w.click) { canvas.addEventListener('pointerdown', (e) => { const r = canvas.getBoundingClientRect(); w.click(fig, e.clientX - r.left, e.clientY - r.top); }); }
+    if (w.click) tapOnly(canvas, (e) => { const r = canvas.getBoundingClientRect(); w.click(fig, e.clientX - r.left, e.clientY - r.top); });
     if (w.drag) {
-      canvas.style.touchAction = 'none';
+      // a finger only grabs the handle if it lands on it; anywhere else the swipe scrolls the page as usual
+      let grab = false;
       const go = (e) => { const r = canvas.getBoundingClientRect(); w.drag(fig, e.clientX - r.left, e.clientY - r.top); };
-      canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); go(e); });
-      canvas.addEventListener('pointermove', (e) => { if (e.buttons) go(e); });
+      canvas.addEventListener('pointerdown', (e) => {
+        const r = canvas.getBoundingClientRect();
+        grab = e.pointerType === 'mouse' || !w.near || w.near(fig, e.clientX - r.left, e.clientY - r.top);
+        if (grab) { canvas.setPointerCapture(e.pointerId); go(e); }
+      });
+      canvas.addEventListener('pointermove', (e) => { if (grab && e.buttons) go(e); });
+      const drop = () => { grab = false; };
+      canvas.addEventListener('pointerup', drop); canvas.addEventListener('pointercancel', drop);
+      canvas.addEventListener('touchmove', (e) => { if (grab) e.preventDefault(); }, { passive: false });
     }
     if (w.cursor) canvas.style.cursor = w.cursor;
     else if (w.click) canvas.style.cursor = 'pointer';
@@ -50,7 +73,7 @@ export function initDive(root, { intro, beats, widgets, captions = {}, label = '
     if (sc) {
       sfig = makeFig(sc); sw = strip(api);
       sc.style.cursor = 'pointer';
-      sc.addEventListener('pointerdown', (e) => { const r = sc.getBoundingClientRect(); sw.click(sfig, e.clientX - r.left, e.clientY - r.top); });
+      tapOnly(sc, (e) => { const r = sc.getBoundingClientRect(); sw.click(sfig, e.clientX - r.left, e.clientY - r.top); });
     }
     return { fig, w, sfig, sw };
   });

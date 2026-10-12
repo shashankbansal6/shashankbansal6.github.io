@@ -716,25 +716,26 @@ function radioWidget() {
       }
       text(f, 'power in  →', (lx + rx) / 2, ay - 14, { size: 10.5, weight: 700, align: 'center', color: c.stim });
       text(f, '←  data out', (lx + rx) / 2, ay + 22, { size: 10.5, weight: 700, align: 'center', color: c.inv });
-      // ── the implant coil voltage: three of the four cycles of every symbol ring, one is shorted
-      const top = 100, bot = narrow ? H - 130 : H - 118, mid = (top + bot) / 2 + 8, amp = (bot - top) / 2 - 16;
-      lay = { x0, cell, n, top, bot };
-      text(f, narrow ? 'coil voltage · 4 cycles = 2 bits · tap a symbol' : 'implant coil voltage · 4 carrier cycles = 1 symbol = 2 bits  (click a symbol)', x0, top - 8, { size: 10, a: 0.6 });
-      const hov = f.mouse.in && f.mouse.y >= top && f.mouse.y <= bot ? Math.floor((f.mouse.x - x0) / cell) : -1;
+      // ── the implant coil voltage: three of the four cycles of every symbol ring, one is shorted to a flat line
+      const laneTop = narrow ? 96 : 108, below = narrow ? 134 : 146;
+      const laneH = clamp(H - laneTop - below, 62, 128), top = laneTop, bot = laneTop + laneH, mid = (top + bot) / 2, amp = laneH * 0.3;
+      lay = { x0, cell, n, top, bot: bot + 26 };
+      text(f, narrow ? 'coil voltage · 4 cycles = 2 bits · tap a symbol' : 'implant coil voltage · 4 carrier cycles = 1 symbol = 2 bits  (click a symbol)', x0, top - 10, { size: 10, a: 0.6 });
+      const hov = f.mouse.in && f.mouse.y >= top && f.mouse.y <= bot + 26 ? Math.floor((f.mouse.x - x0) / cell) : -1;
       const now = Math.floor((f.t * 0.7) % n);
       for (let s = 0; s < n; s++) {
-        const sx = x0 + s * cell;
-        roundRect(ctx, sx + 2, top, cell - 4, bot - top, 8);
-        ctx.fillStyle = s === now ? withAlpha(c.accent, 0.08) : c.paper; ctx.fill();
+        const sx = x0 + s * cell, v = sym[s];
+        roundRect(ctx, sx + 2, top, cell - 4, laneH + 26, 9);
+        ctx.fillStyle = s === now ? withAlpha(c.accent, 0.07) : c.paper; ctx.fill();
         ctx.strokeStyle = s === hov ? c.accent : c.txt(s === now ? 0.4 : 0.18); ctx.lineWidth = s === hov ? 1.8 : 1; ctx.stroke();
-        const v = sym[s];
         // the shorted cycle
-        ctx.fillStyle = withAlpha(c.accent, 0.2); ctx.fillRect(sx + v * cw + 1, top + 4, cw - 2, bot - top - 8);
-        text(f, v.toString(2).padStart(2, '0'), sx + cell / 2, bot - 8, { size: narrow ? 13 : 15, weight: 800, align: 'center', color: c.accent });
-        text(f, `cycle ${v + 1} shorted`, sx + cell / 2, top + 13, { size: 8.5, align: 'center', a: 0.55 });
+        ctx.fillStyle = withAlpha(c.accent, 0.16); ctx.fillRect(sx + v * cw + 1, top + 5, cw - 2, laneH - 10);
+        text(f, 'short', sx + v * cw + cw / 2, top + 15, { size: 8.5, weight: 700, align: 'center', color: c.accent });
+        // the two bits this symbol carries
+        text(f, v.toString(2).padStart(2, '0'), sx + cell / 2, bot + 19, { size: narrow ? 14 : 16, weight: 800, align: 'center', color: c.accent });
       }
-      ctx.strokeStyle = c.txt(0.18); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, mid); ctx.lineTo(x1, mid); ctx.stroke();
-      ctx.strokeStyle = c.inv; ctx.lineWidth = 1.8; ctx.beginPath();
+      ctx.strokeStyle = c.txt(0.16); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, mid); ctx.lineTo(x1, mid); ctx.stroke();
+      ctx.strokeStyle = c.inv; ctx.lineWidth = 1.8; ctx.lineJoin = 'round'; ctx.beginPath();
       const tot = n * 4, steps = Math.round((x1 - x0) / 1.5);
       for (let i = 0; i <= steps; i++) {
         const x = x0 + (i / steps) * (x1 - x0), cyc = (i / steps) * tot, k = Math.min(tot - 1, Math.floor(cyc));
@@ -744,14 +745,14 @@ function radioWidget() {
       }
       ctx.stroke();
       // ── the numbers: COOK against load-shift keying as the coil Q changes (illustrative)
-      const by = bot + 22, bw = W - x0 * 2 - (narrow ? 74 : 150), lsk = Math.min(FC / 2, FC / (Q * 0.8));
+      const by = bot + 26 + 24, bw = W - x0 * 2 - (narrow ? 74 : 150), lsk = Math.min(FC / 2, FC / (Q * 0.8));
       const row = (y, label, val, col, txtv) => {
         text(f, label, x0, y - 4, { size: 10.5, weight: 600, a: 0.8 });
         ctx.fillStyle = c.txt(0.07); ctx.fillRect(x0, y, bw, 11);
         ctx.fillStyle = col; ctx.fillRect(x0, y, Math.max(2, bw * val), 11);
         text(f, txtv, x0 + bw + 10, y + 10, { size: 11, weight: 700, color: col });
       };
-      row(by, 'Cyclic on-off keying (any Q)', (FC / 2) / FC * 2, c.accent, `${fmt(FC / 2, 2)} Mb/s`);
+      row(by, 'Cyclic on-off keying (any Q)', 1, c.accent, `${fmt(FC / 2, 2)} Mb/s`);
       row(by + 32, 'Load-shift keying at this Q', lsk / (FC / 2), c.inv, `~${fmt(lsk, 2)} Mb/s`);
       text(f, 'power flows in 3 of every 4 cycles', x0, by + 60, { size: 10.5, weight: 700, color: c.stim });
       text(f, 'a high Q moves power well, and caps the load-shift rate', x0, by + 76, { size: 10.5, a: 0.7 });
