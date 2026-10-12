@@ -1,269 +1,620 @@
 {
-  "chapters": [
+ "chapters": [
+  {
+   "id": "2018-07-big-sur",
+   "title": "Big Sur",
+   "place": "California",
+   "date": "2018-07-15",
+   "photos": [
     {
-      "id": "lab-2026",
-      "title": "In the lab",
-      "place": "UC San Diego",
-      "date": "2026-09-30",
-      "note": "The compute-in-memory chip: a 1 mm² bare die, ready for bonding.",
-      "photos": [
-        {
-          "f": "cim-die",
-          "w": 768,
-          "h": 1024,
-          "t": "CIM chip, 1 mm² bare die",
-          "d": "2026-09-30",
-          "alt": "A 1 mm² compute-in-memory die in an open black gel-pak tray, with tweezers beside it"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1050",
+     "w": 1100,
+     "h": 825,
+     "t": "Point Lobos",
+     "d": "2018-07-15",
+     "alt": "A turquoise cove ringed by rocks and cypress above the sea"
     },
     {
-      "id": "2018-07-big-sur",
-      "title": "Big Sur",
-      "place": "California",
-      "date": "2018-07-15",
-      "photos": [
-        {
-          "f": "2018-07-big-sur-img-1050",
-          "w": 1100,
-          "h": 825,
-          "t": "Point Lobos",
-          "d": "2018-07-15",
-          "alt": "A turquoise cove ringed by rocks and cypress above the sea"
-        },
-        {
-          "f": "2018-07-big-sur-img-1058",
-          "w": 1100,
-          "h": 825,
-          "t": "Rock arches",
-          "d": "2018-07-15",
-          "alt": "Weathered sandstone arches above a rocky shore"
-        },
-        {
-          "f": "2018-07-big-sur-img-1074",
-          "w": 619,
-          "h": 1100,
-          "t": "Big Sur coast",
-          "d": "2018-07-15",
-          "alt": "Green headlands meeting the sea under a bright sky"
-        },
-        {
-          "f": "2018-07-big-sur-img-1086",
-          "w": 1100,
-          "h": 825,
-          "t": "Big Sur coast",
-          "d": "2018-07-15",
-          "alt": "Rugged coastline with a sea stack in dark blue water"
-        },
-        {
-          "f": "2018-07-big-sur-img-1092",
-          "w": 1100,
-          "h": 825,
-          "t": "McWay Falls",
-          "d": "2018-07-15",
-          "alt": "A waterfall dropping onto a turquoise cove beach"
-        },
-        {
-          "f": "2018-07-big-sur-img-1103",
-          "w": 1100,
-          "h": 825,
-          "t": "Garrapata Beach",
-          "d": "2018-07-15",
-          "alt": "Waves rolling onto a wide beach under heavy clouds"
-        }
-      ],
-      "note": "A day driving Highway 1."
+     "f": "2018-07-big-sur-img-1058",
+     "w": 1100,
+     "h": 825,
+     "t": "Rock arches",
+     "d": "2018-07-15",
+     "alt": "Weathered sandstone arches above a rocky shore"
     },
     {
-      "id": "2018-11-cambridge",
-      "title": "Cambridge",
-      "place": "Massachusetts",
-      "date": "2018-11-15",
-      "photos": [
-        {
-          "f": "2018-11-cambridge-img-1326",
-          "w": 825,
-          "h": 1100,
-          "t": "Graffiti alley",
-          "d": "2018-11-04",
-          "alt": "A narrow alley with a fully painted floor and walls"
-        },
-        {
-          "f": "2018-11-cambridge-img-1333",
-          "w": 1100,
-          "h": 825,
-          "t": "Charles River at dusk",
-          "d": "2018-11-04",
-          "alt": "Silhouetted trees beside a river with a lit bridge in the distance"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1074",
+     "w": 619,
+     "h": 1100,
+     "t": "Big Sur coast",
+     "d": "2018-07-15",
+     "alt": "Green headlands meeting the sea under a bright sky"
     },
     {
-      "id": "2019-11-cascades",
-      "title": "Cascades",
-      "place": "Washington",
-      "date": "2019-11-15",
-      "photos": [
-        {
-          "f": "2019-11-cascades-img-4063",
-          "w": 825,
-          "h": 1100,
-          "t": "Light through the forest",
-          "d": "2019-11-15",
-          "alt": "Sunbeams slanting through tall trees"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1086",
+     "w": 1100,
+     "h": 825,
+     "t": "Big Sur coast",
+     "d": "2018-07-15",
+     "alt": "Rugged coastline with a sea stack in dark blue water"
     },
     {
-      "id": "2019-12-san-francisco",
-      "title": "San Francisco",
-      "place": "California",
-      "date": "2019-12-15",
-      "photos": [
-        {
-          "f": "2019-12-san-francisco-img-4244",
-          "w": 1100,
-          "h": 825,
-          "t": "Autumn ginkgos",
-          "d": "2019-12-07",
-          "alt": "Bright yellow ginkgo trees next to a row of bike-share docks"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1092",
+     "w": 1100,
+     "h": 825,
+     "t": "McWay Falls",
+     "d": "2018-07-15",
+     "alt": "A waterfall dropping onto a turquoise cove beach"
     },
     {
-      "id": "2020-08-bay-area-summer",
-      "title": "Bay Area summer",
-      "date": "2020-08-15",
-      "photos": [
-        {
-          "f": "2020-08-bay-area-summer-img-4714",
-          "w": 1100,
-          "h": 825,
-          "t": "Fog in the redwoods",
-          "d": "2020-06-27",
-          "alt": "Mist drifting between tall trees in a forest"
-        },
-        {
-          "f": "2020-08-bay-area-summer-img-4857",
-          "w": 1100,
-          "h": 825,
-          "t": "Sunset over the pier",
-          "d": "2020-08-15",
-          "alt": "Orange clouds over a long pier and calm water at sunset"
-        },
-        {
-          "f": "2020-08-bay-area-summer-img-4871",
-          "w": 1100,
-          "h": 825,
-          "t": "Smoky sun",
-          "d": "2020-08-17",
-          "alt": "A hazy orange sun over a palm tree and a quiet street"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1103",
+     "w": 1100,
+     "h": 825,
+     "t": "Garrapata Beach",
+     "d": "2018-07-15",
+     "alt": "Waves rolling onto a wide beach under heavy clouds"
     },
     {
-      "id": "2020-11-first-snow",
-      "title": "First snow",
-      "date": "2020-11-15",
-      "photos": [
-        {
-          "f": "2020-11-first-snow-img-0090",
-          "w": 1100,
-          "h": 825,
-          "t": "First snow",
-          "d": "2020-11-08",
-          "alt": "Snow-covered valley floor with snowy mountains under heavy clouds"
-        }
-      ]
-    },
-    {
-      "id": "2022-04-scripps-pier",
-      "title": "Scripps Pier",
-      "place": "La Jolla",
-      "date": "2022-04-15",
-      "photos": [
-        {
-          "f": "2022-04-scripps-pier-img-0163",
-          "w": 825,
-          "h": 1100,
-          "t": "Under Scripps Pier",
-          "d": "2022-04-11",
-          "alt": "Looking along the concrete pilings under a pier toward the beach"
-        }
-      ]
-    },
-    {
-      "id": "2022-08-ha-long-bay",
-      "title": "Ha Long Bay",
-      "place": "Vietnam",
-      "date": "2022-08-15",
-      "photos": [
-        {
-          "f": "2022-08-ha-long-bay-img-3537",
-          "w": 1100,
-          "h": 825,
-          "t": "Sunset over the bay",
-          "d": "2022-08-29",
-          "alt": "A calm bay at dusk with orange sky and distant hills"
-        }
-      ]
-    },
-    {
-      "id": "2023-03-catalina-island",
-      "title": "Catalina Island",
-      "place": "California",
-      "date": "2023-03-15",
-      "photos": [
-        {
-          "f": "2023-03-catalina-island-img-3289",
-          "w": 825,
-          "h": 1100,
-          "t": "Palms on Catalina",
-          "d": "2023-03-25",
-          "alt": "Tall palm trees against a deep blue sky and the sea"
-        }
-      ]
-    },
-    {
-      "id": "2023-06-telluride",
-      "title": "Telluride",
-      "place": "Colorado",
-      "date": "2023-06-15",
-      "photos": [
-        {
-          "f": "2023-06-telluride-img-4260",
-          "w": 1100,
-          "h": 825,
-          "t": "Telluride at night",
-          "d": "2023-06-27",
-          "alt": "Town lights in a dark mountain valley under a starry sky"
-        },
-        {
-          "f": "2023-06-telluride-img-4380",
-          "w": 825,
-          "h": 1100,
-          "t": "Mountains above Telluride",
-          "d": "2023-07-02",
-          "alt": "Green mountain slopes under a bright blue sky with big clouds"
-        }
-      ],
-      "note": "Telluride Neuromorphic Cognition Engineering Workshop."
-    },
-    {
-      "id": "2023-12-solana-beach",
-      "title": "Solana Beach",
-      "place": "California",
-      "date": "2023-12-15",
-      "photos": [
-        {
-          "f": "2023-12-solana-beach-img-5498",
-          "w": 1100,
-          "h": 825,
-          "t": "Lifeguard tower at sunset",
-          "d": "2023-12-02",
-          "alt": "A white lifeguard tower on a dark beach under an orange and blue sunset"
-        }
-      ]
+     "f": "2018-07-big-sur-img-1079",
+     "v": "2018-07-big-sur-img-1079",
+     "w": 720,
+     "h": 1280,
+     "t": "Cliffs above the Pacific",
+     "d": "2018-07-15",
+     "alt": "A slow pan from a Big Sur clifftop, over blue water and rocky coast"
     }
-  ]
+   ],
+   "note": "A day driving Highway 1."
+  },
+  {
+   "id": "2018-11-cambridge",
+   "title": "Cambridge",
+   "place": "Massachusetts",
+   "date": "2018-11-15",
+   "photos": [
+    {
+     "f": "2018-11-cambridge-img-1333",
+     "w": 1100,
+     "h": 825,
+     "t": "Charles River at dusk",
+     "d": "2018-11-04",
+     "alt": "Silhouetted trees beside a river with a lit bridge in the distance"
+    }
+   ]
+  },
+  {
+   "id": "2019-11-cascades",
+   "title": "Cascades",
+   "place": "Washington",
+   "date": "2019-11-15",
+   "photos": [
+    {
+     "f": "2019-11-cascades-img-4063",
+     "w": 825,
+     "h": 1100,
+     "t": "Light through the forest",
+     "d": "2019-11-15",
+     "alt": "Sunbeams slanting through tall trees"
+    }
+   ]
+  },
+  {
+   "id": "2019-12-san-francisco",
+   "title": "San Francisco",
+   "place": "California",
+   "date": "2019-12-15",
+   "photos": [
+    {
+     "f": "2019-12-san-francisco-img-4244",
+     "w": 1100,
+     "h": 825,
+     "t": "Autumn ginkgos",
+     "d": "2019-12-07",
+     "alt": "Bright yellow ginkgo trees next to a row of bike-share docks"
+    }
+   ]
+  },
+  {
+   "id": "2020-08-bay-area-summer",
+   "title": "Bay Area summer",
+   "date": "2020-08-15",
+   "photos": [
+    {
+     "f": "2020-08-bay-area-summer-img-4714",
+     "w": 1100,
+     "h": 825,
+     "t": "Fog in the redwoods",
+     "d": "2020-06-27",
+     "alt": "Mist drifting between tall trees in a forest"
+    },
+    {
+     "f": "2020-08-bay-area-summer-img-4857",
+     "w": 1100,
+     "h": 825,
+     "t": "Sunset over the pier",
+     "d": "2020-08-15",
+     "alt": "Orange clouds over a long pier and calm water at sunset"
+    },
+    {
+     "f": "2020-08-bay-area-summer-img-4871",
+     "w": 1100,
+     "h": 825,
+     "t": "Smoky sun",
+     "d": "2020-08-17",
+     "alt": "A hazy orange sun over a palm tree and a quiet street"
+    }
+   ]
+  },
+  {
+   "id": "2020-11-first-snow",
+   "title": "First snow",
+   "date": "2020-11-15",
+   "photos": [
+    {
+     "f": "2020-11-first-snow-img-0090",
+     "w": 1100,
+     "h": 825,
+     "t": "First snow",
+     "d": "2020-11-08",
+     "alt": "Snow-covered valley floor with snowy mountains under heavy clouds"
+    }
+   ]
+  },
+  {
+   "id": "2022-04-scripps-pier",
+   "title": "Scripps Pier",
+   "place": "La Jolla",
+   "date": "2022-04-15",
+   "photos": [
+    {
+     "f": "2022-04-scripps-pier-img-0163",
+     "w": 825,
+     "h": 1100,
+     "t": "Under Scripps Pier",
+     "d": "2022-04-11",
+     "alt": "Looking along the concrete pilings under a pier toward the beach"
+    }
+   ]
+  },
+  {
+   "id": "2022-08-ha-long-bay",
+   "title": "Ha Long Bay",
+   "place": "Vietnam",
+   "date": "2022-08-15",
+   "photos": [
+    {
+     "f": "2022-08-ha-long-bay-img-3537",
+     "w": 1100,
+     "h": 825,
+     "t": "Sunset over the bay",
+     "d": "2022-08-29",
+     "alt": "A calm bay at dusk with orange sky and distant hills"
+    }
+   ]
+  },
+  {
+   "id": "2023-03-catalina-island",
+   "title": "Catalina Island",
+   "place": "California",
+   "date": "2023-03-15",
+   "photos": [
+    {
+     "f": "2023-03-catalina-island-img-3289",
+     "w": 825,
+     "h": 1100,
+     "t": "Palms on Catalina",
+     "d": "2023-03-25",
+     "alt": "Tall palm trees against a deep blue sky and the sea"
+    },
+    {
+     "f": "2023-03-goat-whiskers-img-3388",
+     "w": 825,
+     "h": 1100,
+     "t": "Goat Whiskers Trail",
+     "d": "2023-03-25",
+     "alt": "A wooden trail sign above the blue ocean on a grassy hillside"
+    }
+   ]
+  },
+  {
+   "id": "2023-06-telluride",
+   "title": "Telluride",
+   "place": "Colorado",
+   "date": "2023-06-15",
+   "photos": [
+    {
+     "f": "2023-06-telluride-img-4260",
+     "w": 1100,
+     "h": 825,
+     "t": "Telluride at night",
+     "d": "2023-06-27",
+     "alt": "Town lights in a dark mountain valley under a starry sky"
+    },
+    {
+     "f": "2023-06-telluride-img-4380",
+     "w": 825,
+     "h": 1100,
+     "t": "Mountains above Telluride",
+     "d": "2023-07-02",
+     "alt": "Green mountain slopes under a bright blue sky with big clouds"
+    }
+   ],
+   "note": "Telluride Neuromorphic Cognition Engineering Workshop."
+  },
+  {
+   "id": "2023-12-solana-beach",
+   "title": "Solana Beach",
+   "place": "California",
+   "date": "2023-12-15",
+   "photos": [
+    {
+     "f": "2023-12-solana-beach-img-5498",
+     "w": 1100,
+     "h": 825,
+     "t": "Lifeguard tower at sunset",
+     "d": "2023-12-02",
+     "alt": "A white lifeguard tower on a dark beach under an orange and blue sunset"
+    }
+   ]
+  },
+  {
+   "id": "2017-01-after-dark",
+   "title": "After dark",
+   "date": "2017-01-15",
+   "photos": [
+    {
+     "f": "2017-01-after-dark-img-1543",
+     "w": 1100,
+     "h": 733,
+     "t": "Light trails",
+     "d": "2017-01-02",
+     "alt": "Red car light trails streak along a dark road below a starry sky"
+    }
+   ]
+  },
+  {
+   "id": "2024-01-utah-snow",
+   "title": "Utah snow",
+   "place": "Utah",
+   "date": "2024-01-15",
+   "photos": [
+    {
+     "f": "2024-01-utah-snow-img-5723",
+     "w": 825,
+     "h": 1100,
+     "t": "Chairlift",
+     "d": "2024-01-08",
+     "alt": "A chairlift line running through snowy pines under heavy cloud"
+    }
+   ]
+  },
+  {
+   "id": "2025-01-winter-2025",
+   "title": "Winter 2025",
+   "date": "2025-01-15",
+   "photos": [
+    {
+     "f": "2025-01-winter-2025-img-1387",
+     "w": 825,
+     "h": 1100,
+     "t": "Window seat",
+     "d": "2025-02-08",
+     "alt": "A wing tip above a layer of cloud"
+    }
+   ]
+  },
+  {
+   "id": "2025-05-spring-bloom",
+   "title": "Spring bloom",
+   "place": "Solana Beach",
+   "date": "2025-05-10",
+   "photos": [
+    {
+     "f": "2025-05-spring-bloom-img-2141",
+     "w": 825,
+     "h": 1100,
+     "t": "Coastal flowers",
+     "d": "2025-05-10",
+     "alt": "Pink flowers in the foreground with the ocean blurred behind"
+    }
+   ]
+  },
+  {
+   "id": "2025-05-london",
+   "title": "London",
+   "place": "England",
+   "date": "2025-05-28",
+   "photos": [
+    {
+     "f": "2025-05-london-img-2530",
+     "w": 825,
+     "h": 1100,
+     "t": "Tall ship on the Thames",
+     "d": "2025-05-28",
+     "alt": "A replica sailing ship moored on the Thames with towers behind it"
+    }
+   ]
+  },
+  {
+   "id": "2025-07-desert-drive",
+   "title": "Desert drive",
+   "place": "Utah to Joshua Tree",
+   "date": "2025-07-18",
+   "photos": [
+    {
+     "f": "2025-07-desert-drive-img-3171",
+     "w": 1100,
+     "h": 825,
+     "t": "Sunset road",
+     "d": "2025-07-18",
+     "alt": "Sun going down behind grassland over a wet road under dramatic clouds"
+    },
+    {
+     "f": "2025-07-desert-drive-img-3998",
+     "w": 1100,
+     "h": 825,
+     "t": "Mojave sunset",
+     "d": "2025-07-20",
+     "alt": "An orange sunset behind a desert mountain ridge"
+    }
+   ]
+  },
+  {
+   "id": "2025-10-road-trip",
+   "title": "Road trip",
+   "date": "2025-10-15",
+   "photos": [
+    {
+     "f": "2025-10-road-trip-img-5076",
+     "w": 1100,
+     "h": 729,
+     "t": "Arched bridge",
+     "d": "2025-10-01",
+     "alt": "An arched bridge spanning a rust-coloured canyon"
+    },
+    {
+     "f": "2025-10-road-trip-img-5096",
+     "w": 1100,
+     "h": 729,
+     "t": "Bare tree",
+     "d": "2025-10-01",
+     "alt": "A leafless tree on a white ridge against a pale blue sky"
+    }
+   ]
+  },
+  {
+   "id": "2025-12-christmas-day",
+   "title": "Christmas Day",
+   "place": "La Jolla",
+   "date": "2025-12-25",
+   "photos": [
+    {
+     "f": "2025-12-christmas-day-img-0087",
+     "w": 1100,
+     "h": 825,
+     "t": "Pier at sunset",
+     "d": "2025-12-25",
+     "alt": "A long pier silhouetted against a sunset sky reflected on wet sand"
+    },
+    {
+     "f": "2025-12-christmas-day-img-0095",
+     "w": 825,
+     "h": 1100,
+     "t": "Palm and contrail",
+     "d": "2025-12-25",
+     "alt": "A palm tree and a jet contrail against deep blue sky"
+    },
+    {
+     "f": "2025-12-la-jolla-shores-img-0091",
+     "v": "2025-12-la-jolla-shores-img-0091",
+     "w": 1600,
+     "h": 900,
+     "t": "Low tide toward Scripps Pier",
+     "d": "2025-12-25",
+     "alt": "A slow pan across the wet sand at low tide at La Jolla Shores, ending on Scripps Pier"
+    }
+   ]
+  },
+  {
+   "id": "2026-05-azores",
+   "title": "Azores",
+   "place": "Portugal",
+   "date": "2026-05-13",
+   "photos": [
+    {
+     "f": "2026-05-azores-img-1039",
+     "w": 825,
+     "h": 1100,
+     "t": "Giant roots",
+     "d": "2026-05-13",
+     "alt": "A huge tree with sprawling roots in a garden"
+    },
+    {
+     "f": "2026-05-azores-img-1106",
+     "w": 825,
+     "h": 1100,
+     "t": "Carved trunk",
+     "d": "2026-05-13",
+     "alt": "A carved wooden figure on a green lawn among trees"
+    },
+    {
+     "f": "2026-05-azores-img-1194",
+     "v": "2026-05-azores-img-1194",
+     "w": 1600,
+     "h": 900,
+     "t": "Crater lakes of São Miguel",
+     "d": "2026-05-15",
+     "alt": "A slow pan over twin crater lakes and green hills on São Miguel, under heavy clouds"
+    }
+   ]
+  },
+  {
+   "id": "2026-05-lisbon-and-sintra",
+   "title": "Lisbon and Sintra",
+   "place": "Portugal",
+   "date": "2026-05-17",
+   "photos": [
+    {
+     "f": "2026-05-lisbon-and-sintra-img-1244",
+     "w": 1100,
+     "h": 825,
+     "t": "Lisbon rooftops",
+     "d": "2026-05-17",
+     "alt": "Red-tiled rooftops of Lisbon stretching to the river"
+    },
+    {
+     "f": "2026-05-lisbon-and-sintra-img-1319",
+     "w": 1100,
+     "h": 825,
+     "t": "Pena Palace",
+     "d": "2026-05-18",
+     "alt": "The yellow and red Pena Palace above forested hills"
+    }
+   ]
+  },
+  {
+   "id": "2026-05-shanghai",
+   "title": "Shanghai",
+   "place": "China",
+   "date": "2026-05-22",
+   "photos": [
+    {
+     "f": "2026-05-shanghai-img-1402",
+     "w": 825,
+     "h": 1100,
+     "t": "Above Shanghai",
+     "d": "2026-05-22",
+     "alt": "The Huangpu river and city blocks seen from a skyscraper"
+    },
+    {
+     "f": "2026-05-shanghai-img-1579",
+     "w": 1100,
+     "h": 825,
+     "t": "The Bund at night",
+     "d": "2026-05-27",
+     "alt": "The Shanghai skyline lit up across the river at night"
+    }
+   ]
+  },
+  {
+   "id": "2026-06-back-in-illinois",
+   "title": "Back in Illinois",
+   "place": "Chicago and Urbana",
+   "date": "2026-06-03",
+   "photos": [
+    {
+     "f": "2026-06-back-in-illinois-img-1624",
+     "w": 825,
+     "h": 1100,
+     "t": "Ferris wheel",
+     "d": "2026-06-03",
+     "alt": "A purple-lit Ferris wheel against the night sky"
+    },
+    {
+     "f": "2026-06-back-in-illinois-img-1635",
+     "w": 1100,
+     "h": 825,
+     "t": "The Quad",
+     "d": "2026-06-06",
+     "alt": "A wide green lawn with a domed hall behind trees"
+    }
+   ]
+  },
+  {
+   "id": "2026-06-evening-palms",
+   "title": "Evening palms",
+   "place": "San Diego",
+   "date": "2026-06-23",
+   "photos": [
+    {
+     "f": "2026-06-evening-palms-img-1767",
+     "w": 825,
+     "h": 1100,
+     "t": "Palm avenue",
+     "d": "2026-06-23",
+     "alt": "Tall palms lining a street under a blue sky"
+    }
+   ]
+  },
+  {
+   "id": "2026-09-coffee",
+   "title": "Coffee",
+   "date": "2026-09-07",
+   "photos": [
+    {
+     "f": "2026-09-coffee-img-2177",
+     "w": 825,
+     "h": 1100,
+     "t": "Latte",
+     "d": "2026-09-07",
+     "alt": "A latte with leaf art in a black mug on a wooden table"
+    }
+   ]
+  },
+  {
+   "id": "2026-09-catalina-bison",
+   "title": "Catalina bison",
+   "place": "Catalina Island",
+   "date": "2026-09-12",
+   "photos": [
+    {
+     "f": "2026-09-catalina-bison-img-2321",
+     "w": 825,
+     "h": 1100,
+     "t": "Bison",
+     "d": "2026-09-12",
+     "alt": "A bison grazing on a dry hillside under haze"
+    },
+    {
+     "f": "2026-09-catalina-bison-img-3334-original",
+     "w": 1100,
+     "h": 277,
+     "t": "Catalina panorama",
+     "d": "2026-09-12",
+     "alt": "A wide panorama of a rocky blue cove"
+    }
+   ]
+  },
+  {
+   "id": "2026-09-chicago-again",
+   "title": "Chicago again",
+   "place": "Illinois",
+   "date": "2026-09-26",
+   "photos": [
+    {
+     "f": "2026-09-chicago-again-img-2506",
+     "w": 825,
+     "h": 1100,
+     "t": "Moon over the skyline",
+     "d": "2026-09-26",
+     "alt": "A full moon between lit high-rises at night"
+    },
+    {
+     "f": "2026-09-chicago-again-img-8609",
+     "w": 825,
+     "h": 1100,
+     "t": "Sunrise over the lake",
+     "d": "2026-09-29",
+     "alt": "An orange sunrise over water with a pier silhouette"
+    }
+   ]
+  },
+  {
+   "title": "Laguna Mountains",
+   "place": "California",
+   "date": "2024-11-17",
+   "id": "2024-11-laguna-mountains",
+   "photos": [
+    {
+     "f": "2024-11-laguna-mountains-img-0577",
+     "v": "2024-11-laguna-mountains-img-0577",
+     "w": 540,
+     "h": 960,
+     "t": "Dry grass and sky",
+     "d": "2024-11-17",
+     "alt": "Walking a dirt trail through dry grass and oak scrub in the Laguna Mountains"
+    }
+   ]
+  }
+ ]
 }

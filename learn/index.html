@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neuroscience · Learn · Shashank Bansal</title>
+    <meta name="description" content="Peel the head back layer by layer: how EEG, ECoG and intracortical arrays see the motor, visual and language cortex, with the paper that first described each." />
+    <link rel="canonical" href="https://shashankbansal.io/learn/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://shashankbansal.io/learn/" />
+    <meta property="og:title" content="Learn · Shashank Bansal" />
+    <meta property="og:site_name" content="Shashank Bansal" />
+    <meta property="og:image" content="https://shashankbansal.io/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Shashank Bansal, neural sensors and silicon" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Learn · Shashank Bansal" />
+    <meta name="twitter:description" content="Peel the head back layer by layer: how EEG, ECoG and intracortical arrays see the motor, visual and language cortex, with the paper that first described each." />
+    <meta name="twitter:image" content="https://shashankbansal.io/og.jpg" />
+    <meta name="author" content="Shashank Bansal" />
+    <meta property="og:description" content="The science behind brain–computer interfaces, one layer of the head at a time, with the seminal papers." />
+    <meta name="theme-color" content="#0d0d0c" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230d0d0c%22/><text x=%2250%22 y=%2268%22 font-family=%22Helvetica,Arial,sans-serif%22 font-weight=%22700%22 font-size=%2246%22 text-anchor=%22middle%22 fill=%22%23ece8e0%22>sb</text></svg>" />
+    <script src="/theme-init.js"></script>
+    <style>
+      html, body { background: #0d0d0c; color: #ece8e0; margin: 0; }
+      #loader { position: fixed; inset: 0; z-index: 50; background: #0d0d0c; }
+      html[data-theme='watercolor'], html[data-theme='watercolor'] body, html[data-theme='watercolor'] #loader { background: #f2ead9; color: #2a231e; }
+    </style>
+  </head>
+  <body>
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div id="hots"></div>
+    <div id="loader"><span>Loading</span></div>
+
+    <header class="nav">
+      <a class="brand" href="/">Shashank Bansal</a>
+      <div class="theme-switch" role="group" aria-label="Visual theme">
+        <button type="button" data-set="watercolor" aria-pressed="false">Watercolor</button>
+        <button type="button" data-set="ink" aria-pressed="false">Ink</button>
+      </div>
+      <nav id="site-nav" aria-label="Site">
+        <div class="menu-group" data-menu="learn">
+          <button type="button" class="menu-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="learn-panel">Learn <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="menu-panel" id="learn-panel">
+            <div class="menu-grid"></div>
+          </div>
+        </div>
+        <div class="menu-group" data-menu="explore">
+          <button type="button" class="menu-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="explore-panel">Explore <svg viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div class="menu-panel" id="explore-panel">
+            <div class="menu-grid"></div>
+          </div>
+        </div>
+        <a href="/ShashankBansal-CV.pdf">CV</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <button class="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="site-nav"><span></span><span></span><span></span></button>
+    </header>
+
+    <nav class="steps" id="steps" aria-label="Layers"></nav>
+    <ol class="rail" aria-label="Chapters"></ol>
+    <aside class="pop" id="pop" hidden role="dialog" aria-label="Device details"></aside>
+
+    <main id="top">
+      <div id="journey">
+        <section class="stage hero" id="s-hero" data-stage="hero" data-rail="Brain">
+          <div class="hero-inner">
+            <p class="eyebrow">Learn · Neuroscience</p>
+            <h1>The brain,<br />layer by layer</h1>
+            <p class="lede">Peel the head back one layer at a time. Pick a region, scroll down through scalp, skull and cortex, and meet the sensor and the paper that first described what it sees. Then follow the signal into the sensor and the silicon.</p>
+            <div class="regions" id="regions"></div>
+            <p class="hint">Or just scroll <span aria-hidden="true">↓</span><span class="hint-drag"> · drag the brain to rotate it</span></p>
+          </div>
+        </section>
+      </div>
+
+      <div class="content">
+        <section class="block foundations" id="foundations"></section>
+        <section class="block worlds-next" id="next"></section>
+        <footer class="block footer">
+          <h2>Want to try the sensors yourself?</h2>
+          <a class="email" href="/#s-landscape">Back to the brain →</a>
+          <p class="fine">© <span id="year"></span> Shashank Bansal · <a href="https://scholar.google.com/citations?user=-4HJqVAAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar ↗</a> · <a href="/privacy/">Privacy</a></p>
+        </footer>
+      </div>
+    </main>
+
+    <script type="module" src="./learn.js"></script>
+  </body>
+</html>

@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import {
   SCALP, ANCHORS, scalpPoint, scalpNormal, scalpAbove, fibonacciDirs, hemiFrame, cortexPatch,
 } from './anatomy.js';
-import { Layer, additive, lineMat, glowPoints, flowLines, instancesAt, COLORS } from './materials.js';
+import { Layer, additive, lineMat, glowPoints, flowLines, pulseDots, instancesAt, COLORS } from './materials.js';
 import { rng } from '../lib/math.js';
 
 const Y = new THREE.Vector3(0, 1, 0);
@@ -135,6 +135,7 @@ function hddotLayer() {
   L.add(glowPoints(lifted(sources, 0.05).map((f) => f.p), { color: COLORS.red, size: 0.03, opacity: 0.9 }));
   L.add(glowPoints(lifted(detectors, 0.05).map((f) => f.p), { color: NON, size: 0.026, opacity: 0.8 }));
   L.add(flowLines(arcs, { color: '#ff8a8a', opacity: 0.55, speed: 0.5, freq: 6 }));
+  L.add(pulseDots(arcs.filter((_, i) => i % 2 === 0), { color: COLORS.red, size: 0.02, per: 1, speed: 0.35, trail: 4, gap: 0.03 }));
   L.label('HD-DOT optodes', sources[0].p.clone().add(new THREE.Vector3(0, 0.3, 0.1)), 'non');
   return L;
 }
@@ -158,6 +159,7 @@ function semgLayer() {
   L.add(instancesAt(new THREE.BoxGeometry(0.13, 0.016, 0.07), additive(NON, 0.6), pads, { axis: 'y' }));
   L.add(glowPoints(pads.map((f) => f.p), { color: NON, size: 0.06, opacity: 0.8 }));
   L.add(flowLines(wires, { color: NON, opacity: 0.5, speed: -0.7, freq: 5 }));
+  L.add(pulseDots(wires.map((w) => [...w].reverse()), { color: COLORS.teal, size: 0.03, per: 3, speed: 0.4 }));
   L.label('sEMG · jaw & face', pads[3].p.clone().add(new THREE.Vector3(0.25, -0.15, 0.1)), 'non');
   return L;
 }
@@ -194,6 +196,7 @@ function seegLayer() {
     const entry = rayToScalp(target, dir).addScaledVector(dir, 0.18);
     const tube = new THREE.TubeGeometry(new THREE.LineCurve3(target, entry), 1, 0.007, 8);
     L.add(new THREE.Mesh(tube, additive(INV, 0.45)));
+    L.add(pulseDots([[target.clone(), entry.clone()]], { color: INV, size: 0.028, per: 3, speed: 0.3 }));
     for (let k = 0; k < 10; k++) {
       const p = target.clone().addScaledVector(dir, 0.02 + k * 0.06);
       contacts.push(p);
@@ -229,6 +232,9 @@ function intracorticalLayer() {
   L.add(glowPoints(needles.map((n) => n.p.clone().addScaledVector(f.n, -0.026)), { color: INV, size: 0.008, opacity: 1 }));
   const ped = scalpAbove(f.p);
   L.add(flowLines([new THREE.QuadraticBezierCurve3(plateC, plateC.clone().addScaledVector(f.n, 0.25).add(new THREE.Vector3(0, 0.1, -0.15)), ped.p).getPoints(30)], { color: INV, opacity: 0.6, speed: 0.8 }));
+  L.add(pulseDots([new THREE.QuadraticBezierCurve3(plateC, plateC.clone().addScaledVector(f.n, 0.25).add(new THREE.Vector3(0, 0.1, -0.15)), ped.p).getPoints(30)], { color: INV, size: 0.036, per: 4, speed: 0.3 }));
+  // spikes rising out of the needles into the plate
+  L.add(pulseDots(needles.filter((_, i) => i % 7 === 3).map((n) => [n.p.clone().addScaledVector(n.n, -0.03), n.p.clone().addScaledVector(n.n, 0.04)]), { color: INV, size: 0.016, per: 2, speed: 0.07, trail: 4, gap: 0.01 }));
   L.label('Utah-style array · 100 needles', plateC.clone().addScaledVector(f.n, 0.3).add(new THREE.Vector3(0, 0.12, 0)), 'inv');
 
   // flexible polymer threads from a coin-sized implant, right motor cortex
@@ -264,6 +270,7 @@ function intracorticalLayer() {
     for (let k = 0; k < 4; k++) tips.push(surf.clone().lerp(tip, 0.3 + k * 0.22));
   }
   L.add(flowLines(threads, { color: '#ff9fd0', opacity: 0.6, speed: 0.9, freq: 8 }));
+  L.add(pulseDots(threads.map((t) => [...t].reverse()), { color: INV, size: 0.026, per: 2, speed: 0.22, trail: 5, gap: 0.03 }));
   L.add(glowPoints(tips, { color: INV, size: 0.012, opacity: 1 }));
   L.label('Flexible threads', coinC.clone().addScaledVector(coin.n, 0.3), 'inv');
   return L;
@@ -291,6 +298,7 @@ function visualArrayLayer() {
   }
   L.add(glowPoints(tiles, { color: INV, size: 0.01, opacity: 1 }));
   L.add(flowLines(wires, { color: INV, opacity: 0.55, speed: -0.8, freq: 6 }));
+  L.add(pulseDots(wires, { color: INV, size: 0.034, per: 4, speed: 0.34 }));
   L.label('Cortical visual prosthesis', conn.clone().add(new THREE.Vector3(0, 0.3, -0.2)), 'inv');
   return L;
 }

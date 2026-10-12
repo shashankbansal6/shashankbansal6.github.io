@@ -4,7 +4,7 @@
 //
 // Each sub-folder becomes one chapter. Name it  "YYYY-MM Title"  or
 // "YYYY-MM Title @ Place"  (e.g. "2019-08 Yosemite @ California"). Every
-// jpg/png/heic inside is resized to 1100 px (grid) and 2000 px (lightbox) wide
+// jpg/png/heic inside is resized to 800 px (grid) and 2000 px (lightbox) wide
 // into public/photos/img/ and appended to photos/manifest.json. Re-running a
 // folder replaces that chapter. Photos are rotated upright and their metadata
 // (including GPS) is stripped. Needs macOS (sips) and python3 with Pillow.
@@ -42,7 +42,7 @@ for (const dir of readdirSync(src).sort()) {
     // sips converts HEIC/PNG to jpeg; resize.py makes the two sizes, upright, with metadata stripped
     const tmp = join(tmpdir(), `${f}.jpg`);
     sips('-s', 'format', 'jpeg', p, '--out', tmp);
-    const [W, H, taken] = execFileSync('python3', ['-I', join(import.meta.dirname, 'resize.py'), tmp, join(out, `${f}-1100.jpg`), join(out, `${f}-2000.jpg`)], { encoding: 'utf8' }).trim().split(' ');
+    const [W, H, taken] = execFileSync('python3', ['-I', join(import.meta.dirname, 'resize.py'), tmp, join(out, `${f}-800.jpg`), join(out, `${f}-2000.jpg`)], { encoding: 'utf8' }).trim().split(' ');
     photos.push({ f, w: +W, h: +H, t: '', d: taken !== '-' ? taken : `${y}-${mo}` });
   }
   if (!photos.length) { console.warn(`"${dir}" has no images`); continue; }

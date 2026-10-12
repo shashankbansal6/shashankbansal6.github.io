@@ -1,110 +1,59 @@
-// Sensing-landscape panel: modality toggles (two streams), one live data
-// window per selected modality, and a spatial × temporal resolution map.
+// Sensing-landscape panel: modality toggles (two streams) that place each sensor on the
+// brain, a one-line description of the one you are pointing at, and the spatial × temporal
+// resolution map. The four modalities the author works with (`mine`) are starred.
 import { MODALITIES } from '../config.js';
-import { Gen, Scope } from './signals.js';
 import { initResolution } from './resolution.js';
-import { tint, onTheme } from '../theme.js';
 
-const TRACE = (stream) => tint(stream === 'non' ? '#5eead4' : '#ff6fb1');
-const MAX_DEFAULT = ['eeg', 'ecog'];
-
-function channelsFor(m) {
-  if (m.wave === 'hddot') return [{ gen: new Gen('hddot'), color: tint('#ff7a6b'), color2: tint('#7aa8ff') }];
-  const c = TRACE(m.stream);
-  return [0, 1].map(() => ({ gen: new Gen(m.wave), color: c }));
-}
 
 export function initModalities(root, onChange) {
-  const selected = new Set(MAX_DEFAULT);
-  const list = root.querySelector('.stream-list');
-  const rows = new Map(); // id → { el, scope }
+  const selected = new Set(['eeg', 'meg', 'intra']);
   const zoom = initResolution(root.querySelector('.res-zoom'));
+  const info = root.querySelector('.mod-info');
 
   const cols = {
     non: root.querySelector('[data-stream="non"] .chips'),
     inv: root.querySelector('[data-stream="inv"] .chips'),
   };
-  Object.values(cols).forEach((c) => c.classList.add('nudge'));
   const buttons = {};
   for (const m of MODALITIES) {
     const b = document.createElement('button');
-    b.className = `chip ${m.stream}`;
+    b.className = `chip ${m.stream}${m.mine ? ' mine' : ''}`;
     b.type = 'button';
-    b.textContent = m.name;
+    b.innerHTML = `${m.name}${m.mine ? '<span class="star" title="I work with this" aria-label="I work with this">★</span>' : ''}`;
     b.addEventListener('click', () => toggle(m));
+    b.addEventListener('pointerenter', () => describe(m));
+    b.addEventListener('focus', () => describe(m));
     cols[m.stream].appendChild(b);
     buttons[m.id] = b;
   }
 
-  // ── stream windows ──────────────────────────────────────────────────────
-  function makeRow(m) {
-    const row = document.createElement('div');
-    row.className = `stream-row ${m.stream}`;
-    row.innerHTML = `
-      <div class="sr-head">
-        <strong>${m.name}</strong>
-        <span class="sr-meta">${m.spatial} · ${m.temporal}</span>
-        <button type="button" class="sr-close" aria-label="Remove ${m.name}">×</button>
-      </div>
-      <p class="sr-desc">${m.measures}. <span>${m.where}.</span></p>
-      <div class="sr-plot"><canvas></canvas></div>`;
-    row.querySelector('.sr-close').addEventListener('click', () => toggle(m));
-    const scope = new Scope(row.querySelector('canvas'), channelsFor(m), {
-      pxPerSec: m.wave === 'hddot' ? 30 : m.wave === 'spikes' ? 150 : 70,
-      gain: m.wave === 'hddot' ? 0.7 : 0.4,
-      grid: false,
-    });
-    return { el: row, scope, m };
+  function describe(m) {
+    info.innerHTML = `<b>${m.full}</b>${m.mine ? ' <span class="mine-tag">★ I work with this</span>' : ''}<span>${m.measures}. ${m.spatial} · ${m.temporal}</span>`;
   }
 
   function render() {
-    const added = [];
     for (const m of MODALITIES) {
       const on = selected.has(m.id);
       buttons[m.id].classList.toggle('on', on);
       buttons[m.id].setAttribute('aria-pressed', String(on));
-      if (on && !rows.has(m.id)) added.push(m.id), rows.set(m.id, makeRow(m));
-      if (!on && rows.has(m.id)) {
-        rows.get(m.id).el.remove();
-        rows.delete(m.id);
-      }
     }
-    // keep rows in canonical order
-    for (const m of MODALITIES) {
-      const r = rows.get(m.id);
-      if (r) list.appendChild(r.el);
-    }
-    // every window changes height when one is added or removed, so re-measure them all
-    list.className = `stream-list n${rows.size}`;
-    requestAnimationFrame(() => rows.forEach((r) => r.scope.resize()));
     zoom.update(selected);
-    list.classList.toggle('empty', rows.size === 0);
-    if (!rows.size) list.innerHTML = '<p class="sr-empty">Select a modality above to see its signal.</p>';
-    else list.querySelector('.sr-empty')?.remove();
   }
 
   function toggle(m) {
-    Object.values(cols).forEach((c) => c.classList.remove('nudge')); // stop the hint once they have played
     if (selected.has(m.id)) selected.delete(m.id);
     else selected.add(m.id);
+    describe(m);
     render();
     onChange(selected);
   }
 
-  // recolor the live traces in place when the theme changes
-  onTheme(() => rows.forEach(({ scope, m }) => scope.channels.forEach((ch) => {
-    if (m.wave === 'hddot') { ch.color = tint('#ff7a6b'); ch.color2 = tint('#7aa8ff'); } else ch.color = TRACE(m.stream);
-  })));
-
+  describe(MODALITIES.find((m) => m.id === 'eeg'));
   render();
   onChange(selected);
 
   return {
     selected,
-    resize: () => rows.forEach((r) => r.scope.resize()),
-    update(dt) {
-      zoom.tick(dt);
-      rows.forEach((r) => r.scope.step(dt));
-    },
+    update: (dt) => zoom.tick(dt),
   };
 }

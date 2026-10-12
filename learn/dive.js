@@ -1,0 +1,103 @@
+// A "dive": a sticky stage where each scroll step swaps in one card (what it is, the papers) and one
+// interactive drawing. Used by the sensor-design and chip-design pages.
+import { makeFig, clamp } from './fig.js';
+import { esc, refsHTML } from './refs.js';
+
+export function initDive(root, { intro, beats, widgets, captions = {}, label = 'STEP', mobile, scrollToY, onActive, strip, stripFrom = 1 }) {
+  const N = beats.length;
+  root.innerHTML = `
+    <div class="dive-track">
+      <div class="dive-sticky">
+        <ol class="dive-steps" aria-label="Steps">${beats.map((b, i) => `<li><button type="button" data-i="${i}">${esc(b.step)}</button></li>`).join('')}</ol>
+        <div class="dive-cards">${beats.map((b, i) => `
+          <article class="dive-card" data-i="${i}" aria-labelledby="dc-${b.id}">
+            <p class="kicker"><span>${label} ${i + 1} / ${N}</span>${esc(b.depth)}</p>
+            <h3 id="dc-${b.id}">${esc(b.title)}</h3>
+            <p>${esc(b.text)}</p>
+            ${refsHTML(b)}
+          </article>`).join('')}</div>
+        <div class="dive-views">${beats.map((b, i) => `
+          <figure class="dive-view" data-i="${i}">
+            ${strip && i >= stripFrom ? '<canvas class="dive-strip" role="group" aria-label="The recording chain: click a block to jump to it"></canvas>' : ''}
+            <canvas class="dive-main" role="img" aria-label="${esc(b.title)}"></canvas>
+            <div class="dive-ctl"></div>
+            <figcaption>${esc(b.hint || '')}${b.hint ? ' · ' : ''}${esc(captions[b.widget] || '')}</figcaption>
+          </figure>`).join('')}</div>
+      </div>
+    </div>`;
+  const track = root.querySelector('.dive-track');
+  const stepBtns = [...root.querySelectorAll('.dive-steps button')];
+  const cards = [...root.querySelectorAll('.dive-card')];
+  const views = [...root.querySelectorAll('.dive-view')];
+  let idx = 0;
+  const api = { active: () => idx, jump: (i) => scrollToBeat(i) };
+  const figs = views.map((v, i) => {
+    const canvas = v.querySelector('canvas.dive-main');
+    const fig = makeFig(canvas);
+    const w = widgets[beats[i].widget](api);
+    if (w.controls) v.querySelector('.dive-ctl').appendChild(w.controls);
+    if (w.click) { canvas.addEventListener('pointerdown', (e) => { const r = canvas.getBoundingClientRect(); w.click(fig, e.clientX - r.left, e.clientY - r.top); }); }
+    if (w.drag) {
+      canvas.style.touchAction = 'none';
+      const go = (e) => { const r = canvas.getBoundingClientRect(); w.drag(fig, e.clientX - r.left, e.clientY - r.top); };
+      canvas.addEventListener('pointerdown', (e) => { canvas.setPointerCapture(e.pointerId); go(e); });
+      canvas.addEventListener('pointermove', (e) => { if (e.buttons) go(e); });
+    }
+    if (w.cursor) canvas.style.cursor = w.cursor;
+    else if (w.click) canvas.style.cursor = 'pointer';
+    let sfig = null, sw = null;
+    const sc = v.querySelector('canvas.dive-strip');
+    if (sc) {
+      sfig = makeFig(sc); sw = strip(api);
+      sc.style.cursor = 'pointer';
+      sc.addEventListener('pointerdown', (e) => { const r = sc.getBoundingClientRect(); sw.click(sfig, e.clientX - r.left, e.clientY - r.top); });
+    }
+    return { fig, w, sfig, sw };
+  });
+
+  const trackTop = () => track.getBoundingClientRect().top + scrollY;
+  const beatSpan = () => Math.max(1, (track.offsetHeight - innerHeight) / N);
+  function scrollToBeat(i) { scrollToY(trackTop() + i * beatSpan() + beatSpan() * 0.5); }
+  stepBtns.forEach((b) => b.addEventListener('click', () => scrollToBeat(+b.dataset.i)));
+
+  function setActive(i) {
+    idx = i;
+    cards.forEach((c, k) => { c.classList.toggle('on', k === i); c.toggleAttribute('inert', k !== i); });
+    views.forEach((v, k) => { v.classList.toggle('on', k === i); v.toggleAttribute('inert', k !== i); });
+    stepBtns.forEach((b, k) => { b.parentElement.classList.toggle('on', k === i); b.parentElement.classList.toggle('done', k < i); });
+    figs[i].fig.resize();
+    figs[i].sfig?.resize();
+    onActive?.(i, beats[i]);
+  }
+  setActive(0);
+
+  let clock = 0;
+  return {
+    resize() { track.style.height = `${N * (mobile ? 78 : 88) + 20}vh`; figs.forEach((x) => { x.fig.resize(); x.sfig?.resize(); }); },
+    // progress 0..1 through the dive (for the background), or null when it is off screen
+    step(dt, scroll) {
+      const r = track.getBoundingClientRect();
+      if (r.bottom < -50 || r.top > innerHeight + 50) return null;
+      const span = Math.max(1, track.offsetHeight - innerHeight);
+      const p = clamp((scroll - (r.top + scroll)) / span, 0, 0.9999);
+      const i = Math.floor(p * N);
+      if (i !== idx) setActive(i);
+      clock += dt;
+      const { fig, w, sfig, sw } = figs[idx];
+      if (!fig.W) fig.resize();
+      if (!fig.W) return p;
+      if (fig.themeKey !== document.documentElement.dataset.theme) fig.colors();
+      fig.t = clock;
+      fig.ctx.clearRect(0, 0, fig.W, fig.H);
+      w.draw(fig, dt);
+      if (sfig) {
+        if (!sfig.W) sfig.resize();
+        if (sfig.W) {
+          if (sfig.themeKey !== document.documentElement.dataset.theme) sfig.colors();
+          sfig.t = clock; sfig.ctx.clearRect(0, 0, sfig.W, sfig.H); sw.draw(sfig, dt);
+        }
+      }
+      return p;
+    },
+  };
+}

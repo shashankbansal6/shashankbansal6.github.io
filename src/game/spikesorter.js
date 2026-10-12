@@ -7,31 +7,44 @@
 // (1 / 2 / 3 or tap). Correct sorts move the cursor the way the user intended;
 // mislabels move it the wrong way, exactly like a decoder error. Artifacts
 // should be left alone. Score = completed requests, plus sorting accuracy.
+// Every round re-rolls which three of four neuron types play the three roles, which five
+// requests are on the board, and where the cursor starts, so no two rounds look alike.
 import { tint, WATERCOLOR, themed, onTheme } from '../theme.js';
 
 let INK = '236,232,224'; // rgb of trace / UI ink (follows the theme)
-const UNITS = [
-  { name: 'Unit 1', type: 'Fast-spiking interneuron', shape: 'narrow, tall', intent: 'left', key: '←', glyph: '●', base: '#5eead4', color: '', amp: 1.0, width: 0.5, pos: false },
-  { name: 'Unit 2', type: 'Pyramidal neuron', shape: 'broad, shallow', intent: 'right', key: '→', glyph: '●', base: '#ff6fb1', color: '', amp: 0.55, width: 1.45, pos: false },
-  { name: 'Unit 3', type: 'Axonal spike', shape: 'positive-first', intent: 'select', key: '↑', glyph: '●', base: '#ffb547', color: '', amp: 0.8, width: 0.85, pos: true },
+// Four waveform types; each round three of them are dealt to the three intents at random.
+const TYPES = [
+  { type: 'Fast-spiking interneuron', shape: 'narrow, tall', amp: 1.0, width: 0.5, pos: false },
+  { type: 'Pyramidal neuron', shape: 'broad, shallow', amp: 0.55, width: 1.45, pos: false },
+  { type: 'Axonal spike', shape: 'positive-first', amp: 0.8, width: 0.85, pos: true },
+  { type: 'Dendritic spike', shape: 'positive, broad', amp: 0.5, width: 1.4, pos: true },
 ];
+// the three roles keep their key and colour; the waveform that plays each one changes
+const UNITS = [
+  { intent: 'left', key: '←', glyph: '●', base: '#5eead4', color: '', ...TYPES[0] },
+  { intent: 'right', key: '→', glyph: '●', base: '#ff6fb1', color: '', ...TYPES[1] },
+  { intent: 'select', key: '↑', glyph: '●', base: '#ffb547', color: '', ...TYPES[2] },
+];
+const shuffle = (a) => { const r = [...a]; for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
 themed(() => {
   INK = WATERCOLOR ? '42,35,30' : '236,232,224';
   UNITS.forEach((u) => { u.color = tint(u.base); });
 });
 // ← → ↑ (or 1 2 3) sort a spike as unit 1 / 2 / 3
 const KEYS = { ArrowLeft: 0, ArrowRight: 1, ArrowUp: 2, 1: 0, 2: 1, 3: 2 };
-const ITEMS = ['Water', 'Food', 'Nurse', 'Lights', 'Music'];
+const ITEM_POOL = ['Water', 'Food', 'Nurse', 'Lights', 'Music', 'TV', 'Fan', 'Blanket', 'Phone', 'Window'];
+let ITEMS = ITEM_POOL.slice(0, 5);
 const DURATION = 60;
 const BEST_KEY = 'spikesorter.best.v2';
+const RUNS_KEY = 'spikesorter.runs.v1'; // this browser session's rounds
 const SPIKE_PX = 120; // on-screen width of one spike
 
 // Time scale. A real extracellular spike lasts ~1.6 ms, so SPIKE_PX pixels = 1.6 ms of
-// recording. The game scrolls at 1 s of play per 1 ms of recording, i.e. it runs
+// recording. The game scrolls at 1 s of play per 2 ms of recording, i.e. it runs
 // SLOWDOWN times slower than the brain, so a human has time to see and sort each spike.
 const SPIKE_MS = 1.6;
 const PX_PER_MS = SPIKE_PX / SPIKE_MS; // 75 px per ms of recording
-const SLOWDOWN = 1000;
+const SLOWDOWN = 500;
 const SPEED = PX_PER_MS * (1000 / SLOWDOWN); // px per second of play
 const WINDOW_W = 170; // sort window: ~2.3 s to sort each spike
 const AXIS_H = 30; // time axis strip at the bottom of the trace
@@ -50,6 +63,10 @@ function artifact(t, kind) {
   return Math.sin(t * 60) * 0.7 * Math.sin(Math.PI * t); // ringing burst
 }
 
+const runStore = {
+  get: () => { try { return JSON.parse(sessionStorage.getItem(RUNS_KEY)) || []; } catch { return []; } },
+  set: (v) => { try { sessionStorage.setItem(RUNS_KEY, JSON.stringify(v)); } catch { /* storage unavailable */ } },
+};
 const store = {
   get: () => { try { return Number(localStorage.getItem(BEST_KEY)) || 0; } catch { return 0; } },
   set: (v) => { try { localStorage.setItem(BEST_KEY, String(v)); } catch { /* storage unavailable */ } },
@@ -64,16 +81,21 @@ export function initSpikeSorter(root) {
   const board = root.querySelector('.ss-board');
   const hud = Object.fromEntries([...root.querySelectorAll('[data-ss]')].map((e) => [e.dataset.ss, e]));
   const buttons = [...root.querySelectorAll('.ss-unit')];
+  const runsEl = root.querySelector('.ss-runs ol');
+  let runs = runStore.get(); // [{ score, done, acc }] for this browser session, in play order
 
-  // ── template buttons: waveform + type + intent ──────────────────────────
-  buttons.forEach((b, i) => {
-    const u = UNITS[i];
-    b.innerHTML = `
-      <span class="ss-key"><kbd>${u.key}</kbd><em>${u.glyph} ${u.intent}</em></span>
-      <canvas width="144" height="64"></canvas>
-      <strong>${u.type}</strong>
-      <small>${u.shape} · extracellular</small>`;
-  });
+  // ── template buttons: waveform + type + intent (re-dealt every round) ───
+  function buildButtons() {
+    buttons.forEach((b, i) => {
+      const u = UNITS[i];
+      b.innerHTML = `
+        <span class="ss-key"><kbd>${u.key}</kbd><em>${u.glyph} ${u.intent}</em></span>
+        <canvas width="144" height="64"></canvas>
+        <strong>${u.type}</strong>
+        <small>${u.shape} · extracellular</small>`;
+    });
+    paintTemplates();
+  }
   function paintTemplates() {
     buttons.forEach((b, i) => {
       const u = UNITS[i];
@@ -93,12 +115,16 @@ export function initSpikeSorter(root) {
       x.stroke();
     });
   }
-  paintTemplates();
+  buildButtons();
   onTheme(() => { paintTemplates(); draw(); drawScatter(state === 'over'); });
 
   // ── board ────────────────────────────────────────────────────────────────
-  board.innerHTML = ITEMS.map((n) => `<div class="ss-item"><span>${n}</span></div>`).join('');
-  const cells = [...board.children];
+  let cells = [];
+  function buildBoard() {
+    board.innerHTML = ITEMS.map((n) => `<div class="ss-item"><span>${n}</span></div>`).join('');
+    cells = [...board.children];
+  }
+  buildBoard();
 
   let W = 0, H = 0, SW = 0, SH = 0;
   let U = 1; // canvas text follows the page's rem scale
@@ -128,6 +154,14 @@ export function initSpikeSorter(root) {
   const targetOf = () => goalAt(0, cursor);
   const noise = new Float32Array(4096);
   hud.best.textContent = best;
+  // session leaderboard: the five best rounds of this visit; the round just played is marked
+  function renderRuns(latest = -1) {
+    const top = runs.map((r, i) => ({ ...r, i })).sort((a, b) => b.score - a.score || b.i - a.i).slice(0, 5);
+    runsEl.innerHTML = top.length
+      ? top.map((r) => `<li class="${r.i === latest ? 'new' : ''}"><b>${r.score}</b><span>${r.done} request${r.done === 1 ? '' : 's'} · ${r.acc}%</span><em>round ${r.i + 1}</em></li>`).join('')
+      : '<li class="none">Your rounds will appear here.</li>';
+  }
+  renderRuns();
 
   const windowX = () => W * 0.28;
   const speed = () => SPEED;
@@ -146,11 +180,20 @@ export function initSpikeSorter(root) {
     hud.wants.textContent = ITEMS[targetOf()];
   }
 
-  function reset() {
+  let jitter = 0.12;
+  function deal() {
+    shuffle(TYPES).slice(0, 3).forEach((t, i) => Object.assign(UNITS[i], t));
+    ITEMS = shuffle(ITEM_POOL).slice(0, 5);
+    jitter = 0.07 + Math.random() * 0.08; // some rounds have cleaner spikes than others
+    buildButtons();
+    buildBoard();
+  }
+  function reset(fresh) {
+    if (fresh) deal();
     events = []; sorted = []; flash = null;
     t = 0; offset = 0; nextAt = (W || 600) * 0.75; score = 0; combo = 0;
     correct = wrong = missed = done = 0;
-    cursor = 2; queue = [];
+    cursor = Math.floor(Math.random() * ITEMS.length); queue = [];
     noise[0] = 0;
     for (let i = 1; i < noise.length; i++) noise[i] = noise[i - 1] * 0.7 + (Math.random() - 0.5) * 0.11;
     renderBoard();
@@ -193,7 +236,7 @@ export function initSpikeSorter(root) {
       u,
       planned,
       kind: Math.floor(Math.random() * 2),
-      j: { amp: 0.88 + Math.random() * 0.24, width: 0.88 + Math.random() * 0.24 },
+      j: { amp: 1 - jitter + Math.random() * 2 * jitter, width: 1 - jitter + Math.random() * 2 * jitter },
       done: false,
     });
     nextAt += 140 + Math.random() * (110 - Math.min(1, t / DURATION) * 40);
@@ -265,12 +308,29 @@ export function initSpikeSorter(root) {
     updateHud();
   }
 
+  // On a phone the round needs the whole board on screen and a page that does not drift under your thumbs:
+  // bring the task bar, board, sort window and buttons into view, then freeze scrolling until the round ends.
+  const phone = matchMedia('(max-width: 900px)');
+  const stopScroll = (e) => { if (state === 'playing') e.preventDefault(); };
+  function lockScroll() {
+    if (!phone.matches) return;
+    const top = root.querySelector('.ss-taskbar').getBoundingClientRect().top + scrollY - 66;
+    window.scrollTo({ top, behavior: 'instant' });
+    document.documentElement.classList.add('ss-lock');
+    document.addEventListener('touchmove', stopScroll, { passive: false });
+  }
+  function unlockScroll() {
+    document.documentElement.classList.remove('ss-lock');
+    document.removeEventListener('touchmove', stopScroll);
+  }
+
   function start() {
     resize();
-    reset();
+    reset(true);
     state = 'playing';
     overlay.hidden = true;
     root.classList.add('playing');
+    lockScroll();
     canvas.focus({ preventScroll: true });
   }
 
@@ -279,16 +339,22 @@ export function initSpikeSorter(root) {
     state = 'over';
     flash = null;
     root.classList.remove('playing');
+    unlockScroll();
     const total = correct + wrong + missed;
     const acc = total ? Math.round((correct / total) * 100) : 0;
     const isBest = score > best;
     if (isBest) { best = score; store.set(best); hud.best.textContent = best; }
+    runs.push({ score, done, acc });
+    runStore.set(runs);
+    renderRuns(runs.length - 1);
+    const rank = [...runs].sort((a, b) => b.score - a.score).findIndex((r) => r.score === score) + 1;
     overlay.hidden = false;
     overlay.innerHTML = `
       <div class="ss-card">
         <p class="ss-title">${done} request${done === 1 ? '' : 's'} completed</p>
         <p class="ss-big">${score}</p>
         <p class="ss-sub">${correct} spikes sorted correctly · ${wrong} mislabeled · ${missed} missed · ${acc}% accuracy${isBest ? ' · new best' : ''}</p>
+        <p class="ss-sub ss-rank">Round ${runs.length} this session · ${rank === 1 ? 'your best so far' : `#${rank} of ${runs.length}`}</p>
         <p class="ss-note">A real decoder does this for thousands of channels, in real time, on a microwatt budget. That's what the chip is for.</p>
         <button type="button" class="ss-start">Play again</button>
       </div>`;

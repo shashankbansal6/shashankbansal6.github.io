@@ -1,5 +1,3 @@
-import './styles.css';
-import 'lenis/dist/lenis.css';
 import * as THREE from 'three';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
@@ -26,7 +24,6 @@ import { initSpikeSorter } from './game/spikesorter.js';
 import { WATERCOLOR, PAPER, tint, applyTheme, themed, onTheme } from './theme.js';
 import { watercolorPass } from './scene/watercolor.js';
 
-import './watercolor.css'; // every rule is scoped to [data-theme='watercolor']
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const mobile = matchMedia('(max-width: 900px)').matches;
@@ -158,17 +155,13 @@ const view = (target, offset, sx = 0, sy = 0, mobileZoom = 1.3) => ({
   sy: mobile ? Math.max(sy, 0.16) : sy,
 });
 const ecogN = ecog.center.n;
-const motorT = ecog.center.p.clone().lerp(new THREE.Vector3(-0.75, 0.95, 0.05), 0.35);
 
 // Wide desktop screens: bring the hero camera closer so the brain fills more of the view.
 const heroZoom = mobile ? 1 : Math.min(0.92, Math.max(0.68, 1.3 / (innerWidth / innerHeight)));
 
 const STAGES = {
   hero: { view: view(new THREE.Vector3(0, 0.05, 0), new THREE.Vector3(6.0, 2.2, 4.4).multiplyScalar(heroZoom), 0.22, mobile ? 0.24 : 0), state: { drag: 1, activity: 0.7 } },
-  landscape: { view: view(new THREE.Vector3(0, 0.1, 0), new THREE.Vector3(-6.4, 3.4, 8.0), 0.02), state: { drag: 1, manual: true } },
-  motor: { view: view(motorT, ecogN.clone().multiplyScalar(0.8).add(new THREE.Vector3(0, 0.55, 0.35)).setLength(4.5), -0.2), state: { hi: [1, 0, 0], ov: { ecog: 1, utah: 1 } } },
-  visual: { view: view(new THREE.Vector3(0, 0.15, -1.45), new THREE.Vector3(-2.7, 2.1, -4.1), 0.2), state: { hi: [0, 1, 0], ov: { visual_array: 1, hddot: 1, scalp: 0.5 } } },
-  language: { view: view(layers.uecog.center.p, layers.uecog.center.n.clone().add(new THREE.Vector3(0.05, 0.15, 0.45)).setLength(4.4), -0.2), state: { hi: [0, 0, 1], ov: { uecog: 1, hddot: 0.6, scalp: 0.35 } } },
+  landscape: { view: view(new THREE.Vector3(0, 0.1, 0), new THREE.Vector3(-5.6, 3.0, 7.0).multiplyScalar(0.8), 0.13), state: { drag: 1, manual: true } },
   signals: { view: view(ecog.center.p.clone().lerp(chipAnchor.p, 0.45), ecogN.clone().add(new THREE.Vector3(0, 0.3, 0.7)).setLength(2.0), 0.18), state: { hi: [0.7, 0, 0], ov: { ecog: 1 }, sig: 1, chip: 1, brain: 0.9 } },
   chip: { view: view(chipAnchor.p, cn.clone().add(tH.clone().multiplyScalar(0.3)).add(UP.clone().multiplyScalar(0.12)).setLength(0.44), -0.17, 0, 2.2), state: { sig: 1, chip: 1, brain: 0.3, hover: 1 } },
   link: { view: view(chipAnchor.p.clone().addScaledVector(cn, LINK_GAP / 2), tH.clone().add(cn.clone().multiplyScalar(0.3)).add(UP.clone().multiplyScalar(0.15)).setLength(1.45), 0.18), state: { ov: { ecog: 0.3 }, sig: 0.6, chip: 1, link: 1, brain: 0.5 } },
@@ -314,12 +307,23 @@ const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const linkList = PROFILE.links.map((l) => `<a href="${l.href}">${l.label}</a>`).join('') + `<a href="mailto:${PROFILE.email}">Email</a>`;
 $('#profile-links').innerHTML = linkList;
 $('#footer-links').innerHTML = linkList;
-$('#honors').innerHTML = HONORS.map((h) => `<li class="${h.img ? 'has-img' : ''}">
-  ${h.img ? `<button type="button" class="honor-img" data-full="${h.img}" data-alt="${esc(h.alt || h.text)}" aria-label="View certificate larger"><img src="${h.img}" alt="${esc(h.alt || h.text)}" loading="lazy" onerror="this.closest('button').remove()" /></button>` : ''}
-  <div><span>${h.year}</span>${esc(h.text)}</div></li>`).join('');
+$('#honors').innerHTML = HONORS.map((h, i) => `<li data-i="${i}"><div><span>${h.year}</span>${esc(h.text)}</div></li>`).join('');
 const certDlg = $('#cert');
+// an award with a certificate image becomes a link (text and thumbnail) once the image is known to exist
+HONORS.forEach((h, i) => {
+  if (!h.img) return;
+  const probe = new Image();
+  probe.onload = () => {
+    const li = $(`#honors li[data-i="${i}"]`);
+    const alt = esc(h.alt || h.text);
+    li.classList.add('has-img');
+    li.innerHTML = `<button type="button" class="honor-img" data-full="${h.img}" data-alt="${alt}" aria-label="View certificate larger"><img src="${h.img.replace(".jpg", "-thumb.jpg")}" alt="${alt}" loading="lazy" decoding="async" /></button>
+      <div><span>${h.year}</span><button type="button" class="honor-link" data-full="${h.img}" data-alt="${alt}">${esc(h.text)} <em>View certificate ↗</em></button></div>`;
+  };
+  probe.src = h.img.replace(".jpg", "-thumb.jpg");
+});
 $('#honors').addEventListener('click', (e) => {
-  const b = e.target.closest('.honor-img');
+  const b = e.target.closest('.honor-img, .honor-link');
   if (!b) return;
   $('img', certDlg).src = b.dataset.full;
   $('img', certDlg).alt = b.dataset.alt;
@@ -440,14 +444,6 @@ async function switchTheme(next) {
   switching = false;
 }
 themeBtns.forEach((b) => b.addEventListener('click', () => switchTheme(b.dataset.set)));
-// phone menu (the three-line button)
-const navEl = $('.nav');
-const menuBtn = $('.menu-btn');
-const setMenu = (open) => { navEl.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', String(open)); };
-menuBtn.addEventListener('click', (e) => { e.stopPropagation(); setMenu(!navEl.classList.contains('open')); });
-$('#site-nav').addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-document.addEventListener('click', (e) => { if (!e.target.closest('.nav')) setMenu(false); });
-addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 // warm the other theme's faces so the first switch never waits on the network
 (window.requestIdleCallback || setTimeout)(() => {
   ['400 1em "Newsreader"', 'italic 400 1em "Newsreader"', '500 1em "Newsreader"', '400 1em "Noto Serif Devanagari"', '500 1em "Space Grotesk"', '400 1em "Noto Sans Devanagari"']
@@ -516,7 +512,6 @@ function resize() {
   camera.aspect = w / h;
   uPixelRatio.value = dpr * Math.max(0.7, h / 900);
   layout();
-  modalities.resize();
   sigScope.resize();
   decode.resize();
 }
@@ -655,9 +650,6 @@ function frame(time) {
   if (first) {
     first = false;
     $('#loader').classList.add('done');
-    if (!reduced) {
-      gsap.from('.hero-inner > *', { y: 30, opacity: 0, duration: 1.2, ease: 'power3.out', stagger: 0.12, delay: 0.3 });
-    }
   }
   requestAnimationFrame(frame);
 }

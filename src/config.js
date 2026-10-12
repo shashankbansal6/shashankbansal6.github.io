@@ -63,21 +63,21 @@ export const totalPowerMW = () => (CHIP.channels * CHIP.powerPerChannelUW) / 100
 // resolution map; `overlay` is the 3D layer it switches on.
 export const MODALITIES = [
   {
-    id: 'eeg', name: 'EEG', stream: 'non', overlay: 'eeg', wave: 'eeg',
+    mine: true, id: 'eeg', name: 'EEG', stream: 'non', overlay: 'eeg', wave: 'eeg',
     full: 'Electroencephalography',
     measures: 'Summed postsynaptic potentials of cortical neurons, through skull and scalp',
     where: 'Scalp cap, 32–256 electrodes',
     spatial: '~1–3 cm', temporal: '~1 ms', spatialMM: 20, temporalMS: 1,
   },
   {
-    id: 'meg', name: 'MEG', stream: 'non', overlay: 'meg', wave: 'meg',
+    mine: true, id: 'meg', name: 'MEG', stream: 'non', overlay: 'meg', wave: 'meg',
     full: 'Magnetoencephalography',
     measures: 'Femtotesla magnetic fields from intracellular currents',
     where: 'SQUID helmet or wearable OPMs',
     spatial: '~3–10 mm', temporal: '~1 ms', spatialMM: 6, temporalMS: 1,
   },
   {
-    id: 'hddot', name: 'fNIRS / HD-DOT', stream: 'non', overlay: 'hddot', wave: 'hddot',
+    mine: true, id: 'hddot', name: 'fNIRS / HD-DOT', stream: 'non', overlay: 'hddot', wave: 'hddot',
     full: 'High-density diffuse optical tomography',
     measures: 'Blood oxygenation (HbO / HbR) from near-infrared light',
     where: 'Optode sources + detectors on scalp',
@@ -105,7 +105,7 @@ export const MODALITIES = [
     spatial: '~2–5 mm', temporal: '<1 ms', spatialMM: 3.5, temporalMS: 0.5,
   },
   {
-    id: 'intra', name: 'Intracortical', stream: 'inv', overlay: 'utah', wave: 'spikes',
+    mine: true, id: 'intra', name: 'Intracortical', stream: 'inv', overlay: 'utah', wave: 'spikes',
     full: 'Utah arrays, Neuropixels & threads',
     measures: 'Single-neuron spikes and LFP',
     where: 'Microelectrodes penetrating cortex',
@@ -119,6 +119,7 @@ export const PROFILE = {
   email: 'shashankbansal56@gmail.com',
   links: [
     { label: 'CV', href: '/ShashankBansal-CV.pdf' },
+    { label: 'Google Scholar', href: 'https://scholar.google.com/citations?user=-4HJqVAAAAAJ&hl=en' },
     { label: 'GitHub', href: 'https://github.com/shashankbansal6/' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/shashank-bansal-43a9177b/' },
     { label: 'Threads', href: 'https://www.threads.com/@shashank_9543' },

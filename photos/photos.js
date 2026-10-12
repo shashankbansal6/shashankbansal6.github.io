@@ -1,9 +1,14 @@
+import '../src/fonts.css';
+import '../src/menu.css';
 import './photos.css';
+import { initMenu } from '../src/menu.js';
+import { initAnalytics } from '../src/analytics.js';
 import manifest from './manifest.json';
 
 const $ = (s, r = document) => r.querySelector(s);
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const IMG = '/photos/img/';
+const VID = '/photos/vid/';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const fmt = (iso) => {
   const [y, m, d] = iso.split('-').map(Number);
@@ -19,6 +24,10 @@ const span = (c) => {
 };
 
 // newest first, like a timeline you scroll back through
+const count = (c) => {
+  const v = c.photos.filter((p) => p.v).length, n = c.photos.length - v;
+  return [n && `${n} photo${n === 1 ? '' : 's'}`, v && `${v} video${v === 1 ? '' : 's'}`].filter(Boolean).join(' · ');
+};
 const chapters = [...manifest.chapters].sort((a, b) => b.date.localeCompare(a.date));
 const all = [];
 const chaptersEl = $('#chapters');
@@ -29,8 +38,10 @@ chaptersEl.innerHTML += chapters.map((c) => {
   const tiles = c.photos.map((p) => {
     const i = all.push({ ...p, chapter: c }) - 1;
     const cap = [p.t, c.place].filter(Boolean).join(' · ');
-    return `<button type="button" class="tile" style="--ar:${(p.w / p.h).toFixed(4)}" data-i="${i}" aria-label="${esc(p.t || c.title)}, open large">
-      <img src="${IMG}${p.f}-1100.jpg" width="${p.w}" height="${p.h}" alt="${esc(p.alt || p.t || c.title)}" loading="lazy" decoding="async" />
+    const src = p.v ? `${VID}${p.v}.jpg` : `${IMG}${p.f}-800.jpg`;
+    return `<button type="button" class="tile${p.v ? ' vid' : ''}" style="--ar:${(p.w / p.h).toFixed(4)}" data-i="${i}" aria-label="${esc(p.t || c.title)}, ${p.v ? 'play video' : 'open large'}">
+      <img src="${src}" width="${p.w}" height="${p.h}" alt="${esc(p.alt || p.t || c.title)}" loading="${i < 6 ? 'eager' : 'lazy'}" decoding="async" />
+      ${p.v ? '<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' : ''}
       ${cap ? `<span class="cap">${esc(cap)}</span>` : ''}
     </button>`;
   }).join('');
@@ -38,12 +49,40 @@ chaptersEl.innerHTML += chapters.map((c) => {
     <header class="chapter-head">
       <span class="yr">${year}</span>
       <h2>${esc(c.title)}</h2>
-      <span class="when">${esc(span(c))}${c.place ? ` · ${esc(c.place)}` : ''} · ${c.photos.length} photo${c.photos.length === 1 ? '' : 's'}</span>
+      <span class="when">${esc(span(c))}${c.place ? ` · ${esc(c.place)}` : ''} · ${count(c)}</span>
       ${c.note ? `<p class="note">${esc(c.note)}</p>` : ''}
     </header>
     <div class="grid n${c.photos.length}">${tiles}</div>
   </section>`;
 }).join('');
+
+// ── hover a clip to preview it ───────────────────────────────────────────────
+// Nothing is downloaded until the pointer is over a clip, and only that one clip, so the page stays light.
+// Touch screens keep the poster and the play badge; reduced-motion visitors do too.
+if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const preview = (tile) => {
+    let v = tile.querySelector('video');
+    if (!v) {
+      v = document.createElement('video');
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'auto'; v.setAttribute('aria-hidden', 'true');
+      v.src = `${VID}${all[tile.dataset.i].v}.mp4`;
+      v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+      tile.insertBefore(v, tile.querySelector('.play'));
+    }
+    return v;
+  };
+  chaptersEl.addEventListener('pointerover', (e) => {
+    const tile = e.target.closest?.('.tile.vid');
+    if (!tile || e.pointerType !== 'mouse' || tile.contains(e.relatedTarget)) return;
+    preview(tile).play().catch(() => {});
+  });
+  chaptersEl.addEventListener('pointerout', (e) => {
+    const tile = e.target.closest?.('.tile.vid');
+    if (!tile || tile.contains(e.relatedTarget)) return;
+    const v = tile.querySelector('video');
+    if (v) { v.pause(); v.currentTime = 0; v.classList.remove('on'); }
+  });
+}
 
 // ── year rail ────────────────────────────────────────────────────────────────
 const years = [...new Set(chapters.map((c) => c.date.slice(0, 4)))];
@@ -60,7 +99,8 @@ function spy() {
 addEventListener('scroll', spy, { passive: true });
 spy();
 
-$('#meta').textContent = `${all.length} photos · ${chapters.length} stops · ${years[years.length - 1]}–${years[0]}`;
+const nVid = all.filter((p) => p.v).length;
+$('#meta').textContent = `${all.length - nVid} photos${nVid ? ` · ${nVid} videos` : ''} · ${chapters.length} stops · ${years[years.length - 1]}–${years[0]}`;
 $('#year').textContent = new Date().getFullYear();
 
 // ── reveal on scroll ─────────────────────────────────────────────────────────
@@ -75,6 +115,7 @@ document.querySelectorAll('.tile').forEach((t, i) => {
 // ── lightbox ─────────────────────────────────────────────────────────────────
 const lb = $('#lb');
 const lbImg = $('img', lb);
+const lbVid = $('video', lb);
 const lbCap = $('figcaption', lb);
 let cur = -1;
 let opener = null;
@@ -82,11 +123,25 @@ let opener = null;
 function show(i) {
   cur = (i + all.length) % all.length;
   const p = all[cur];
-  lbImg.src = `${IMG}${p.f}-2000.jpg`;
-  lbImg.alt = p.alt || p.t || p.chapter.title;
+  if (p.v) {
+    lbImg.hidden = true; lbImg.removeAttribute('src');
+    lbVid.hidden = false;
+    lbVid.poster = `${VID}${p.v}.jpg`;
+    lbVid.src = `${VID}${p.v}.mp4`;
+    lbVid.setAttribute('aria-label', p.alt || p.t || p.chapter.title);
+    lbVid.play().catch(() => {});
+  } else {
+    lbVid.hidden = true; lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
+    lbImg.hidden = false;
+    lbImg.src = `${IMG}${p.f}-2000.jpg`;
+    lbImg.alt = p.alt || p.t || p.chapter.title;
+  }
   lbCap.innerHTML = `<b>${esc(p.t || p.chapter.title)}</b><span>${esc([p.chapter.place, p.d ? fmt(p.d) : fmt(p.chapter.date)].filter(Boolean).join(' · '))} · ${cur + 1} / ${all.length}</span>`;
   // warm the neighbours
-  for (const k of [cur + 1, cur - 1]) new Image().src = `${IMG}${all[(k + all.length) % all.length].f}-2000.jpg`;
+  for (const k of [cur + 1, cur - 1]) {
+    const q = all[(k + all.length) % all.length];
+    if (!q.v) new Image().src = `${IMG}${q.f}-2000.jpg`;
+  }
 }
 function open(i, from) {
   opener = from;
@@ -99,6 +154,7 @@ function close() {
   lb.hidden = true;
   document.body.classList.remove('noscroll');
   lbImg.removeAttribute('src');
+  lbVid.pause(); lbVid.removeAttribute('src'); lbVid.load();
   opener?.focus({ preventScroll: true });
 }
 chaptersEl.addEventListener('click', (e) => {
@@ -137,3 +193,6 @@ document.querySelectorAll('.theme-switch button').forEach((b) => {
     location.href = u.toString();
   });
 });
+
+initMenu();
+initAnalytics();

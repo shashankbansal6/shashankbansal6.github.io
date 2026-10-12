@@ -1,0 +1,30 @@
+/* the three Learn pages as three small icons, always one click away once the hero has scrolled past */
+.w-dock {
+  position: fixed; z-index: 15; top: 4.7rem; right: clamp(1rem, 4vw, 2.75rem);
+  display: flex; gap: 0.3rem; padding: 0.25rem; border: 1px solid var(--line-2); border-radius: 99px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(8px);
+  opacity: 0; transform: scale(0.55); transform-origin: 100% 0; pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.5s cubic-bezier(0.2, 1.2, 0.35, 1);
+}
+.w-dock.on { opacity: 1; transform: none; pointer-events: auto; }
+.w-dock a {
+  position: relative; display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%;
+  text-decoration: none; transition: background 0.2s, transform 0.25s cubic-bezier(0.2, 1.2, 0.35, 1);
+}
+.w-dock a:hover, .w-dock a:focus-visible { background: color-mix(in srgb, var(--text) 10%, transparent); transform: translateY(-2px); }
+.w-dock a[aria-current='page'] { background: var(--text); }
+.w-dock u { width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--accent); }
+.w-dock a[data-k='sensor'] u { background: var(--non); border-radius: 0.15rem; }
+.w-dock a[data-k='chip'] u { background: var(--stim); border-radius: 0.1rem; transform: rotate(45deg); }
+.w-dock a::after {
+  content: attr(data-name); position: absolute; top: calc(100% + 0.55rem); right: 0; white-space: nowrap; padding: 0.25rem 0.6rem;
+  border-radius: 99px; background: var(--text); color: var(--bg); font: 500 0.78rem var(--ui);
+  opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity 0.15s, transform 0.2s;
+}
+.w-dock a:hover::after, .w-dock a:focus-visible::after { opacity: 1; transform: none; }
+@media (max-width: 900px) {
+  .w-dock { top: 3.55rem; right: 0.6rem; }
+  .w-dock a { width: 1.85rem; height: 1.85rem; }
+  body.world .dive-steps { max-width: calc(100% - 6.2rem); }
+}
+@media (prefers-reduced-motion: reduce) { .w-dock { transition: opacity 0.2s; transform: none; } }

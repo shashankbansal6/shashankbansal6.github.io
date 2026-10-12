@@ -9,6 +9,66 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+## v3.9 (not yet deployed)
+
+- **Follow-ups**: ECoG cable pulses removed; menu panels no longer catch the pointer while fading (hovering
+  Learn after Explore opened Explore); a three-icon Learn switcher in the top right once the hero scrolls
+  away; fewer background neurons and signals on the sensor and chip pages; link-preview image, JSON-LD
+  and sitemap dates for search.
+
+- **Sensing**: one left panel (modality chips, a one-line description of the one you point at, the
+  space and time resolution figure stacked) and a bigger brain on the right. No "Try it" box and no
+  live-signal panel. EEG, MEG and intracortical are on by default; EEG, MEG, HD-DOT and intracortical
+  are starred as the modalities I work with.
+- **Learn** (`/learn/`, rebuilt): the same 3D brain, one dive per region (motor, visual, language).
+  Scrolling peels the head layer by layer (scalp, surface, inside, neurons); each layer names the
+  paper that first described what its sensor sees, plus later reading. A stepper shows the depth,
+  device labels on the brain are clickable (Utah array, flexible threads, ECoG, HD-DOT, ...), and the
+  motor dive ends in a population-vector demo (eight neurons, each with a favourite direction; their
+  votes add up to the hand's direction). Every DOI checked against Crossref. Each layer also lists
+  papers from the labs I work with and collaborate with (ISNL, Poldrack, Komiyama, Kuzum, Cubukcu,
+  Reynolds), tagged with the lab.
+- **Learn is now three worlds**, each its own page with its own animated backdrop, seven interactive
+  beats, a landmark paper per beat and the lab papers I work with:
+  - Neuroscience (`/learn/`): the brain dive above.
+  - Sensor design (`/learn/sensors/`): the extracellular field, the electrode interface (RC divider),
+    electrode size, five ways in, soft vs stiff probes, transparent graphene, and the electrode-count
+    trend.
+  - Chip design (`/learn/chip/`): the chain from electrode to link, microvolt signal vs noise, NEF
+    (quiet costs power), ADC resolution, neuromorphic (event-driven) work, compute-in-memory, and
+    adiabatic charging. The chain figure is a live signal ribbon with a data funnel; the in-memory
+    figure now shows DRAM vs SRAM vs a crossbar next to an energy ledger.
+  Illustrative numbers are labelled as such; every DOI is checked against Crossref.
+- **Menu**: the top bar is now Learn, Explore, CV, Contact. Learn drops down to Neuroscience, Sensor design
+  and Chip design; Explore to Research, Publications, Experience, Play and Photos (both flat lists on phones).
+- **Chip page**: the six-block chain (Electrode, Amplifier, ADC, Events, In-memory, Radio) stays above every
+  figure after the first one, highlights the block you are in and jumps to any other when clicked.
+- **Photos**: removed the "In the lab" chapter and every picture with a person in it (nine photos,
+  including all of Winter 2025); added four short clips without an audio track (La Jolla Shores, Big
+  Sur, Azores, Laguna Mountains). Clips play silently on hover (desktop; downloaded only then) and open
+  large on click. Location and device metadata are stripped from images and videos, the headshot and the
+  certificates too. Grid thumbnails are 800 px (about half the bytes).
+- **Brain**: removed the stream of pulses that ran out of the ECoG grid's rows.
+- **Phone**: the header has a solid backdrop (text no longer shows through it), the decoder game scrolls
+  itself into view on Start and freezes the page until the round ends, and the Photos header fits 375 px.
+- **Speed**: the first screen (text, menu, fonts) paints before the 3D scene loads; the scene is fetched
+  quietly and started once the hero text has risen. One stylesheet instead of five requests, first-screen
+  fonts preloaded, three.js/gsap/lenis in their own long-cached chunks, certificate thumbnails and a smaller
+  headshot, photos/clips/logos cached for a week, no 3D code on the sensor, chip, photos or privacy pages.
+  Lighthouse (mobile, throttled) on the home page: first paint 3.3 s to 1.5 s, 1.2 MB to 0.76 MB.
+- **Privacy and security**: Google Analytics and the consent banner are gone. Visit counts come from
+  Cloudflare Web Analytics only (cookie-free, no consent needed; paste its token in `src/analytics.js` or
+  enable it in the dashboard). Fonts are self-hosted, so nothing from another company loads. A Privacy and
+  notices page, `security.txt`, `robots.txt`, `sitemap.xml`. The Worker sets a Content-Security-Policy,
+  HSTS (two years, includeSubDomains, preload), nosniff, frame, referrer, COOP and permissions headers,
+  redirects HTTP to HTTPS and www to the bare domain in one hop, and answers only GET and HEAD.
+- **Hero**: "sensors" and "silicon" fully highlighted.
+- **Game**: 500x slower than real time (twice as fast), Start button no longer clipped, every round
+  re-deals neurons, board items and cursor, and this session's best rounds are listed.
+- **Awards**: the Student Paper Award and Best Poster Award text link to their certificates (dialog).
+- **Photos**: 35 more from the Amateur album (56 in total), burst shots and near-duplicates left out.
+- **Google Scholar** added to the profile links and the Publications page.
+
 ## v3.7 — 2026-10-11
 
 - **Phone fixes**: a three-line menu button opens all the links (Journey, Research, Play,

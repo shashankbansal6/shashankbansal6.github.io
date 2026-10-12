@@ -1,0 +1,71 @@
+/* "Explore" menu: hover (or tap) and a panel zooms out of the trigger, tiles pop in one by one.
+   Shared by the journey, Photos and Learn pages, so everything uses the page's own tokens. */
+.menu-group { position: relative; pointer-events: auto; }
+.menu-trigger {
+  font: inherit; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.45em; transition: color 0.2s;
+}
+.menu-trigger svg { width: 0.62em; height: 0.4em; transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1); }
+.menu-group:hover .menu-trigger, .menu-group.open .menu-trigger { color: var(--accent); }
+.menu-group.open .menu-trigger svg { transform: rotate(180deg); }
+.menu-trigger:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+
+.menu-panel {
+  position: absolute; top: 100%; right: -1.1em; padding-top: 0.9rem; width: min(25rem, calc(100vw - 2rem));
+  visibility: hidden; opacity: 0; transform: scale(0.74); transform-origin: 82% 0; filter: blur(8px);
+  transition: opacity 0.26s ease, transform 0.45s cubic-bezier(0.2, 1.2, 0.35, 1), filter 0.26s ease, visibility 0s 0.45s;
+}
+.menu-group:not(.open) .menu-panel, .menu-group:not(.open) .menu-panel * { pointer-events: none !important; } /* .nav a re-enables pointer events, so a fading panel would otherwise catch the pointer */
+.menu-group.picked:hover .menu-trigger:not(:focus-visible) { color: var(--muted); }
+.menu-group.open .menu-panel { visibility: visible; opacity: 1; transform: none; filter: none; transition-delay: 0s; }
+.menu-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; padding: 0.5rem;
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: 0.9rem;
+  box-shadow: 0 28px 60px -24px rgba(0, 0, 0, 0.5);
+}
+.menu-grid a {
+  display: flex; flex-direction: column; gap: 0.1rem; padding: 0.7rem 0.85rem; border-radius: 0.6rem;
+  border: 1px solid transparent; text-decoration: none; color: var(--text) !important;
+  transition: background 0.15s, border-color 0.15s, transform 0.25s cubic-bezier(0.2, 1.2, 0.35, 1);
+}
+.menu-grid a:hover, .menu-grid a:focus-visible { background: color-mix(in srgb, var(--text) 7%, transparent); border-color: var(--line-2); transform: scale(1.03); }
+.menu-grid a b { font: 600 1.05em/1.2 var(--display); color: var(--text); }
+.menu-grid a:hover b, .menu-grid a:focus-visible b { color: var(--accent); }
+.menu-grid a span { font: 0.82em/1.3 var(--ui); color: var(--muted); }
+.menu-grid .featured { background: color-mix(in srgb, var(--accent) 9%, transparent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
+.menu-group.open .menu-grid a { animation: tilePop 0.5s cubic-bezier(0.2, 1.2, 0.35, 1) both; animation-delay: calc(var(--i, 0) * 45ms + 60ms); }
+.menu-grid a:nth-child(2) { --i: 1; } .menu-grid a:nth-child(3) { --i: 2; } .menu-grid a:nth-child(4) { --i: 3; }
+.menu-grid a:nth-child(5) { --i: 4; } .menu-grid a:nth-child(6) { --i: 5; }
+@keyframes tilePop { from { opacity: 0; transform: scale(0.78) translateY(0.5rem); } to { opacity: 1; transform: none; } }
+@media (max-width: 520px) { .menu-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .menu-panel { filter: none; transform: none; } .menu-group.open .menu-grid a { animation: none; } }
+
+/* phones: the panel spans the screen under the header (the journey page flattens it into its own menu instead) */
+@media (max-width: 760px) {
+  .menu-panel { position: fixed; top: 3.3rem; left: 1rem; right: 1rem; width: auto; padding-top: 0; transform-origin: 70% 0; }
+  .top { gap: 8px; }
+  .top .back { white-space: nowrap; font-size: 15px; }
+  .top nav { gap: 12px; }
+  .top .theme-switch button { font-size: 12px; padding: 3px 9px; }
+}
+
+.menu-grid .cv-only, .menu-grid .grp { display: none; }
+@media (max-width: 520px) { .top .menu-grid .cv-only { display: flex; } .top nav > a.keep { display: none; } }
+
+/* the Learn panel: three worlds, each with its own marker (dot, square, diamond) */
+.menu-group[data-menu='learn'] .menu-panel { width: min(19rem, calc(100vw - 2rem)); }
+.menu-group[data-menu='learn'] .menu-grid { grid-template-columns: 1fr; }
+.menu-grid a[data-k] { position: relative; padding-left: 2.2rem; }
+.menu-grid a[data-k] u { position: absolute; left: 0.85rem; top: 1.02rem; width: 0.7rem; height: 0.7rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--accent) 20%, transparent); }
+.menu-grid a[data-k='sensor'] u { background: var(--non); border-radius: 0.15rem; box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--non) 22%, transparent); }
+.menu-grid a[data-k='chip'] u { background: var(--stim); border-radius: 0.1rem; transform: rotate(45deg); box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--stim) 24%, transparent); }
+.menu-grid a[aria-current='page'] { background: color-mix(in srgb, var(--text) 8%, transparent); border-color: var(--line-2); }
+.menu-group.here > .menu-trigger { color: var(--text); }
+
+/* very narrow phones: the back link keeps just its arrow so Learn, Explore and the theme switch fit */
+@media (max-width: 520px) {
+  .top .back span { display: none; }
+  .top .back { font-size: 1.3rem; line-height: 1; }
+  .top nav { gap: 0.7rem; }
+  .top .menu-trigger { font-size: 0.95rem; }
+}

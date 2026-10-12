@@ -175,6 +175,91 @@ export function flowLines(polylines, { color = COLORS.cyan, opacity = 1, speed =
   return seg;
 }
 
+// Comet-like pulses that travel along polylines (spikes running down a wire). The thin dash
+// shader above is hard to see on paper, so these are real sprites: a bright head plus a fading trail.
+// Positions are advanced on the CPU just before the object is drawn.
+export function pulseDots(polylines, { color = COLORS.magenta, size = 0.03, per = 2, speed = 0.3, trail = 5, gap = 0.035, opacity = 1 } = {}) {
+  const lines = polylines.filter((l) => l.length > 1).map((pts) => {
+    const acc = [0];
+    for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + pts[i].distanceTo(pts[i - 1]));
+    return { pts, acc, total: acc[acc.length - 1] };
+  });
+  const pulses = [];
+  lines.forEach((ln, li) => {
+    for (let k = 0; k < per; k++) pulses.push({ ln, phase: (k + Math.random() * 0.6) / per, v: speed * (0.8 + Math.random() * 0.4) });
+  });
+  const n = pulses.length * trail;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+  geo.setAttribute('aFade', new THREE.BufferAttribute(new Float32Array(n), 1));
+  const mat = new THREE.ShaderMaterial({
+    uniforms: { uPixelRatio, uColor: { value: new THREE.Color(tint(color)) }, uSize: { value: size }, uOpacity: { value: opacity } },
+    defines: WATERCOLOR ? { WATERCOLOR: '' } : {},
+    vertexShader: /* glsl */ `
+      attribute float aFade;
+      uniform float uSize, uPixelRatio;
+      varying float vF;
+      void main() {
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        vF = aFade;
+        if (mv.z > -0.01 || aFade <= 0.001) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); gl_PointSize = 0.0; return; }
+        gl_PointSize = min(uSize * uPixelRatio * 600.0 * (0.35 + 0.65 * aFade) / -mv.z, 40.0 * uPixelRatio);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform vec3 uColor;
+      uniform float uOpacity;
+      varying float vF;
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        #ifdef WATERCOLOR
+        float a = smoothstep(0.5, 0.3, d);
+        gl_FragColor = vec4(uColor * (1.0 - 0.35 * smoothstep(0.15, 0.45, d)), a * vF * uOpacity);
+        #else
+        float a = pow(smoothstep(0.5, 0.0, d), 1.3);
+        gl_FragColor = vec4(mix(uColor, vec3(1.0), 0.45 * smoothstep(0.3, 0.0, d)), a * vF * uOpacity);
+        #endif
+        #include <colorspace_fragment>
+      }`,
+    transparent: true,
+    depthWrite: false,
+    blending: BLENDING,
+  });
+  mat.userData.base = opacity;
+  themeShader(mat, color);
+  themed(() => { mat.uniforms.uSize.value = size * (WATERCOLOR ? 1.9 : 1.35); }); // pigment dabs need to be bigger to read on paper
+  const pts = new THREE.Points(geo, mat);
+  pts.frustumCulled = false;
+  const p = new THREE.Vector3();
+  const at = (ln, s) => {
+    let i = 1;
+    while (i < ln.acc.length - 1 && ln.acc[i] < s) i++;
+    const u = (s - ln.acc[i - 1]) / Math.max(1e-6, ln.acc[i] - ln.acc[i - 1]);
+    return p.copy(ln.pts[i - 1]).lerp(ln.pts[i], Math.max(0, Math.min(1, u)));
+  };
+  let stamp = -1;
+  pts.onBeforeRender = () => {
+    if (stamp === uTime.value) return; // several passes draw the same frame
+    stamp = uTime.value;
+    const pa = geo.attributes.position, fa = geo.attributes.aFade;
+    pulses.forEach((pu, i) => {
+      const len = pu.ln.total;
+      const head = (((pu.phase * len + uTime.value * pu.v) % len) + len) % len;
+      for (let j = 0; j < trail; j++) {
+        const s = head - j * gap;
+        const k = (i * trail + j);
+        if (s < 0) { fa.array[k] = 0; continue; }
+        at(pu.ln, s);
+        pa.array[k * 3] = p.x; pa.array[k * 3 + 1] = p.y; pa.array[k * 3 + 2] = p.z;
+        fa.array[k] = (1 - j / trail) ** 1.5 * Math.min(1, s / 0.02, (len - s) / 0.02 + 0.2);
+      }
+    });
+    pa.needsUpdate = true; fa.needsUpdate = true;
+  };
+  return pts;
+}
+
 // Thin tubes with the same flowing-dash look, readable from further away.
 export function flowTubes(curves, { radius = 0.004, color = COLORS.magenta, opacity = 1, speed = 0.8, freq = 6, sharp = 2 } = {}) {
   // `radius` is a number, or { ink, wc } when the tubes should be thicker on paper
