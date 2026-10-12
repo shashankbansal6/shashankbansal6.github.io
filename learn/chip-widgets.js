@@ -227,7 +227,7 @@ const CHAIN = [
   { n: 'ADC', s: '10 bits', beat: 3, col: 'stim', cap: '30k numbers/s' },
   { n: 'Events', s: 'spikes only', beat: 4, col: 'non', cap: 'only on spikes' },
   { n: 'In-memory', s: 'decode', beat: 5, col: 'non', cap: 'which neuron' },
-  { n: 'Radio', s: 'bits out', beat: 0, col: 'accent', cap: 'packets' },
+  { n: 'Radio', s: 'bits out', beat: 6, col: 'accent', cap: 'packets' },
 ];
 
 const icon = (f, i, cx, cy, s, on) => {
@@ -679,7 +679,87 @@ function adiabaticWidget() {
   };
 }
 
-export const WIDGETS = { chain: chainWidget, signal: signalWidget, nef: nefWidget, adc: adcWidget, events: eventsWidget, cim: cimWidget, adiabatic: adiabaticWidget };
+// 7 · the radio: power in and data out over one pair of coils (cyclic on-off keying)
+function radioWidget() {
+  const FC = 13.56;                       // MHz carrier
+  const sym = [2, 0, 3, 1, 2, 0];         // which of the four cycles in each symbol is shorted = two bits
+  let Q = 25, lay = null;
+  const controls = document.createElement('div');
+  controls.append(slider('Coil quality factor (Q)', 5, 80, 1, Q, (v) => `Q = ${v}`, (v) => (Q = v)).el);
+  return {
+    controls,
+    cursor: 'pointer',
+    click(f, x, y) {
+      if (!lay || y < lay.top || y > lay.bot) return;
+      const k = Math.floor((x - lay.x0) / lay.cell);
+      if (k >= 0 && k < lay.n) sym[k] = (sym[k] + 1) % 4;
+    },
+    draw(f) {
+      const { ctx, W, H, c } = f;
+      const narrow = W < 520, n = narrow ? 4 : 6;
+      const x0 = narrow ? 12 : 18, x1 = W - x0, cell = (x1 - x0) / n, cw = cell / 4;
+      // ── the link: external coil (power) and the implant coil (data)
+      const ay = 34, lx = x0 + 34, rx = x1 - 34;
+      const coil = (cx, col, label) => {
+        ctx.strokeStyle = col; ctx.lineWidth = 2;
+        for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.ellipse(cx + k * 5, ay, 9, 17, 0, 0, TAU); ctx.stroke(); }
+        text(f, label, cx + 5, ay + 34, { size: 10, align: 'center', a: 0.65 });
+      };
+      coil(lx - 5, c.stim, 'outside the body'); coil(rx - 5, c.inv, 'implant');
+      // power flowing right, data flowing left
+      for (let k = 0; k < 6; k++) {
+        const u = ((f.t * 0.5 + k / 6) % 1), x = lx + 30 + u * (rx - lx - 70);
+        ctx.fillStyle = withAlpha(c.stim, 0.9 * Math.sin(u * Math.PI)); ctx.beginPath(); ctx.arc(x, ay - 7, 2.6, 0, TAU); ctx.fill();
+        const x2 = rx - 30 - ((f.t * 0.5 + k / 6 + 0.5) % 1) * (rx - lx - 70);
+        const u2 = (rx - 30 - x2) / (rx - lx - 70);
+        ctx.fillStyle = withAlpha(c.inv, 0.9 * Math.sin(u2 * Math.PI)); ctx.fillRect(x2 - 2.5, ay + 5, 5, 5);
+      }
+      text(f, 'power in  →', (lx + rx) / 2, ay - 14, { size: 10.5, weight: 700, align: 'center', color: c.stim });
+      text(f, '←  data out', (lx + rx) / 2, ay + 22, { size: 10.5, weight: 700, align: 'center', color: c.inv });
+      // ── the implant coil voltage: three of the four cycles of every symbol ring, one is shorted
+      const top = 100, bot = narrow ? H - 130 : H - 118, mid = (top + bot) / 2 + 8, amp = (bot - top) / 2 - 16;
+      lay = { x0, cell, n, top, bot };
+      text(f, 'implant coil voltage · 4 carrier cycles = 1 symbol = 2 bits  (click a symbol)', x0, top - 8, { size: 10, a: 0.6 });
+      const hov = f.mouse.in && f.mouse.y >= top && f.mouse.y <= bot ? Math.floor((f.mouse.x - x0) / cell) : -1;
+      const now = Math.floor((f.t * 0.7) % n);
+      for (let s = 0; s < n; s++) {
+        const sx = x0 + s * cell;
+        roundRect(ctx, sx + 2, top, cell - 4, bot - top, 8);
+        ctx.fillStyle = s === now ? withAlpha(c.accent, 0.08) : c.paper; ctx.fill();
+        ctx.strokeStyle = s === hov ? c.accent : c.txt(s === now ? 0.4 : 0.18); ctx.lineWidth = s === hov ? 1.8 : 1; ctx.stroke();
+        const v = sym[s];
+        // the shorted cycle
+        ctx.fillStyle = withAlpha(c.accent, 0.2); ctx.fillRect(sx + v * cw + 1, top + 4, cw - 2, bot - top - 8);
+        text(f, v.toString(2).padStart(2, '0'), sx + cell / 2, bot - 8, { size: narrow ? 13 : 15, weight: 800, align: 'center', color: c.accent });
+        text(f, `cycle ${v + 1} shorted`, sx + cell / 2, top + 13, { size: 8.5, align: 'center', a: 0.55 });
+      }
+      ctx.strokeStyle = c.txt(0.18); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, mid); ctx.lineTo(x1, mid); ctx.stroke();
+      ctx.strokeStyle = c.inv; ctx.lineWidth = 1.8; ctx.beginPath();
+      const tot = n * 4, steps = Math.round((x1 - x0) / 1.5);
+      for (let i = 0; i <= steps; i++) {
+        const x = x0 + (i / steps) * (x1 - x0), cyc = (i / steps) * tot, k = Math.min(tot - 1, Math.floor(cyc));
+        const shorted = sym[Math.floor(k / 4)] === k % 4;
+        const y = mid - (shorted ? 0 : Math.sin((cyc - f.t * 0.6) * TAU) * amp);
+        i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+      }
+      ctx.stroke();
+      // ── the numbers: COOK against load-shift keying as the coil Q changes (illustrative)
+      const by = bot + 22, bw = W - x0 * 2 - (narrow ? 0 : 150), lsk = Math.min(FC / 2, FC / (Q * 0.8));
+      const row = (y, label, val, col, txtv) => {
+        text(f, label, x0, y - 4, { size: 10.5, weight: 600, a: 0.8 });
+        ctx.fillStyle = c.txt(0.07); ctx.fillRect(x0, y, bw, 11);
+        ctx.fillStyle = col; ctx.fillRect(x0, y, Math.max(2, bw * val), 11);
+        text(f, txtv, x0 + bw + 10, y + 10, { size: 11, weight: 700, color: col });
+      };
+      row(by, 'Cyclic on-off keying (any Q)', (FC / 2) / FC * 2, c.accent, `${fmt(FC / 2, 2)} Mb/s`);
+      row(by + 32, 'Load-shift keying at this Q', lsk / (FC / 2), c.inv, `~${fmt(lsk, 2)} Mb/s`);
+      text(f, 'power flows in 3 of every 4 cycles', x0, by + 60, { size: 10.5, weight: 700, color: c.stim });
+      text(f, 'a high Q moves power well, and caps the load-shift rate', x0, by + 76, { size: 10.5, a: 0.7 });
+    },
+  };
+}
+
+export const WIDGETS = { chain: chainWidget, signal: signalWidget, nef: nefWidget, adc: adcWidget, events: eventsWidget, cim: cimWidget, adiabatic: adiabaticWidget, radio: radioWidget };
 export const CAPTIONS = {
   chain: 'The signal changes shape at every block. Pulses are analog until the ADC, then bits, then events. Rates are illustrative: 30 kS/s, 10 bits, 10 spikes/s per channel, 16 bits per event.',
   signal: 'Simulated spikes in noise. Thresholding is how most chips find a neuron.',
@@ -688,4 +768,5 @@ export const CAPTIONS = {
   events: 'A cartoon of 64 neurons: bright squares are spikes, dim ones are idle work.',
   cim: 'Schematic. DRAM, SRAM and arithmetic energies are the published 45 nm figures (Horowitz, ISSCC 2014); the in-memory figure is illustrative.',
   adiabatic: 'Idealised: a staircase supply charging a capacitor through a switch.',
+  radio: 'Simplified from the published scheme: two bits per four carrier cycles on a 13.56 MHz link. The load-shift curve is illustrative (rate ≈ carrier / 0.8Q), not a measurement.',
 };

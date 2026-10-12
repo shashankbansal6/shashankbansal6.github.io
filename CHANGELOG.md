@@ -9,7 +9,13 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
-## v3.9 (not yet deployed)
+## v3.10 (not yet deployed)
+
+- **Chip design, Radio**: a new step for the radio block (power in, data out over one pair of coils) with a
+  cyclic on-off keying drawing and its papers (Ha et al., VLSI 2014 and JSSC 2016; Sauer et al., TCAS-I 2005).
+  The Radio tile in the chain now opens it instead of jumping back to the first step.
+
+## v3.9
 
 - **Follow-ups**: ECoG cable pulses removed; menu panels no longer catch the pointer while fading (hovering
   Learn after Explore opened Explore); a three-icon Learn switcher in the top right once the hero scrolls

@@ -57,6 +57,6 @@ body.world .then.lab { color: var(--w) !important; }
   body.world .dive-view canvas.dive-main { height: clamp(14rem, 36vh, 21rem); }
 }
 
-/* hold the dive's height until the script builds it, so the page below does not jump (7 beats: 88vh each + 20vh) */
-.dive:empty { min-height: 636vh; }
-@media (max-width: 900px) { .dive:empty { min-height: 566vh; } }
+/* hold the dive's height until the script builds it, so the page below does not jump (--beats steps: 88vh each + 20vh) */
+.dive:empty { min-height: calc(var(--beats, 7) * 88vh + 20vh); }
+@media (max-width: 900px) { .dive:empty { min-height: calc(var(--beats, 7) * 78vh + 20vh); } }
