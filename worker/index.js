@@ -51,7 +51,7 @@ export default {
       // hashed build output never changes under the same name; photos, clips and logos rarely do (a week, refreshed quietly after);
       // pages stay revalidated on every visit so a new deploy is picked up at once
       if (url.pathname.startsWith('/assets/')) out.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
-      else if (/^\/(photos|awards|logos)\/|^\/shashank\.jpg$/.test(url.pathname)) out.headers.set('Cache-Control', 'public, max-age=604800, stale-while-revalidate=2592000');
+      else if (/^\/(photos|awards|logos|talks|papers)\/|^\/shashank\.jpg$/.test(url.pathname)) out.headers.set('Cache-Control', 'public, max-age=604800, stale-while-revalidate=2592000');
     }
     return out;
   },

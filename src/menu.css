@@ -35,7 +35,7 @@
 .menu-grid .featured { background: color-mix(in srgb, var(--accent) 9%, transparent); border-color: color-mix(in srgb, var(--accent) 35%, transparent); }
 .menu-group.open .menu-grid a { animation: tilePop 0.5s cubic-bezier(0.2, 1.2, 0.35, 1) both; animation-delay: calc(var(--i, 0) * 45ms + 60ms); }
 .menu-grid a:nth-child(2) { --i: 1; } .menu-grid a:nth-child(3) { --i: 2; } .menu-grid a:nth-child(4) { --i: 3; }
-.menu-grid a:nth-child(5) { --i: 4; } .menu-grid a:nth-child(6) { --i: 5; }
+.menu-grid a:nth-child(5) { --i: 4; } .menu-grid a:nth-child(6) { --i: 5; } .menu-grid a:nth-child(7) { --i: 6; }
 @keyframes tilePop { from { opacity: 0; transform: scale(0.78) translateY(0.5rem); } to { opacity: 1; transform: none; } }
 @media (max-width: 520px) { .menu-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .menu-panel { filter: none; transform: none; } .menu-group.open .menu-grid a { animation: none; } }

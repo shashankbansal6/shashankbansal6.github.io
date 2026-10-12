@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 
 // shashankbansal6.github.io is a user site, so it is served from the root.
 // Pages: the 3D journey (/), the photo timeline (/photos/), the three Learn worlds (/learn/, /learn/sensors/, /learn/chip/) and /privacy/.
@@ -15,14 +17,14 @@ function preloadFonts() {
         const want = ctx.path === '/index.html' ? [...FIRST_SCREEN, /noto-serif-devanagari-devanagari-400/] : FIRST_SCREEN;
         const tags = Object.keys(ctx.bundle).filter((f) => want.some((r) => r.test(f)))
           .map((f) => ({ tag: 'link', attrs: { rel: 'preload', as: 'font', type: 'font/woff2', crossorigin: '', href: `/${f}` }, injectTo: 'head-prepend' }));
-        // the 3D scene is imported after the first paint; fetch (not run) it quietly meanwhile
+        // the 3D scene is imported right after the first paint; start fetching (not running) it with the page
         if (ctx.path === '/index.html') {
           const scene = Object.values(ctx.bundle).find((c) => c.type === 'chunk' && c.isDynamicEntry && /src\/main\.js$/.test(c.facadeModuleId || ''));
           if (scene) {
             const seen = new Set();
             const walk = (name) => { if (seen.has(name)) return; seen.add(name); (ctx.bundle[name]?.imports || []).forEach(walk); };
             walk(scene.fileName);
-            seen.forEach((f) => !html.includes(f) && tags.push({ tag: 'link', attrs: { rel: 'modulepreload', crossorigin: '', fetchpriority: 'low', href: `/${f}` }, injectTo: 'head' }));
+            seen.forEach((f) => !html.includes(f) && tags.push({ tag: 'link', attrs: { rel: 'modulepreload', crossorigin: '', href: `/${f}` }, injectTo: 'head' }));
           }
         }
         return tags;
@@ -31,9 +33,26 @@ function preloadFonts() {
   };
 }
 
+// theme-init.js must stay a blocking classic script (it picks the theme before the first paint), so Vite leaves it alone
+// and it would be served from /theme-init.js, which is revalidated on every visit: one round trip before anything paints.
+// Publish a content-hashed copy under /assets/ instead, cached for a year like the rest of the build.
+function hashThemeInit() {
+  let file = '';
+  return {
+    name: 'hash-theme-init',
+    apply: 'build',
+    buildStart() {
+      const source = readFileSync(resolve(import.meta.dirname, 'public/theme-init.js'));
+      file = `assets/theme-init-${createHash('sha256').update(source).digest('hex').slice(0, 8)}.js`;
+      this.emitFile({ type: 'asset', fileName: file, source });
+    },
+    transformIndexHtml: (html) => html.replace('<script src="/theme-init.js"></script>', `<script src="/${file}"></script>`),
+  };
+}
+
 export default defineConfig({
   base: '/',
-  plugins: [preloadFonts()],
+  plugins: [hashThemeInit(), preloadFonts()],
   build: {
     outDir: 'dist',
     chunkSizeWarningLimit: 1200,

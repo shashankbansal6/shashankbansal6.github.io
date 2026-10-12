@@ -234,6 +234,13 @@
           </div>
         </section>
 
+        <section id="talks" class="block page">
+          <div class="page-fit">
+            <h3 class="subhead first">Posters &amp; talks</h3>
+            <ul class="talks" id="talk-list"></ul>
+          </div>
+        </section>
+
         <section id="experience" class="block">
           <p class="kicker">Experience</p>
           <h2>Path so far</h2>
@@ -252,6 +259,17 @@
     </main>
 
     <dialog id="cert" aria-label="Certificate"><img alt="" /></dialog>
+    <dialog id="viewer" class="viewer" aria-label="Poster and slide viewer" data-lenis-prevent>
+      <div class="v-stage" tabindex="-1" autofocus><img class="v-img" alt="" draggable="false" /></div>
+      <div class="v-bar">
+        <p class="v-title"></p>
+        <div class="v-nav"><button type="button" class="v-prev" aria-label="Previous slide">←</button><span class="v-count" aria-live="polite"></span><button type="button" class="v-next" aria-label="Next slide">→</button></div>
+        <div class="v-tools">
+          <button type="button" class="v-zoom-out" aria-label="Zoom out">−</button><button type="button" class="v-fit">Fit</button><button type="button" class="v-zoom-in" aria-label="Zoom in">+</button>
+          <a class="v-pdf" download>PDF ↓</a><button type="button" class="v-close" aria-label="Close">✕</button>
+        </div>
+      </div>
+    </dialog>
 
     <script type="module" src="/src/boot.js"></script>
   </body>

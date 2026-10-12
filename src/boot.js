@@ -21,6 +21,8 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.nav')) setMe
 addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
 
 let started = false;
-const scene = () => { if (!started) { started = true; import('./main.js'); } };
-// run it once the hero text has finished rising: the scene's setup is a long task and would stall that animation
-setTimeout(scene, 1100);
+// if the scene cannot start (no WebGL, a failed download) the page stays as it is, minus the 3D: just lift the cover
+const scene = () => { if (!started) { started = true; import('./main.js').catch(() => document.querySelector('#loader')?.classList.add('done')); } };
+// start as soon as the first frame is on screen. The hero text rises on the compositor (opacity and transform only),
+// so the scene's setup does not stall it, and the build hands the main thread back between its steps.
+requestAnimationFrame(() => setTimeout(scene, 0));

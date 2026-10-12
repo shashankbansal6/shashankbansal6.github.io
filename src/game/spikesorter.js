@@ -308,24 +308,30 @@ export function initSpikeSorter(root) {
     updateHud();
   }
 
-  // On a phone the round needs the whole board on screen and a page that does not drift under your thumbs:
-  // bring the task bar, board, sort window and buttons into view, then freeze scrolling until the round ends.
+  // On a phone the round needs the whole board on screen: bring the task bar, board, sort window and buttons into
+  // view. The page stays scrollable (swipe anywhere but the sort buttons), and scrolling the game away ends the round.
+  // Only a swipe that starts on the sort buttons is held, so fast tapping does not drift the page under your thumbs.
   const phone = matchMedia('(max-width: 900px)');
-  const stopScroll = (e) => { if (state === 'playing') e.preventDefault(); };
-  function lockScroll() {
+  const units = root.querySelector('.ss-units');
+  const holdThumbs = (e) => { if (state === 'playing' && units?.contains(e.target)) e.preventDefault(); };
+  function frameBoard() {
     if (!phone.matches) return;
     const top = root.querySelector('.ss-taskbar').getBoundingClientRect().top + scrollY - 66;
     window.scrollTo({ top, behavior: 'instant' });
-    // a landscape phone is too short to hold the whole board: leave the page scrollable there
-    const last = root.querySelector('.ss-units') || root;
-    if (last.getBoundingClientRect().bottom > innerHeight) return;
-    document.documentElement.classList.add('ss-lock');
-    document.addEventListener('touchmove', stopScroll, { passive: false });
+    document.addEventListener('touchmove', holdThumbs, { passive: false });
   }
-  function unlockScroll() {
-    document.documentElement.classList.remove('ss-lock');
-    document.removeEventListener('touchmove', stopScroll);
+  function releaseThumbs() {
+    document.removeEventListener('touchmove', holdThumbs);
   }
+
+  // a way out mid-round: this button (and Esc) ends it and shows the score so far
+  const quit = document.createElement('button');
+  quit.type = 'button';
+  quit.className = 'ss-quit';
+  quit.textContent = 'End round';
+  quit.hidden = true;
+  quit.addEventListener('click', () => end());
+  root.querySelector('.ss-taskbar').appendChild(quit);
 
   function start() {
     resize();
@@ -333,7 +339,8 @@ export function initSpikeSorter(root) {
     state = 'playing';
     overlay.hidden = true;
     root.classList.add('playing');
-    lockScroll();
+    quit.hidden = false;
+    frameBoard();
     canvas.focus({ preventScroll: true });
   }
 
@@ -342,7 +349,8 @@ export function initSpikeSorter(root) {
     state = 'over';
     flash = null;
     root.classList.remove('playing');
-    unlockScroll();
+    quit.hidden = true;
+    releaseThumbs();
     const total = correct + wrong + missed;
     const acc = total ? Math.round((correct / total) * 100) : 0;
     const isBest = score > best;
@@ -531,7 +539,9 @@ export function initSpikeSorter(root) {
     if (!visible || e.metaKey || e.ctrlKey || e.altKey) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     const i = e.key in KEYS ? KEYS[e.key] : -1;
-    if (i >= 0 && state === 'playing') {
+    if (e.key === 'Escape' && state === 'playing') {
+      end();
+    } else if (i >= 0 && state === 'playing') {
       e.preventDefault(); // arrows must not scroll the page mid-game, even when held
       if (!e.repeat) sort(i);
     } else if (e.repeat) {
@@ -553,6 +563,7 @@ export function initSpikeSorter(root) {
 
   new IntersectionObserver(([en]) => {
     visible = en.isIntersecting;
+    if (!visible) end(); // scrolled away mid-round: that round is over (no-op when not playing)
     last = 0; // no time jump after being away
     if (visible) resize();
   }, { threshold: 0.15 }).observe(root);

@@ -1,5 +1,6 @@
 // HTML labels pinned to 3D points; each fades with its layer.
 import * as THREE from 'three';
+import { setStyle } from '../lib/dom.js';
 
 export function initLabels(container, layers, root, camera) {
   const items = [];
@@ -19,18 +20,18 @@ export function initLabels(container, layers, root, camera) {
         const target = it.layer.value > 0.5 ? it.layer.value * gate : 0;
         it.op += (target - it.op) * 0.15;
         if (it.op < 0.01) {
-          if (it.el.style.opacity !== '0') it.el.style.opacity = '0';
+          setStyle(it.el, 'opacity', '0');
           continue;
         }
         v.copy(it.pos).applyMatrix4(root.matrixWorld).project(camera);
         if (v.z > 1) {
-          it.el.style.opacity = '0';
+          setStyle(it.el, 'opacity', '0');
           continue;
         }
         const x = (v.x * 0.5 + 0.5) * w;
         const y = (-v.y * 0.5 + 0.5) * h;
-        it.el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-        it.el.style.opacity = it.op.toFixed(3);
+        setStyle(it.el, 'transform', `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
+        setStyle(it.el, 'opacity', it.op.toFixed(3));
       }
     },
   };

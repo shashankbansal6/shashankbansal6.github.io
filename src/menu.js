@@ -8,9 +8,10 @@ const LEARN = [
 const EXPLORE = [
   { href: '/#research', b: 'Research', s: 'What I work on' },
   { href: '/#publications', b: 'Publications', s: 'Papers and patents' },
+  { href: '/#talks', b: 'Posters & talks', s: 'Slides and posters' },
   { href: '/#experience', b: 'Experience', s: 'Path so far' },
   { href: '/#play', b: 'Play', s: 'Be the decoder' },
-  { href: '/photos/', b: 'Photos', s: 'Graduate school, in pictures' },
+  { href: '/photos/', b: 'Photos', s: 'Grad school in pictures' },
   { href: '/ShashankBansal-CV.pdf', b: 'CV', s: 'PDF', cv: true },
 ];
 const MENUS = { learn: { title: 'Learn', items: LEARN }, explore: { title: 'Explore', items: EXPLORE } };

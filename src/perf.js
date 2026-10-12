@@ -15,3 +15,18 @@ export function adaptiveScale({ start, min = 1, apply }) {
     if (avg > 26 && q - 0.25 >= min - 1e-6) { q -= 0.25; warm = 20; apply(q); }
   };
 }
+
+// Building a scene is a few long steps. Hand the main thread back between them, so a tap or a scroll that arrives
+// meanwhile is answered at once instead of after the whole build.
+export const yieldToMain = () => (globalThis.scheduler?.yield ? globalThis.scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
+
+// Compile every shader in the scene, including the layers that are still hidden, before the first frame: in the
+// background where the browser can (KHR_parallel_shader_compile), and never in the middle of a scroll into a later
+// chapter. Programs depend on where they draw, so compile against the composer's buffer when there is one.
+export function precompile(renderer, scene, camera, composer) {
+  renderer.setRenderTarget(composer ? composer.readBuffer : null);
+  let done;
+  try { done = renderer.compileAsync(scene, camera); } catch { done = Promise.resolve(); }
+  renderer.setRenderTarget(null);
+  return Promise.race([done.catch(() => {}), new Promise((r) => setTimeout(r, 2000))]);
+}

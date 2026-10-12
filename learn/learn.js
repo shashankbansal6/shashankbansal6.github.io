@@ -14,8 +14,9 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import Lenis from 'lenis';
-import { adaptiveScale } from '../src/perf.js';
+import { adaptiveScale, yieldToMain, precompile } from '../src/perf.js';
 import { fitCards } from '../src/phone.js';
+import { setStyle } from '../src/lib/dom.js';
 
 import { sstep, damp, lerp } from '../src/lib/math.js';
 import { hemiFrame, ANCHORS } from '../src/scene/anatomy.js';
@@ -23,7 +24,7 @@ import { buildBrain } from '../src/scene/brain.js';
 import { buildOverlays } from '../src/scene/overlays.js';
 import { uTime, uPixelRatio, glowPoints } from '../src/scene/materials.js';
 import { WATERCOLOR, PAPER, applyTheme, themed } from '../src/theme.js';
-import { watercolorPass } from '../src/scene/watercolor.js';
+import { watercolorPass, paperOutputPass } from '../src/scene/watercolor.js';
 import { initMenu } from '../src/menu.js';
 import { initAnalytics } from '../src/analytics.js';
 import { REGIONS, BEATS, FOUNDATIONS } from './content.js';
@@ -49,6 +50,7 @@ scene.add(root);
 
 const brain = buildBrain(mobile ? 60000 : 125000);
 root.add(brain.points);
+await yieldToMain();
 const wash = (() => {
   const src = brain.points.geometry.attributes.position;
   const n = 900;
@@ -67,6 +69,7 @@ const wash = (() => {
 themed(() => { wash.visible = WATERCOLOR; });
 const { group: overlayGroup, layers } = buildOverlays();
 root.add(overlayGroup);
+await yieldToMain();
 overlayGroup.traverse((o) => (o.renderOrder = Math.max(o.renderOrder, 2)));
 {
   const n = 1800;
@@ -98,7 +101,7 @@ function buildPipeline(wcTheme) {
     c.addPass(new RenderPass(scene, camera));
     const pass = watercolorPass();
     c.addPass(pass);
-    c.addPass(new OutputPass());
+    c.addPass(paperOutputPass());
     return { composer: c, wc: pass, bloom: null };
   }
   if (mobile) return { composer: null, wc: null, bloom: null };
@@ -175,7 +178,14 @@ for (const b of BEATS) {
 const LAYER_KEYS = Object.keys(layers);
 const SCALARS = ['brain', 'drag', 'activity'];
 const DEFAULTS = { brain: 1, activity: 0.4 };
+// one flat vector per stage, built once
+const vectors = new Map();
 function stateVector(st) {
+  let v = vectors.get(st);
+  if (!v) vectors.set(st, (v = buildVector(st)));
+  return v;
+}
+function buildVector(st) {
   const ov = st.ov || {};
   const v = {};
   for (const k of SCALARS) v[k] = st[k] ?? DEFAULTS[k] ?? 0;
@@ -247,7 +257,9 @@ $('#year').textContent = new Date().getFullYear();
 
 // ── layout / anchors ─────────────────────────────────────────────────────────
 const contentEl = $('.content');
+const heroInner = $('.hero-inner');
 let keys = [];
+let coveredAt = Infinity; // past here the opaque content (foundations, next) hides the 3D scene completely
 function layout() {
   const vh = innerHeight;
   fitCards(mobile, sections.flatMap((x) => x.cards));
@@ -260,6 +272,7 @@ function layout() {
   const contentTop = contentEl.getBoundingClientRect().top + scrollY;
   keys = sections.map((s) => ({ at: s.anchor, stage: STAGES[s.id] }));
   keys.push({ at: contentTop + vh * 0.2, stage: STAGES.outro });
+  coveredAt = contentTop + vh * 0.7;
 }
 
 const lenis = reduced || mobile || matchMedia('(pointer: coarse)').matches ? null : new Lenis({ lerp: 0.085, wheelMultiplier: 0.9, anchors: { offset: 0 } });
@@ -380,13 +393,18 @@ canvas.addEventListener('pointercancel', endDrag);
 
 // ── resize ───────────────────────────────────────────────────────────────────
 let lastW = 0, lastH = 0;
+let viewW = innerWidth, viewH = innerHeight; // the canvas's CSS size: what the camera and anything projected must use
 function resize() {
   const w = innerWidth, h = innerHeight;
   if (lastW === w && lastH && Math.abs(h - lastH) < lastH * 0.25 && matchMedia('(pointer: coarse)').matches) return;
   lastW = w; lastH = h;
-  renderer.setSize(w, h, false);
+  // draw at the canvas's own size: it is 100vh tall, which on a phone is taller than innerHeight while the browser
+  // bars are showing, and a buffer of the window's size would be stretched to fit it
+  viewW = canvas.clientWidth || w;
+  viewH = canvas.clientHeight || h;
+  renderer.setSize(viewW, viewH, false);
   sizePipeline();
-  camera.aspect = w / h;
+  camera.aspect = viewW / viewH;
   uPixelRatio.value = dpr * Math.max(0.7, h / 900);
   layout();
   popvec.forEach((p) => p.w.resize());
@@ -395,7 +413,7 @@ addEventListener('resize', resize);
 resize();
 
 // ── main loop ────────────────────────────────────────────────────────────────
-const cur = stateVector(STAGES.hero.state);
+const cur = { ...stateVector(STAGES.hero.state) }; // a copy: the cached vector must not be damped in place
 const camPos = new THREE.Vector3();
 const camTarget = new THREE.Vector3();
 const camOff = new THREE.Spherical();
@@ -404,6 +422,8 @@ let intro = reduced ? 1 : 0;
 let first = true;
 const clock = new THREE.Timer();
 const tmpV = new THREE.Vector3();
+const tmpS = new THREE.Spherical();
+const sampled = { target: new THREE.Vector3(), off: new THREE.Spherical(), sx: 0, sy: 0, st: {} };
 
 function sample(scroll) {
   let i = 0;
@@ -412,16 +432,18 @@ function sample(scroll) {
   const raw = b === a ? 0 : Math.max(0, Math.min(1, (scroll - a.at) / (b.at - a.at)));
   const t = sstep(0.18, 0.82, raw);
   const va = a.stage.view, vb = b.stage.view;
-  const target = va.target.clone().lerp(vb.target, t);
-  const off = new THREE.Spherical(
+  const out = sampled;
+  out.target.copy(va.target).lerp(vb.target, t);
+  out.off.set(
     Math.exp(lerp(Math.log(va.off.radius), Math.log(vb.off.radius), t)),
     lerp(va.off.phi, vb.off.phi, t),
     va.off.theta + Math.atan2(Math.sin(vb.off.theta - va.off.theta), Math.cos(vb.off.theta - va.off.theta)) * t,
   );
   const sa = stateVector(a.stage.state), sb = stateVector(b.stage.state);
-  const st = {};
-  for (const k in sa) st[k] = lerp(sa[k], sb[k], t);
-  return { target, off, sx: lerp(va.sx, vb.sx, t), sy: lerp(va.sy, vb.sy, t), st };
+  for (const k in sa) out.st[k] = lerp(sa[k], sb[k], t);
+  out.sx = lerp(va.sx, vb.sx, t);
+  out.sy = lerp(va.sy, vb.sy, t);
+  return out;
 }
 
 const scaleDown = adaptiveScale({ start: dpr, min: 1, apply: (q) => { dpr = q; renderer.setPixelRatio(q); lastW = 0; resize(); } });
@@ -434,6 +456,14 @@ function frame(time) {
   lenis?.raf(time);
   const scroll = window.scrollY;
   const w = innerWidth, h = innerHeight;
+  // the foundations and the worlds below sit on an opaque page: stop drawing the scene behind them
+  if (!first && scroll > coveredAt) {
+    rail.classList.add('hide');
+    renderSteps(sections[0]);
+    for (const it of hots) { it.op = 0; setStyle(it.el, 'opacity', '0'); setStyle(it.el, 'pointerEvents', 'none'); }
+    requestAnimationFrame(frame);
+    return;
+  }
 
   const s = sample(scroll);
   // hovering a region button on the hero lights that region up
@@ -453,11 +483,12 @@ function frame(time) {
 
   intro = Math.min(1, intro + dt * 0.45);
   const ease = 1 - (1 - intro) ** 3;
-  tmpV.setFromSpherical(new THREE.Spherical(camOff.radius * (1 + 0.9 * (1 - ease)), camOff.phi - 0.25 * (1 - ease), camOff.theta + 0.6 * (1 - ease)));
+  tmpV.setFromSpherical(tmpS.set(camOff.radius * (1 + 0.9 * (1 - ease)), camOff.phi - 0.25 * (1 - ease), camOff.theta + 0.6 * (1 - ease)));
   camPos.copy(camTarget).add(tmpV);
   camera.position.copy(camPos);
   camera.lookAt(camTarget);
-  camera.setViewOffset(w, h, -shift.x * w, shift.y * h, w, h);
+  // (setViewOffset also sets the camera's aspect from these, so they must be the canvas's size, not the window's)
+  camera.setViewOffset(viewW, viewH, -shift.x * viewW, shift.y * viewH, viewW, viewH);
 
   if (!dragging) {
     yawVel *= 0.94;
@@ -466,7 +497,8 @@ function frame(time) {
   }
   const sway = reduced ? 0 : Math.sin(uTime.value * 0.18) * 0.35 * cur.drag;
   root.rotation.set(pitch * cur.drag, yaw + sway, 0);
-  canvas.className = cur.drag > 0.5 && !mobile ? (dragging ? 'grabbing' : 'grab') : '';
+  const cursor = cur.drag > 0.5 && !mobile ? (dragging ? 'grabbing' : 'grab') : '';
+  if (canvas.className !== cursor) canvas.className = cursor;
 
   for (const k of LAYER_KEYS) layers[k].set(cur[`ov_${k}`]);
   const u = brain.material.uniforms;
@@ -483,16 +515,17 @@ function frame(time) {
     const d = Math.abs(scroll - sec.anchor) / sec.half;
     sec.vis = sec.id === 'hero' ? 1 - sstep(0.15, 0.6, scroll / h) : 1 - sstep(0.62, 0.92, d);
     for (const card of sec.cards) {
-      const loose = card.classList.contains('flow');
-      card.style.opacity = loose ? '1' : sec.vis.toFixed(3);
-      card.style.pointerEvents = loose || sec.vis > 0.3 ? 'auto' : 'none';
+      // solid on a laptop / desktop (it rides in and out with the page), and for a phone card that scrolls with the page
+      const solid = !mobile || card.classList.contains('flow');
+      setStyle(card, 'opacity', solid ? '1' : sec.vis.toFixed(3));
+      setStyle(card, 'pointerEvents', solid || sec.vis > 0.3 ? 'auto' : 'none');
     }
     if (d < best) { best = d; active = sec; }
   }
   const pastJourney = scroll > keys[keys.length - 1].at - h * 0.5;
   sections.forEach((sec) => sec.rail.classList.toggle('on', sec === active && !pastJourney));
   rail.classList.toggle('hide', pastJourney || scroll < h * 0.3);
-  $('.hero-inner').style.opacity = sections[0].vis.toFixed(3);
+  setStyle(heroInner, 'opacity', sections[0].vis.toFixed(3));
   renderSteps(pastJourney ? sections[0] : active);
   popvec.forEach((p) => { if (p.s.vis > 0.01) p.w.step(dt); });
 
@@ -501,15 +534,15 @@ function frame(time) {
   for (const it of hots) {
     const target = it.sec.vis * Math.min(1, it.layer.value);
     it.op += (target - it.op) * 0.18;
-    if (it.op < 0.02) { it.el.style.opacity = '0'; it.el.style.pointerEvents = 'none'; continue; }
+    if (it.op < 0.02) { setStyle(it.el, 'opacity', '0'); setStyle(it.el, 'pointerEvents', 'none'); continue; }
     hv.copy(it.pos).applyMatrix4(root.matrixWorld).project(camera);
-    const x = (hv.x * 0.5 + 0.5) * w;
-    const y = (-hv.y * 0.5 + 0.5) * h;
+    const x = (hv.x * 0.5 + 0.5) * viewW;
+    const y = (-hv.y * 0.5 + 0.5) * viewH;
     // on phones the card covers the lower third, so labels there would sit on top of its text
-    if (hv.z > 1 || (mobile && y > h * 0.4)) { it.el.style.opacity = '0'; it.el.style.pointerEvents = 'none'; continue; }
-    it.el.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-    it.el.style.opacity = it.op.toFixed(3);
-    it.el.style.pointerEvents = it.op > 0.5 ? 'auto' : 'none';
+    if (hv.z > 1 || (mobile && y > h * 0.4)) { setStyle(it.el, 'opacity', '0'); setStyle(it.el, 'pointerEvents', 'none'); continue; }
+    setStyle(it.el, 'transform', `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`);
+    setStyle(it.el, 'opacity', it.op.toFixed(3));
+    setStyle(it.el, 'pointerEvents', it.op > 0.5 ? 'auto' : 'none');
   }
 
   if (composer) composer.render(dt);
@@ -534,6 +567,6 @@ function jumpToParam() {
 }
 jumpToParam();
 document.fonts?.ready.then(() => { layout(); jumpToParam(); });
-requestAnimationFrame(frame);
+precompile(renderer, scene, camera, composer).then(() => requestAnimationFrame(frame));
 
 if (import.meta.env.DEV) window.__learn = { scene, camera, brain, cur, layers, keys: () => keys, sections, STAGES };

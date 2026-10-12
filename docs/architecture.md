@@ -39,6 +39,9 @@ transformed sub-group (the die, the coils) keep their transforms.
 mobile. The clamp pass caps HDR values at 1 so thousands of additive particles don't
 make bloom smear a grey haze over the page. The clear color is pre-linearized twice in
 the composer path (see [development.md](development.md#gotchas)).
+In the watercolor theme the paper and granulation noise are baked into a texture once per canvas size
+(`src/scene/watercolor.js`), and its output pass also applies the slight saturation boost. Every shader is
+compiled before the first frame (`precompile` in `src/perf.js`).
 
 ## Themes
 

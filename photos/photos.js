@@ -90,13 +90,18 @@ $('#years').innerHTML = years.map((y) => `<li data-y="${y}"><a href="#y-${y}">${
 years.forEach((y) => { chaptersEl.querySelector(`[data-year="${y}"]`).id = `y-${y}`; });
 const railItems = [...document.querySelectorAll('#years li')];
 const yearSections = years.map((y) => chaptersEl.querySelector(`[data-year="${y}"]`));
+// measured at most once per frame (scroll events can fire several times a frame), and only touched when it changes
+let spyAt = -1, spyQueued = false;
 function spy() {
+  spyQueued = false;
   const line = innerHeight * 0.35;
   let cur = 0;
   yearSections.forEach((s, i) => { if (s.getBoundingClientRect().top <= line) cur = i; });
+  if (cur === spyAt) return;
+  spyAt = cur;
   railItems.forEach((li, i) => li.classList.toggle('on', i === cur));
 }
-addEventListener('scroll', spy, { passive: true });
+addEventListener('scroll', () => { if (!spyQueued) { spyQueued = true; requestAnimationFrame(spy); } }, { passive: true });
 spy();
 
 const nVid = all.filter((p) => p.v).length;

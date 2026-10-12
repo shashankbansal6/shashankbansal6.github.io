@@ -9,6 +9,35 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+### v3.11: posters & talks, hosted papers, faster start
+- New "Posters & talks" section (also in Explore): the ISCAS 2026 talk, the SfN 2025, two ISCAS 2025 and the IEEE Brain
+  2023 posters, and a high-school outreach talk. Posters open in a full-screen viewer that zooms and pans (wheel, pinch,
+  drag, double-tap) and loads sharp 9600 px tiles for just the zoomed part; decks show one 2560 px slide at a time
+  (arrows, swipe, wheel). Each item has its own link (#talks/<id>/<slide>) and a PDF download. Add more with
+  `node scripts/add-talk.mjs <pdf> <slug>`.
+- Six papers are hosted under /papers/ with a PDF link in Publications (IEEE accepted manuscripts carry IEEE's notice).
+- Honors: the Neocortex System (PSC) grant.
+- The brain shows up about a second sooner after a load: the scene starts right after the first paint instead of
+  1.1 s later, the cover fades in 0.5 s and the opening camera move is shorter.
+- Desktop cards rise in solid from below instead of fading; the first screen keeps the next card off it; the brain is
+  no longer squashed on phones (camera aspect from the canvas, not the window) and the name sits in view on iOS Brave.
+- The game can be scrolled past or ended (End round, Escape, or scrolling away) mid-round on phones.
+- Explore menu: one-line descriptions so the tiles line up; links like /#talks from other pages land on the section.
+
+### Also (v3.10, not yet deployed): speed and reliability (no visual change)
+- Watercolor: the paper texture and granulation, which never move, are drawn once per screen size instead of every
+  frame, and the canvas's slight saturation boost moved from a CSS filter into the output shader. About 37% less GPU
+  time per frame for the same picture (within 1/255 per pixel), and no extra full-screen compositor pass.
+- Every shader is compiled before the first frame (in the background where the browser supports it), so scrolling
+  into a chapter for the first time no longer stalls on a compile; the scene is built in shorter steps, so the longest
+  blocking task at startup drops from ~450 ms to ~275 ms on an emulated phone.
+- About, Research, Publications, Experience and the game are filled in before the 3D scene, so they show up even
+  where WebGL is unavailable (before, they stayed empty).
+- The chapter rail no longer stays on screen over the content pages after a jump straight past the journey.
+- The theme script is served under a hashed name and cached for a year (no round trip before the first paint on a
+  return visit); the Neuroscience page stops drawing its scene under the opaque page at the bottom; fewer repeated
+  style writes in the animation loops; the photo year rail is measured at most once per frame.
+
 ### Also (v3.10, not yet deployed): phone header + game scrolling
 - Step bars on the Learn pages (Neuroscience layers, Sensor/Chip steps) stop short of the three-icon dock on phones, so the two no longer overlap; the bars are opaque so nothing shows through them.
 - The 3D scene stops drawing once you are past the top of the game (the game, About, Research, ... sit on an opaque page), which removes the stutter on phones below the game.

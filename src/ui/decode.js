@@ -2,6 +2,7 @@
 // across their communication board and selecting what they need. Each
 // selection calls `onSelect` (which drives the stimulation pulse in 3D).
 import { WATERCOLOR } from '../theme.js';
+import { setStyle, setText } from '../lib/dom.js';
 
 const CLASSES = ['left', 'right', 'select'];
 const ITEMS = ['Water', 'Food', 'Nurse', 'Lights', 'Music'];
@@ -79,8 +80,8 @@ export function initDecode(root, { onSelect } = {}) {
       if (bar.p > bars[best].p) best = i;
     });
     bars.forEach((bar, i) => {
-      bar.fill.style.width = `${(bar.p * 100).toFixed(1)}%`;
-      bar.val.textContent = bar.p.toFixed(2);
+      setStyle(bar.fill, 'width', `${(bar.p * 100).toFixed(1)}%`);
+      setText(bar.val, bar.p.toFixed(2));
       bar.row.classList.toggle('win', i === best);
     });
 
@@ -111,12 +112,13 @@ export function initDecode(root, { onSelect } = {}) {
     cells.forEach((c, i) => {
       c.classList.toggle('cursor', i === cursor);
       c.classList.toggle('target', i === target);
-      c.style.setProperty('--dwell', i === cursor ? (dwell / DWELL).toFixed(3) : 0);
+      const v = i === cursor ? (dwell / DWELL).toFixed(3) : '0';
+      if (c.__dwell !== v) { c.__dwell = v; c.style.setProperty('--dwell', v); }
     });
-    textEl.textContent = log;
+    setText(textEl, log);
 
     stimFlash = Math.max(0, stimFlash - dt * 1.5);
-    stimEl.style.opacity = (0.35 + stimFlash * 0.65).toFixed(2);
+    setStyle(stimEl, 'opacity', (0.35 + stimFlash * 0.65).toFixed(2));
     stimEl.classList.toggle('firing', stimFlash > 0.3);
   }
 

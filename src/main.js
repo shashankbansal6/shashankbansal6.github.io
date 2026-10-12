@@ -5,11 +5,13 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import Lenis from 'lenis';
-import { adaptiveScale } from './perf.js';
+import { adaptiveScale, yieldToMain, precompile } from './perf.js';
 import { fitCards } from './phone.js';
+import { setStyle } from './lib/dom.js';
 import gsap from 'gsap';
 
-import { CHIP, MODALITIES, PROFILE, EXPERIENCE, RESEARCH, PUBLICATIONS, HONORS, totalPowerMW } from './config.js';
+import { CHIP, MODALITIES, totalPowerMW } from './config.js';
+import { fillPages, fmt } from './pages.js';
 import { sstep, damp, lerp } from './lib/math.js';
 import { scalpAbove } from './scene/anatomy.js';
 import { buildBrain } from './scene/brain.js';
@@ -22,15 +24,15 @@ import { Gen, Scope } from './ui/signals.js';
 import { initModalities } from './ui/modalities.js';
 import { initDecode } from './ui/decode.js';
 import { initLabels } from './ui/labels.js';
-import { initSpikeSorter } from './game/spikesorter.js';
 import { WATERCOLOR, PAPER, tint, applyTheme, themed, onTheme } from './theme.js';
-import { watercolorPass } from './scene/watercolor.js';
+import { watercolorPass, paperOutputPass } from './scene/watercolor.js';
 
 
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 const mobile = matchMedia('(max-width: 900px)').matches;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = (s, r = document) => r.querySelector(s);
+fillPages();
 
 // ── renderer / scene ─────────────────────────────────────────────────────────
 const canvas = $('#gl');
@@ -44,6 +46,7 @@ scene.add(root);
 
 const brain = buildBrain(mobile ? 60000 : 125000);
 root.add(brain.points);
+await yieldToMain();
 // watercolor underpainting: large, faint washes scattered over the cortex (paper theme only)
 const wash = (() => {
   const src = brain.points.geometry.attributes.position;
@@ -64,6 +67,7 @@ const wash = (() => {
 themed(() => { wash.visible = WATERCOLOR; });
 const { group: overlayGroup, layers } = buildOverlays();
 root.add(overlayGroup);
+await yieldToMain();
 const ecog = layers.ecog;
 const chipAnchor = scalpAbove(ecog.center.p.clone().add(new THREE.Vector3(0.25, 0.45, -0.4)));
 const chip = buildChip(chipAnchor);
@@ -92,6 +96,8 @@ link.layer.set(0);
   });
 }
 
+await yieldToMain();
+
 // ── post-processing: one pipeline per theme, built on first use ───────────────
 let composer = null;
 let bloom = null;
@@ -108,7 +114,7 @@ function buildPipeline(wcTheme) {
     c.addPass(new RenderPass(scene, camera));
     const pass = watercolorPass();
     c.addPass(pass);
-    c.addPass(new OutputPass());
+    c.addPass(paperOutputPass());
     return { composer: c, wc: pass, bloom: null };
   }
   if (mobile || new URLSearchParams(location.search).get('bloom') === '0') return { composer: null, wc: null, bloom: null };
@@ -176,7 +182,14 @@ const SCALARS = ['brain', 'chip', 'sig', 'link', 'loop', 'drag', 'activity', 'ho
 const DEFAULTS = { brain: 1, activity: 0.4 };
 let manualOverlays = {};
 
+// One flat vector per stage, built once (the sensing stage's again whenever its toggles change).
+const vectors = new Map();
 function stateVector(st) {
+  let v = vectors.get(st);
+  if (!v) vectors.set(st, (v = buildVector(st)));
+  return v;
+}
+function buildVector(st) {
   const ov = st.manual ? manualOverlays : st.ov || {};
   const v = {};
   for (const k of SCALARS) v[k] = st[k] ?? DEFAULTS[k] ?? 0;
@@ -188,8 +201,10 @@ function stateVector(st) {
 
 // ── DOM: sections, anchors, rail ─────────────────────────────────────────────
 const sections = [...document.querySelectorAll('.stage')].map((el) => ({
-  el, id: el.dataset.stage, cards: [...el.querySelectorAll('.card')], anchor: 0, half: 1, vis: 0,
+  el, id: el.dataset.stage, cards: [...el.querySelectorAll('.card')].map((el) => ({ el, loose: false })), anchor: 0, half: 1, vis: 0,
 }));
+const byId = Object.fromEntries(sections.map((s) => [s.id, s]));
+const heroInner = $('.hero-inner');
 const contentEl = $('.content');
 let keys = [];
 let coveredAt = Infinity; // past here the opaque content (game, about, ...) hides the 3D scene completely
@@ -219,6 +234,7 @@ function fitPages() {
 function layout() {
   fitPages();
   fitCards(mobile, [...document.querySelectorAll('#journey > .stage > .card, #journey > .stage > .duo')]);
+  for (const s of sections) for (const c of s.cards) c.loose = !!c.el.closest('.flow'); // a card that scrolls with the page
   const vh = innerHeight;
   for (const s of sections) {
     const top = s.el.getBoundingClientRect().top + scrollY;
@@ -254,6 +270,7 @@ document.querySelectorAll('a[href="#s-landscape"]').forEach((a) =>
 // ── UI modules ────────────────────────────────────────────────────────────────
 const modalities = initModalities($('#s-landscape'), (sel) => {
   manualOverlays = {};
+  vectors.delete(STAGES.landscape.state);
   let non = false;
   for (const id of sel) {
     const m = MODALITIES.find((x) => x.id === id);
@@ -281,7 +298,6 @@ brain.material.uniforms.uRippleCenter.value.copy(ecog.center.p);
 const labels = initLabels($('#labels'), [...Object.values(layers), link.layer], root, camera);
 
 // chip stats + specs from config
-const fmt = (v, d = 0) => v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
 const statTargets = {
   channels: [CHIP.channels, 0],
   ppc: [CHIP.powerPerChannelUW, 1],
@@ -289,6 +305,8 @@ const statTargets = {
   total: [totalPowerMW(), 2],
 };
 let statsShown = false;
+const statsEl = $('#s-chip .stats');
+const statsOnScreen = () => { const r = statsEl.getBoundingClientRect(); return r.top < innerHeight * 0.9 && r.bottom > 0; };
 function resetStats() {
   statsShown = false;
   document.querySelectorAll('.stats [data-count]').forEach((el) => { gsap.killTweensOf(el.__o); el.textContent = '0'; });
@@ -301,84 +319,6 @@ function showStats() {
     gsap.to(o, { v, duration: 1.6, ease: 'power3.out', onUpdate: () => (el.textContent = fmt(o.v, d)) });
   });
 }
-$('.chip-note').textContent = `Test setup: ${CHIP.testbed}.`;
-$('.link-specs').innerHTML = `
-  <dt>Power</dt><dd class="down">↓ inductive, wearable → implant</dd>
-  <dt>Data</dt><dd class="up">↑ backscatter, implant → wearable</dd>
-  <dt>Implant</dt><dd>no battery, no percutaneous wires</dd>`;
-
-// about, research, publications, experience
-const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-const linkList = PROFILE.links.map((l) => `<a href="${l.href}">${l.label}</a>`).join('') + `<a href="mailto:${PROFILE.email}">Email</a>`;
-$('#profile-links').innerHTML = linkList;
-$('#footer-links').innerHTML = linkList;
-$('#honors').innerHTML = HONORS.map((h, i) => `<li data-i="${i}"><div><span>${h.year}</span>${esc(h.text)}</div></li>`).join('');
-const certDlg = $('#cert');
-// an award with a certificate image becomes a link (text and thumbnail) once the image is known to exist
-HONORS.forEach((h, i) => {
-  if (!h.img) return;
-  const probe = new Image();
-  probe.onload = () => {
-    const li = $(`#honors li[data-i="${i}"]`);
-    const alt = esc(h.alt || h.text);
-    li.classList.add('has-img');
-    li.innerHTML = `<button type="button" class="honor-img" data-full="${h.img}" data-alt="${alt}" aria-label="View certificate larger"><img src="${h.img.replace(".jpg", "-thumb.jpg")}" alt="${alt}" loading="lazy" decoding="async" /></button>
-      <div><span>${h.year}</span><button type="button" class="honor-link" data-full="${h.img}" data-alt="${alt}">${esc(h.text)} <em>View certificate ↗</em></button></div>`;
-  };
-  probe.src = h.img.replace(".jpg", "-thumb.jpg");
-});
-$('#honors').addEventListener('click', (e) => {
-  const b = e.target.closest('.honor-img, .honor-link');
-  if (!b) return;
-  $('img', certDlg).src = b.dataset.full;
-  $('img', certDlg).alt = b.dataset.alt;
-  certDlg.showModal();
-});
-certDlg.addEventListener('click', () => certDlg.close());
-$('#pillars').innerHTML = RESEARCH.map((r, i) => `
-  <article>
-    <span class="num">${String(i + 1).padStart(2, '0')}</span>
-    <h3>${esc(r.title)}</h3>
-    <p>${esc(r.text).replace(/1,024/g, '<span class="live-count" data-to="1024">1,024</span>')}</p>
-    <ul class="refs">${r.refs.map((x) => `<li><span class="kind">${x.kind}</span>${x.href ? `<a href="${x.href}" target="_blank" rel="noopener">${esc(x.label)} ↗</a>` : `<em>${esc(x.label)}</em>`}</li>`).join('')}</ul>
-  </article>`).join('');
-// "1,024 channels" counts up the first time it scrolls into view
-document.querySelectorAll('.live-count').forEach((el) => {
-  if (reduced || !('IntersectionObserver' in window)) return;
-  el.textContent = '0';
-  const io = new IntersectionObserver(([e]) => {
-    if (!e.isIntersecting) return;
-    io.disconnect();
-    const o = { v: 0 };
-    gsap.to(o, { v: +el.dataset.to, duration: 2.2, ease: 'power2.out', onUpdate: () => (el.textContent = fmt(o.v)) });
-  }, { threshold: 1 });
-  io.observe(el);
-});
-const pubItem = (p) => `
-  <li>
-    <span class="year">${p.year}</span>
-    <div>
-      <a href="${p.href}" target="_blank" rel="noopener" class="title">${esc(p.title)}</a>
-      <div class="authors">${p.authors}</div>
-      <div class="venue">${esc(p.venue)}</div>
-    </div>
-  </li>`;
-$('#pubs').innerHTML = PUBLICATIONS.filter((p) => p.type !== 'patent').map(pubItem).join('');
-$('#patents').innerHTML = PUBLICATIONS.filter((p) => p.type === 'patent').map(pubItem).join('');
-$('#timeline').innerHTML = EXPERIENCE.map((e) => `
-  <li>
-    <a class="logo" href="${e.url}" target="_blank" rel="noopener" aria-label="${esc(e.org)}"><img src="${e.logo}" alt="" width="36" height="36" loading="lazy" /></a>
-    <div class="body">
-      <div class="when">${e.when}</div>
-      <h3>${esc(e.title)}</h3>
-      <a class="org" href="${e.url}" target="_blank" rel="noopener">${esc(e.org)}</a>
-      ${e.who ? `<div class="who">${esc(e.who)}</div>` : ''}
-      ${e.email ? `<a class="mail" href="mailto:${e.email}">${e.email}</a>` : ''}
-      ${e.notes?.length ? `<ul>${e.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
-    </div>
-  </li>`).join('');
-$('#year').textContent = new Date().getFullYear();
-initSpikeSorter($('#play .ss'));
 // ── theme switch ──────────────────────────────────────────────────────────────
 // No reload: freeze the current 3D frame in an overlay, dip the page text, swap every
 // material/pipeline/stylesheet to the other theme in place (scroll position, camera and
@@ -485,6 +425,7 @@ canvas.addEventListener('pointerup', endDrag);
 canvas.addEventListener('pointercancel', endDrag);
 canvas.addEventListener('pointerleave', () => pointer.set(-9, -9));
 
+let tipFor = null;
 function updateHover() {
   if (cur.hover < 0.6 || mobile) {
     chip.hover(null);
@@ -496,25 +437,31 @@ function updateHover() {
   const b = hit?.object.userData.block;
   chip.hover(b?.id ?? null);
   if (b) {
-    tip.innerHTML = `<strong><i style="background:${b.color}"></i>${b.label}</strong><ul>${b.lines().map((l) => `<li>${l}</li>`).join('')}</ul>`;
+    if (b !== tipFor) tip.innerHTML = `<strong><i style="background:${b.color}"></i>${b.label}</strong><ul>${b.lines().map((l) => `<li>${l}</li>`).join('')}</ul>`;
     const x = Math.min(pointerPx.x + 18, innerWidth - 300);
-    tip.style.transform = `translate(${x}px, ${pointerPx.y + 18}px)`;
+    setStyle(tip, 'transform', `translate(${x}px, ${pointerPx.y + 18}px)`);
     tip.classList.add('on');
   } else tip.classList.remove('on');
+  tipFor = b || null;
   return !!b;
 }
 
 // ── resize ────────────────────────────────────────────────────────────────────
 let lastW = 0, lastH = 0;
+let viewW = innerWidth, viewH = innerHeight; // the canvas's CSS size: what the camera and anything projected must use
 function resize() {
   const w = innerWidth, h = innerHeight;
   // a phone's address bar growing/shrinking while scrolling is not a real resize
   if (lastW === w && lastH && Math.abs(h - lastH) < lastH * 0.25 && matchMedia('(pointer: coarse)').matches) return;
   lastW = w;
   lastH = h;
-  renderer.setSize(w, h, false);
+  // draw at the canvas's own size: it is 100vh tall, which on a phone is taller than innerHeight while the browser
+  // bars are showing, and a buffer of the window's size would be stretched to fit it
+  viewW = canvas.clientWidth || w;
+  viewH = canvas.clientHeight || h;
+  renderer.setSize(viewW, viewH, false);
   sizePipeline();
-  camera.aspect = w / h;
+  camera.aspect = viewW / viewH;
   uPixelRatio.value = dpr * Math.max(0.7, h / 900);
   layout();
   sigScope.resize();
@@ -524,7 +471,7 @@ addEventListener('resize', resize);
 resize();
 
 // ── main loop ─────────────────────────────────────────────────────────────────
-const cur = stateVector(STAGES.hero.state);
+const cur = { ...stateVector(STAGES.hero.state) }; // a copy: the cached vector must not be damped in place
 const camPos = new THREE.Vector3();
 const camTarget = new THREE.Vector3();
 const camOff = new THREE.Spherical();
@@ -533,6 +480,8 @@ let intro = reduced ? 1 : 0;
 let first = true;
 const clock = new THREE.Timer();
 const tmpV = new THREE.Vector3();
+const tmpS = new THREE.Spherical();
+const sampled = { target: new THREE.Vector3(), off: new THREE.Spherical(), sx: 0, sy: 0, st: {} };
 
 function sample(scroll) {
   let i = 0;
@@ -541,16 +490,18 @@ function sample(scroll) {
   const raw = b === a ? 0 : Math.max(0, Math.min(1, (scroll - a.at) / (b.at - a.at)));
   const t = sstep(0.18, 0.82, raw);
   const va = a.stage.view, vb = b.stage.view;
-  const target = va.target.clone().lerp(vb.target, t);
-  const off = new THREE.Spherical(
+  const out = sampled;
+  out.target.copy(va.target).lerp(vb.target, t);
+  out.off.set(
     Math.exp(lerp(Math.log(va.off.radius), Math.log(vb.off.radius), t)),
     lerp(va.off.phi, vb.off.phi, t),
     va.off.theta + Math.atan2(Math.sin(vb.off.theta - va.off.theta), Math.cos(vb.off.theta - va.off.theta)) * t,
   );
   const sa = stateVector(a.stage.state), sb = stateVector(b.stage.state);
-  const st = {};
-  for (const k in sa) st[k] = lerp(sa[k], sb[k], t);
-  return { target, off, sx: lerp(va.sx, vb.sx, t), sy: lerp(va.sy, vb.sy, t), st };
+  for (const k in sa) out.st[k] = lerp(sa[k], sb[k], t);
+  out.sx = lerp(va.sx, vb.sx, t);
+  out.sy = lerp(va.sy, vb.sy, t);
+  return out;
 }
 
 const scaleDown = adaptiveScale({ start: dpr, min: 1, apply: (q) => { dpr = q; renderer.setPixelRatio(q); lastW = 0; resize(); } });
@@ -565,7 +516,13 @@ function frame(time) {
   const w = innerWidth, h = innerHeight;
   // everything from the game down is a plain page over an opaque background: stop drawing the scene behind it
   // (on a phone this is what keeps scrolling smooth there)
-  if (!first && scroll > coveredAt) { requestAnimationFrame(frame); return; }
+  if (!first && scroll > coveredAt) {
+    // a jump straight past the journey (an anchor link, End) must still put away the rail and the chip tooltip
+    rail.classList.add('hide');
+    tip.classList.remove('on');
+    requestAnimationFrame(frame);
+    return;
+  }
 
   // scene state from scroll
   const s = sample(scroll);
@@ -585,13 +542,14 @@ function frame(time) {
   shift.y = damp(shift.y, s.sy, 6, dt);
 
   // intro dolly
-  intro = Math.min(1, intro + dt * 0.45);
+  intro = Math.min(1, intro + dt * 0.6);
   const ease = 1 - (1 - intro) ** 3;
-  tmpV.setFromSpherical(new THREE.Spherical(camOff.radius * (1 + 0.9 * (1 - ease)), camOff.phi - 0.25 * (1 - ease), camOff.theta + 0.6 * (1 - ease)));
+  tmpV.setFromSpherical(tmpS.set(camOff.radius * (1 + 0.9 * (1 - ease)), camOff.phi - 0.25 * (1 - ease), camOff.theta + 0.6 * (1 - ease)));
   camPos.copy(camTarget).add(tmpV);
   camera.position.copy(camPos);
   camera.lookAt(camTarget);
-  camera.setViewOffset(w, h, -shift.x * w, shift.y * h, w, h);
+  // (setViewOffset also sets the camera's aspect from these, so they must be the canvas's size, not the window's)
+  camera.setViewOffset(viewW, viewH, -shift.x * viewW, shift.y * viewH, viewW, viewH);
 
   // drag rotation only while the brain is the subject; idle sway in hero
   if (!dragging) {
@@ -604,7 +562,7 @@ function frame(time) {
   }
   const sway = reduced ? 0 : Math.sin(uTime.value * 0.18) * 0.35 * cur.drag;
   root.rotation.set(pitch * cur.drag, yaw + sway, 0);
-  canvas.className = cur.drag > 0.5 && !mobile ? (dragging ? 'grabbing' : 'grab') : '';
+  let cursor = cur.drag > 0.5 && !mobile ? (dragging ? 'grabbing' : 'grab') : '';
 
   // apply state
   for (const k of LAYER_KEYS) layers[k].set(cur[`ov_${k}`]);
@@ -625,7 +583,8 @@ function frame(time) {
   pathway.update(dt, 1);
   chip.update(dt, 0.6 + cur.sig * 0.6);
   link.update(dt);
-  if (updateHover()) canvas.className = 'point';
+  if (updateHover()) cursor = 'point';
+  if (canvas.className !== cursor) canvas.className = cursor;
 
   // cards, rail, per-chapter UI
   let active = sections[0];
@@ -634,26 +593,30 @@ function frame(time) {
     const d = Math.abs(scroll - sec.anchor) / sec.half;
     sec.vis = sec.id === 'hero' ? 1 - sstep(0.15, 0.6, scroll / h) : 1 - sstep(0.62, 0.92, d);
     for (const card of sec.cards) {
-      const loose = card.closest('.flow'); // a card that scrolls with the page stays fully visible
-      card.style.opacity = loose ? '1' : sec.vis.toFixed(3);
-      card.style.pointerEvents = loose || sec.vis > 0.3 ? 'auto' : 'none';
+      // on a laptop / desktop the cards stay solid and ride in and out with the page (sticky), like on a phone;
+      // on a phone a pinned card still fades, and one that scrolls with the page stays fully visible
+      const solid = !mobile || card.loose;
+      setStyle(card.el, 'opacity', solid ? '1' : sec.vis.toFixed(3));
+      setStyle(card.el, 'pointerEvents', solid || sec.vis > 0.3 ? 'auto' : 'none');
     }
     if (d < best) { best = d; active = sec; }
   }
   const pastJourney = scroll > keys[keys.length - 1].at - h * 0.5;
   sections.forEach((sec) => sec.rail.classList.toggle('on', sec === active && !pastJourney));
   rail.classList.toggle('hide', pastJourney || scroll < h * 0.3);
-  $('.hero-inner').style.opacity = sections[0].vis.toFixed(3);
+  setStyle(heroInner, 'opacity', sections[0].vis.toFixed(3));
 
-  const vis = Object.fromEntries(sections.map((x) => [x.id, x.vis]));
-  if (vis.landscape > 0.01) modalities.update(dt);
-  if (vis.signals > 0.01) sigScope.step(dt);
-  if (vis.decode > 0.01) decode.update(dt);
-  if (vis.chip > 0.5 && !statsShown) showStats();
-  else if (vis.chip < 0.15 && statsShown) resetStats(); // count again on the next pass
+  if (byId.landscape.vis > 0.01) modalities.update(dt);
+  if (byId.signals.vis > 0.01) sigScope.step(dt);
+  if (byId.decode.vis > 0.01) decode.update(dt);
+  // count up as the stats come into view (desktop cards are on screen well before the chapter is centred)
+  const statsIn = mobile ? byId.chip.vis > 0.5 : statsOnScreen();
+  const statsOut = mobile ? byId.chip.vis < 0.15 : !statsIn;
+  if (statsIn && !statsShown) showStats();
+  else if (statsOut && statsShown) resetStats(); // count again on the next pass
 
   root.updateMatrixWorld();
-  labels.update(w, h, 1 - Math.max(vis.decode, vis.chip));
+  labels.update(viewW, viewH, 1 - Math.max(byId.decode.vis, byId.chip.vis));
 
   if (composer) composer.render(dt);
   else renderer.render(scene, camera);
@@ -676,12 +639,24 @@ function jumpToParam() {
   else window.scrollTo(0, y);
 }
 jumpToParam();
+// Arriving on /#talks (or #talks/<item>) from another page: the browser jumps before the page has its final height,
+// so jump again once it has.
+const hashId = !at && location.hash.slice(1).split('/')[0];
+function jumpToHash() {
+  const el = hashId && document.getElementById(hashId);
+  if (!el) return;
+  const y = el.getBoundingClientRect().top + scrollY;
+  intro = 1;
+  if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
+  else window.scrollTo(0, y);
+}
 
 // Fonts change layout; re-measure once they land.
 document.fonts?.ready.then(() => {
   layout();
   jumpToParam();
+  jumpToHash();
 });
-requestAnimationFrame(frame);
+precompile(renderer, scene, camera, composer).then(() => requestAnimationFrame(frame));
 
 if (import.meta.env.DEV) window.__site = { scene, camera, renderer, brain, cur, root, keys: () => keys, sample, sections, chip, link, chipAnchor, pathway, STAGES, composer, bloom };

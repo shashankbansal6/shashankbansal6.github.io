@@ -22,8 +22,7 @@
 [data-theme='watercolor'] body { font-size: 1.0625rem; }
 [data-theme='watercolor'] ::selection { color: #fffaf0; }
 
-/* paper vignette over everything that isn't the canvas */
-[data-theme='watercolor'] #gl { filter: saturate(1.05); }
+/* the canvas's slight saturation boost is done in its output shader (src/scene/watercolor.js) */
 
 [data-theme='watercolor'] .nav::before { background: linear-gradient(to bottom, rgba(242, 234, 217, 0.92), rgba(242, 234, 217, 0)); }
 @media (max-width: 900px) { [data-theme='watercolor'] .nav::before { background: linear-gradient(to bottom, #f2ead9 62%, rgba(242, 234, 217, 0)); } }

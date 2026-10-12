@@ -134,6 +134,18 @@ export const HONORS = [
   { year: '2025', text: 'Oral, International Materials Research Congress (Cancún) · 2 posters, SfN' },
   { year: '2023', text: 'Best Poster Award, First Place · IEEE Brain Discovery & Neurotechnology Workshop (Washington, DC)', img: '/awards/ieee-brain-2023.jpg', alt: 'IEEE Brain Best Poster Award, First Place, certificate' },
   { year: '2023', text: 'Telluride Neuromorphic Cognition Engineering Workshop' },
+  { year: '2023', text: 'Neocortex System grant (PSC supercomputer) · simulating energy-efficient large-scale spiking neural networks' },
+];
+
+// "Posters & talks". Files live in public/talks/ (made by scripts/add-talk.mjs): <id>-thumb.jpg, <id>.pdf, and either
+// <id>.jpg + <id>/tiles (a poster, pages: 1) or <id>/01.jpg ... (a deck, pages: N).
+export const TALKS = [
+  { id: 'iscas-2026', kind: 'Talk', year: 2026, title: 'Adiabatic Energy-Recycling Charge-Redistribution Array', venue: 'IEEE ISCAS 2026 (Shanghai) · Student Paper Award', pages: 26 },
+  { id: 'sfn-2025', kind: 'Poster', year: 2025, title: 'From Circuits to Synapses', venue: 'Society for Neuroscience (SfN) 2025', pages: 1 },
+  { id: 'iscas-2025-where-to-cut', kind: 'Poster', year: 2025, title: 'Where to Cut: Efficient ADC Quantization for Analog In-Memory Computing', venue: 'IEEE ISCAS 2025 (London)', pages: 1 },
+  { id: 'iscas-2025-translinear', kind: 'Poster', year: 2025, title: 'Analog Dynamic Current-Mode Translinear Matrix-Vector Multiplier', venue: 'IEEE ISCAS 2025 (London)', pages: 1 },
+  { id: 'ieee-brain-2023', kind: 'Poster', year: 2023, title: 'Wired for Oops: Neural Correlates of Loss of Control in a Car Racing Game', venue: 'IEEE Brain Discovery & Neurotechnology Workshop 2023 · Best Poster, First Place', pages: 1 },
+  { id: 'hs-ai-hardware', kind: 'Outreach', year: 2026, title: 'The Chips That Make AI Possible', venue: 'Talk for high-school students · why energy, not intelligence, is the hard problem', pages: 67 },
 ];
 
 const doi = (d) => `https://doi.org/${d}`;
@@ -174,15 +186,17 @@ export const RESEARCH = [
   },
 ];
 
+// `pdf`: a copy hosted here (public/papers/) — the accepted manuscript with the publisher's notice for IEEE papers,
+// the published version for open-access ones
 export const PUBLICATIONS = [
-  { year: 2026, title: 'Adiabatic Energy-Recycling Charge-Redistribution Array for Ultra-Low Power Massively Parallel Cross-Correlation', authors: '<b>S. Bansal</b>, P. G. Hogganvik, S. Jain, G. Hota, et al.', venue: 'IEEE ISCAS 2026 · Student Paper Award, NSA TC', href: doi('10.1109/iscas66217.2026.11562109') },
+  { year: 2026, title: 'Adiabatic Energy-Recycling Charge-Redistribution Array for Ultra-Low Power Massively Parallel Cross-Correlation', authors: '<b>S. Bansal</b>, P. G. Hogganvik, S. Jain, G. Hota, et al.', venue: 'IEEE ISCAS 2026 · Student Paper Award, NSA TC', href: doi('10.1109/iscas66217.2026.11562109'), pdf: '/papers/bansal-iscas-2026.pdf' },
   { type: 'patent', year: 2026, title: 'Energy Efficient Compute-in-Memory SRAM-C Circuit Architecture', authors: '<b>S. Bansal</b>, B. Cherif, G. Cauwenberghs, G. Hota, S. Jain', venue: 'US Patent 12,676,185 B2', href: PATENT_URL },
-  { year: 2025, title: 'A Dynamic Spike Sorter for Multiscale Nanoelectrode Array Recordings', authors: 'S. Shukla, C. Walsh, <b>S. Bansal</b>, J. Leugering, et al.', venue: 'Advanced Materials Interfaces', href: doi('10.1002/admi.202500158') },
-  { year: 2025, title: 'Where to Cut: Efficient ADC Quantization for Analog In-Memory Computing with Discrete Values', authors: 'J. Leugering, <b>S. Bansal</b>, Z. Liu, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043960') },
-  { year: 2025, title: 'A Highly PVT Invariant Low Power Scalable Analog Dynamic Current-Mode Translinear Matrix-Vector Multiplier', authors: 'G. Gennis, B. Cherif, <b>S. Bansal</b>, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043721') },
-  { year: 2024, title: 'The Past, Present, and Future of the Brain Imaging Data Structure (BIDS)', authors: 'R. Poldrack, … <b>S. Bansal</b>, et al.', venue: 'Imaging Neuroscience', href: doi('10.1162/imag_a_00103') },
+  { year: 2025, title: 'A Dynamic Spike Sorter for Multiscale Nanoelectrode Array Recordings', authors: 'S. Shukla, C. Walsh, <b>S. Bansal</b>, J. Leugering, et al.', venue: 'Advanced Materials Interfaces', href: doi('10.1002/admi.202500158'), pdf: '/papers/shukla-admi-2025.pdf' },
+  { year: 2025, title: 'Where to Cut: Efficient ADC Quantization for Analog In-Memory Computing with Discrete Values', authors: 'J. Leugering, <b>S. Bansal</b>, Z. Liu, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043960'), pdf: '/papers/leugering-iscas-2025.pdf' },
+  { year: 2025, title: 'A Highly PVT Invariant Low Power Scalable Analog Dynamic Current-Mode Translinear Matrix-Vector Multiplier', authors: 'G. Gennis, B. Cherif, <b>S. Bansal</b>, J. Song, et al.', venue: 'IEEE ISCAS 2025', href: doi('10.1109/iscas56072.2025.11043721'), pdf: '/papers/gennis-iscas-2025.pdf' },
+  { year: 2024, title: 'The Past, Present, and Future of the Brain Imaging Data Structure (BIDS)', authors: 'R. Poldrack, … <b>S. Bansal</b>, et al.', venue: 'Imaging Neuroscience', href: doi('10.1162/imag_a_00103'), pdf: '/papers/poldrack-bids-2024.pdf' },
   { year: 2023, title: 'Reconfigurable Event-Driven Spiking Neuromorphic Computing near High-Bandwidth Memory', authors: 'G. Hota, G. Frank, K. Wang, A. Uppal, O. Olajide, J. Liu, <b>S. Bansal</b>, et al.', venue: 'IEEE BioCAS 2023', href: doi('10.1109/biocas58349.2023.10388692') },
-  { year: 2021, title: 'High-Sensitivity Detection of Facial Features on MRI Brain Scans with a Convolutional Network', authors: '<b>S. Bansal</b>, A. Kori, et al.', venue: 'bioRxiv', href: doi('10.1101/2021.04.25.441373') },
+  { year: 2021, title: 'High-Sensitivity Detection of Facial Features on MRI Brain Scans with a Convolutional Network', authors: '<b>S. Bansal</b>, A. Kori, et al.', venue: 'bioRxiv', href: doi('10.1101/2021.04.25.441373'), pdf: '/papers/bansal-biorxiv-2021.pdf' },
 ];
 
 export const EXPERIENCE = [

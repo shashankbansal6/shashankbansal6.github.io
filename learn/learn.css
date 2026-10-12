@@ -42,13 +42,13 @@ html { scroll-behavior: auto; }
 .beat .card > p { font-size: 0.97rem; line-height: 1.5; margin-bottom: 0.8rem; }
 .beat .card .kicker { margin-bottom: 0.55rem; }
 .kicker span { text-transform: none; }
-.first { margin: 0.2rem 0 0.7rem; padding: 0.7rem 0.85rem; border-radius: 0.5rem; background: color-mix(in srgb, var(--accent) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); }
-.first .badge { display: inline-block; font: 700 0.68rem var(--ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--bg); background: var(--accent); border-radius: 99px; padding: 0.12rem 0.55rem; margin-bottom: 0.35rem; }
-.first.landmark { background: color-mix(in srgb, var(--text) 5%, transparent); border-color: var(--line-2); }
-.first.landmark .badge { background: var(--text); }
-.first > a { display: block; font: 600 1rem/1.3 var(--display); }
-.first .by { font: 0.8rem var(--ui); color: var(--muted); margin-top: 0.15rem; }
-.card .first p { font: 0.84rem/1.4 var(--ui); color: var(--body); margin: 0.3rem 0 0; }
+div.first { margin: 0.2rem 0 0.7rem; padding: 0.7rem 0.85rem; border-radius: 0.5rem; background: color-mix(in srgb, var(--accent) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent); }
+div.first .badge { display: inline-block; font: 700 0.68rem var(--ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--bg); background: var(--accent); border-radius: 99px; padding: 0.12rem 0.55rem; margin-bottom: 0.35rem; }
+div.first.landmark { background: color-mix(in srgb, var(--text) 5%, transparent); border-color: var(--line-2); }
+div.first.landmark .badge { background: var(--text); }
+div.first > a { display: block; font: 600 1rem/1.3 var(--display); }
+div.first .by { font: 0.8rem var(--ui); color: var(--muted); margin-top: 0.15rem; }
+.card div.first p { font: 0.84rem/1.4 var(--ui); color: var(--body); margin: 0.3rem 0 0; }
 .refs2 .labtag { display: inline-block; margin-right: 0.45rem; padding: 0 0.45rem; border-radius: 99px; font: 600 0.68rem/1.5 var(--ui); letter-spacing: 0.02em; color: var(--bg); background: var(--non); }
 .refs2 .metag { display: inline-block; margin-right: 0.45rem; font: 600 0.7rem var(--ui); color: var(--accent); }
 .refs2.labs a { font-weight: 500; color: var(--text); }
