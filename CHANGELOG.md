@@ -9,6 +9,12 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+### Also (v3.10, not yet deployed): phone header + game scrolling
+- Step bars on the Learn pages (Neuroscience layers, Sensor/Chip steps) stop short of the three-icon dock on phones, so the two no longer overlap; the bars are opaque so nothing shows through them.
+- The 3D scene stops drawing once you are past the top of the game (the game, About, Research, ... sit on an opaque page), which removes the stutter on phones below the game.
+- The game's scroll lock no longer toggles `overflow: hidden` (phone browsers jump the page when it flips); touch-move blocking alone holds the page still during a round.
+- Chip chain strip: the two small captions no longer overlap on narrow screens.
+
 ## v3.10 (not yet deployed)
 
 - **Chip design, Radio**: a new step for the radio block (power in, data out over one pair of coils) with a

@@ -399,8 +399,10 @@ function chainWidget(api) {
       text(f, `${fmt(RAW / 1e6, 0)} Mb/s`, xs[2], fy - maxT / 2 - 5, { size: 10.5, weight: 700, align: 'center', a: 0.9 });
       text(f, `${fmt(EVT / 1e3, 0)} kb/s`, xs[3], fy - tAt(3) / 2 - 5, { size: 10.5, weight: 700, align: 'center', a: 0.9 });
       text(f, 'tens of bits/s', xs[5] - (narrow ? 20 : 0), fy - 9, { size: 10.5, weight: 700, align: 'center', a: 0.9 });
-      text(f, 'bits per second at each stage (log scale)', L + 2, fy + maxT / 2 + 14, { size: 10, a: 0.5 });
-      text(f, `${CHIP.channels.toLocaleString()} ch × ${CHIP.powerPerChannelUW} µW ≈ ${totalPowerMW().toFixed(1)} mW · NEF ${CHIP.nef}`, R, fy + maxT / 2 + 14, { size: 10, align: 'right', a: 0.6 });
+      // narrow screens: the two captions would collide, so they sit on two lines
+      const tight = f.W < 520;
+      text(f, tight ? 'bits per second per stage (log)' : 'bits per second at each stage (log scale)', L + 2, fy + maxT / 2 + 14, { size: 10, a: 0.5 });
+      text(f, `${CHIP.channels.toLocaleString()} ch × ${CHIP.powerPerChannelUW} µW ≈ ${totalPowerMW().toFixed(1)} mW · NEF ${CHIP.nef}`, tight ? L + 2 : R, fy + maxT / 2 + (tight ? 28 : 14), { size: 10, align: tight ? 'left' : 'right', a: 0.6 });
     },
     click(f, x, y) {
       const h = hit.find((b) => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);

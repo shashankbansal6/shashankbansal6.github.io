@@ -192,6 +192,7 @@ const sections = [...document.querySelectorAll('.stage')].map((el) => ({
 }));
 const contentEl = $('.content');
 let keys = [];
+let coveredAt = Infinity; // past here the opaque content (game, about, ...) hides the 3D scene completely
 
 // Each content page (About, Research, ...) should fit one window: find the largest zoom
 // (>= 0.55) at which its content is no taller than the viewport. Mobile scrolls normally.
@@ -227,6 +228,7 @@ function layout() {
   const contentTop = contentEl.getBoundingClientRect().top + scrollY;
   keys = sections.map((s) => ({ at: s.anchor, stage: STAGES[s.id] }));
   keys.push({ at: contentTop + vh * 0.2, stage: STAGES.outro });
+  coveredAt = contentTop + vh * 0.7;
 }
 
 const rail = $('.rail');
@@ -561,6 +563,9 @@ function frame(time) {
   lenis?.raf(time);
   const scroll = window.scrollY;
   const w = innerWidth, h = innerHeight;
+  // everything from the game down is a plain page over an opaque background: stop drawing the scene behind it
+  // (on a phone this is what keeps scrolling smooth there)
+  if (!first && scroll > coveredAt) { requestAnimationFrame(frame); return; }
 
   // scene state from scroll
   const s = sample(scroll);

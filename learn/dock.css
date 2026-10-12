@@ -25,6 +25,12 @@
 @media (max-width: 900px) {
   .w-dock { top: 3.55rem; right: 0.6rem; backdrop-filter: none; background: color-mix(in srgb, var(--bg) 94%, transparent); }
   .w-dock a { width: 1.85rem; height: 1.85rem; }
-  body.world .dive-steps { max-width: calc(100% - 6.2rem); }
+  /* the step bars on each page stop short of the dock so the two never overlap (dock is about 6.8rem wide) */
+  .dive-track.phone .dive-steps { background: color-mix(in srgb, var(--bg) 96%, transparent); }
+  body.world .dive-track.phone .dive-steps { box-sizing: border-box; width: calc(100% - 6.9rem); max-width: none; }
+  body .steps { top: 3.55rem; left: 0.6rem; right: 7.7rem; transform: translateY(-0.5rem); max-width: none; overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
+  body .steps::-webkit-scrollbar { display: none; }
+  body .steps.show { transform: none; }
+  body .steps ol { flex: none; }
 }
 @media (prefers-reduced-motion: reduce) { .w-dock { transition: opacity 0.2s; transform: none; } }
