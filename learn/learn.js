@@ -28,6 +28,7 @@ import { watercolorPass, paperOutputPass } from '../src/scene/watercolor.js';
 import { initMenu } from '../src/menu.js';
 import { initAnalytics } from '../src/analytics.js';
 import { REGIONS, BEATS, FOUNDATIONS } from './content.js';
+import { doodle } from './doodles.js';
 import { initPopVec } from './popvec.js';
 import { esc, link, refsHTML } from './refs.js';
 import { worldsNext, initDock } from './worlds-nav.js';
@@ -211,6 +212,7 @@ BEATS.forEach((b) => {
       <p class="kicker"><span>${R.name.split(' ')[0].toUpperCase().slice(0, 3)} ${regionNo[b.region]}</span>${esc(b.depth)}</p>
       <h2>${esc(b.title)}</h2>
       <p>${esc(b.text)}</p>
+      ${doodle(b.comic)}
       ${b.widget === 'popvec' ? '<canvas class="popvec" aria-label="Population vector: each neuron fires most for its preferred direction"></canvas>' : ''}
       ${refsHTML(b)}
     </div>`;
@@ -223,9 +225,7 @@ const sections = [...document.querySelectorAll('.stage')].map((el) => ({
 const popvec = sections.filter((s) => s.beat?.widget === 'popvec').map((s) => ({ s, w: initPopVec($('.popvec', s.el)) }));
 
 // hero: pick a region
-$('#regions').innerHTML = Object.entries(REGIONS).map(([k, r]) => `<button type="button" data-r="${k}" class="reg ${k}"><b>${r.name}</b><span>${r.tagline}</span></button>`).join('')
-  + '<a class="reg sensor" href="/learn/sensors/"><b>Sensor design</b><span>Electrodes and the tissue interface</span></a>'
-  + '<a class="reg chip" href="/learn/chip/"><b>Chip design</b><span>Adiabatic, neuromorphic, in-memory</span></a>';
+$('#regions').innerHTML = Object.entries(REGIONS).map(([k, r]) => `<button type="button" data-r="${k}" class="reg ${k}"><b>${r.name}</b><span>${r.tagline}</span></button>`).join('');
 $('#next').innerHTML = worldsNext('brain');
 initDock('brain');
 let hoverRegion = null;

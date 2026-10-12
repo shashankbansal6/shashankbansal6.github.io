@@ -5,6 +5,7 @@
 //    (drawing, then its text) and only the page scrolls; a slim step bar stays on top to jump around.
 import { makeFig, clamp } from './fig.js';
 import { esc, refsHTML } from './refs.js';
+import { doodle } from './doodles.js';
 
 // A mouse acts on press. A finger acts on a tap: if the touch turns into a scroll the browser cancels it,
 // so swiping over a drawing scrolls the page instead of poking the drawing.
@@ -40,6 +41,7 @@ export function initDive(root, { beats, widgets, captions = {}, label = 'STEP', 
       <p class="kicker"><span>${label} ${i + 1} / ${N}</span>${esc(b.depth)}</p>
       <h3 id="dc-${b.id}">${esc(b.title)}</h3>
       <p>${esc(b.text)}</p>
+      ${doodle(b.comic)}
       ${refsHTML(b)}
     </article>`;
   const stepsHTML = `<ol class="dive-steps" aria-label="Steps">${beats.map((b, i) => `<li><button type="button" data-i="${i}">${esc(b.step)}</button></li>`).join('')}</ol>`;

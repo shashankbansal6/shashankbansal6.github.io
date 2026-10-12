@@ -9,6 +9,16 @@ npm install && npm run dev
 git checkout redesign       # back to the latest
 ```
 
+### v3.12: plainer Learn pages, comics, faster on machines without a GPU
+- Learn pages: every card, intro and the basics rewritten in plainer language; the Neuroscience hero no longer shows
+  the Sensor/Chip design boxes (they have their own pages).
+- A hand-drawn stick-figure comic on every Learn card (26, in learn/doodles.js, Patrick Hand font, self-hosted),
+  pun-heavy on the chip page.
+- Home page: where WebGL draws in software (no GPU, VMs, PageSpeed's lab machine), a lighter brain (30k points, lower
+  resolution, no opening move) redrawn only while the page moves. With a GPU nothing changes. The hero text starts
+  25% visible so it counts as painted on the first frame, and the 3D code is fetched after the first paint instead of
+  being preloaded. Lab score on a no-GPU run: mobile 45 → ~74, desktop 67 → 80–94.
+
 ### v3.11: posters & talks, hosted papers, faster start
 - New "Posters & talks" section (also in Explore): the ISCAS 2026 talk, the SfN 2025, two ISCAS 2025 and the IEEE Brain
   2023 posters, and a high-school outreach talk. Posters open in a full-screen viewer that zooms and pans (wheel, pinch,

@@ -98,9 +98,9 @@ const P = {
 const lab = (p, name, me = false) => ({ ...p, lab: name, me });
 
 export const REGIONS = {
-  motor: { name: 'Motor cortex', hi: [1, 0, 0], tagline: 'Where intention becomes movement', area: 'Precentral gyrus · frontal lobe' },
-  visual: { name: 'Visual cortex', hi: [0, 1, 0], tagline: 'The back of the brain sees', area: 'Occipital lobe · V1' },
-  language: { name: 'Language', hi: [0, 0, 1], tagline: 'Decoding words and plans', area: 'Frontal and temporal lobes' },
+  motor: { name: 'Motor cortex', hi: [1, 0, 0], tagline: 'Plans a move, then makes it', area: 'Precentral gyrus · frontal lobe' },
+  visual: { name: 'Visual cortex', hi: [0, 1, 0], tagline: 'Seeing happens at the back', area: 'Occipital lobe · V1' },
+  language: { name: 'Language', hi: [0, 0, 1], tagline: 'Where words get made', area: 'Frontal and temporal lobes' },
 };
 
 // `first` = the paper that first described what this layer shows (kind 'first') or the landmark
@@ -109,8 +109,8 @@ export const BEATS = [
   // ── motor ───────────────────────────────────────────────────────────────
   {
     id: 'm-scalp', region: 'motor', step: 'Scalp', depth: 'Scalp · outside the skull', side: 'left',
-    title: 'Outside: a rhythm that drops when you move',
-    text: 'From the scalp, EEG sees the µ (8–12 Hz) and β (13–30 Hz) rhythms over the motor strip weaken when you move, or even imagine moving. The picture is blurry, about a centimetre, but it needs no surgery.',
+    title: 'From the scalp, a rhythm that fades when you move',
+    text: 'Put EEG electrodes over the top of your head and you’ll see a steady 8–12 Hz rhythm called mu, with a faster beta rhythm alongside it. When you move your hand, or even just imagine moving it, both rhythms get quieter. EEG can’t tell you which neurons did that, because everything is blurred over about a centimetre. But it needs no surgery, so it’s where most people start.', comic: 'eeg',
     first: { kind: 'first', note: 'The first human EEG recording.', ...P.berger },
     labs: [lab(P.chi09, 'ISNL · Cauwenberghs')],
     modern: [P.pfurtscheller],
@@ -118,8 +118,8 @@ export const BEATS = [
   },
   {
     id: 'm-surface', region: 'motor', step: 'Surface', depth: 'Cortical surface · under the skull', side: 'right',
-    title: 'The surface: the first map of the body',
-    text: 'Penfield and Boldrey stimulated the exposed cortex of patients during surgery and asked what they felt or which part moved. The foot landed at the top, the face at the bottom, and the hand got far more room than the trunk. ECoG grids now sit on this same surface and read high-gamma power as you plan a movement.',
+    title: 'On the surface, a map of the body',
+    text: 'In the 1930s Wilder Penfield stimulated the exposed brains of awake patients during surgery and asked what moved. The foot showed up at the top of the strip and the face near the bottom, and the hands and lips got far more room than the back. ECoG grids now sit on this same surface. They pick up fast activity that rises as you plan a movement.', comic: 'homunculus',
     first: { kind: 'first', note: 'The first map of the motor cortex in people.', ...P.penfield },
     labs: [lab(P.kuzum14, 'Kuzum Lab'), lab(P.ramezani, 'Kuzum & Cubukcu Labs')],
     modern: [P.jasper],
@@ -127,8 +127,8 @@ export const BEATS = [
   },
   {
     id: 'm-inside', region: 'motor', step: 'Inside', depth: 'Inside the cortex · ~1.5 mm deep', side: 'left',
-    title: 'Inside: a hundred needles',
-    text: 'A Utah array is a 10×10 grid of silicon needles, a few millimetres across, that hears single neurons. Implanted in the hand area of people with tetraplegia, it has driven cursors, robotic arms and handwriting. Click the labels on the brain to read about the devices.',
+    title: 'Inside, a hundred tiny needles',
+    text: 'The Utah array is a square of 100 silicon needles, about 4 mm across, that sits 1.5 mm deep in the cortex. At that depth it can hear single neurons firing. People with paralysis who have one in the hand area have used it to move cursors and robotic arms, and to type by imagining handwriting. Click the labels on the brain to read about each device.', comic: 'utah',
     first: { kind: 'landmark', note: 'The paper that introduced the Utah array.', ...P.maynard },
     labs: [lab(P.shukla25, 'ISNL · Cauwenberghs', true)],
     modern: [P.hochberg, P.collinger, P.willett21],
@@ -140,7 +140,7 @@ export const BEATS = [
   {
     id: 'm-neurons', region: 'motor', step: 'Neurons', depth: 'Single neurons · ~0.02 mm', side: 'right', widget: 'popvec',
     title: 'Neurons vote on direction',
-    text: 'No single neuron knows where the hand is going. Each one has a favourite direction: it fires fastest when the hand moves that way and falls silent when it moves the opposite way. The brain (and a decoder) adds up every neuron’s vote, and the sum points where the hand goes. Move your pointer around the dial to steer the hand.',
+    text: 'No single neuron knows where your hand is going. Each one has a favourite direction. It fires fastest when the hand moves that way and barely at all when it moves the other way. Add up all the votes and the total points where the hand goes, which is also how a decoder reads movement. Move your pointer around the dial to steer the hand.', comic: 'vote',
     first: { kind: 'first', note: 'The first description of the population code for movement direction.', ...P.georgopoulos },
     labs: [lab(P.peters14, 'Komiyama Lab'), lab(P.makino17, 'Komiyama Lab')],
     modern: [P.hochberg],
@@ -149,8 +149,8 @@ export const BEATS = [
   // ── visual ──────────────────────────────────────────────────────────────
   {
     id: 'v-scalp', region: 'visual', step: 'Scalp', depth: 'Scalp · outside the skull', side: 'left',
-    title: 'Outside: flicker and light',
-    text: 'Flicker a target and the visual cortex answers at the same frequency, which scalp EEG can read (SSVEP). Caps of near-infrared light sources and detectors (HD-DOT) see the blood-oxygen response and can map the visual field across the back of the head.',
+    title: 'From the scalp, flicker and light',
+    text: 'Look at a light flickering 15 times a second and your visual cortex starts pulsing at 15 Hz too. EEG can pick that up from the back of the head. It’s called SSVEP, and it’s one of the most reliable signals EEG has. A cap of near-infrared lights and detectors (HD-DOT) does something different. It follows blood flow and maps which part of your view is active.', comic: 'ssvep',
     first: { kind: 'first', note: 'Steady-state responses to modulated light, the basis of SSVEP.', ...P.regan },
     labs: [lab(P.ha14, 'ISNL · Cauwenberghs')],
     modern: [P.eggebrecht],
@@ -158,8 +158,8 @@ export const BEATS = [
   },
   {
     id: 'v-surface', region: 'visual', step: 'Surface', depth: 'Cortical surface · occipital pole', side: 'right',
-    title: 'The surface: a map in the back of the head',
-    text: 'In 1968 Brindley and Lewin implanted electrodes on the occipital cortex of a blind volunteer. Stimulating one made a spot of light, a phosphene, appear at a steady place in the visual field, because neighbouring points in the world map to neighbouring patches of cortex.',
+    title: 'On the surface, a map of what you see',
+    text: 'In 1968 Brindley and Lewin placed electrodes on the visual cortex of a blind volunteer. Stimulating an electrode made the volunteer see a spot of light, and it showed up in the same place every time. Neighbouring electrodes gave neighbouring spots, because the visual cortex holds a rough map of the world in front of you.', comic: 'phosphene',
     first: { kind: 'first', note: 'The first visual prosthesis implanted in a person.', ...P.brindley },
     labs: [lab(P.thunemann, 'Kuzum Lab')],
     modern: [],
@@ -167,8 +167,8 @@ export const BEATS = [
   },
   {
     id: 'v-inside', region: 'visual', step: 'Inside', depth: 'Inside the cortex · single neurons', side: 'left',
-    title: 'Inside: edges and shapes',
-    text: 'Hubel and Wiesel lowered a microelectrode into a cat’s visual cortex and found neurons that fire for an edge at one orientation. Today, many intracortical electrodes stimulated together draw shapes in monkeys and evoke phosphenes in people.',
+    title: 'Inside, neurons that see edges',
+    text: 'Hubel and Wiesel put a fine electrode into a cat’s visual cortex and found neurons that fire for a line at one particular angle. Turn the line and the neuron goes quiet. Those edge detectors are where seeing starts. Today, stimulating many electrodes at once can draw simple shapes for monkeys and spots of light for people.', comic: 'hubel',
     first: { kind: 'first', note: 'Neurons as edge detectors.', ...P.hubel },
     labs: [lab(P.reynoldsHeeger, 'Reynolds Lab'), lab(P.nassi15, 'Reynolds Lab'), lab(P.nandy17, 'Reynolds Lab')],
     modern: [P.chen, P.fernandez],
@@ -177,8 +177,8 @@ export const BEATS = [
   // ── language ────────────────────────────────────────────────────────────
   {
     id: 'l-scalp', region: 'language', step: 'Scalp', depth: 'Scalp · outside the skull', side: 'right',
-    title: 'Outside: light through the forehead',
-    text: 'fNIRS and HD-DOT shine near-infrared light through the scalp and read how much oxygenated blood a region draws while you listen or speak. They cannot follow syllables, but they show which regions work, and a cap is wearable.',
+    title: 'From the forehead, light through the skull',
+    text: 'fNIRS shines near-infrared light through the scalp and measures how much oxygen the blood underneath is carrying. It’s far too slow to follow words. It can show which areas work harder while you listen or speak, though, and you can wear it like a cap.', comic: 'fnirs',
     first: { kind: 'first', note: 'The first fNIRS study of brain activation in humans.', ...P.villringer },
     labs: [lab(P.bids24, 'Poldrack Lab', true), lab(P.bids16, 'Poldrack Lab')],
     modern: [P.eggebrecht],
@@ -186,8 +186,8 @@ export const BEATS = [
   },
   {
     id: 'l-map', region: 'language', step: 'The map', depth: 'The cortical map', side: 'left',
-    title: 'Two areas, one idea',
-    text: 'In 1861 Paul Broca described a patient who understood speech but could say almost nothing; the damage sat in the left frontal lobe. A dual-stream model now describes speech as one stream mapping sound to the movements of articulation, and another mapping sound to meaning.',
+    title: 'Where language lives',
+    text: 'In 1861 Paul Broca met a patient who understood what people said but could barely speak. After the patient died, Broca found damage in the left frontal lobe. It was the first time anyone had tied a mental ability to one spot in the brain. Today’s picture has two pathways. One links sounds to the mouth movements that make them, and the other links sounds to what they mean.', comic: 'streams',
     first: { kind: 'first', note: 'The first link between a brain region and speech production.', ...P.broca },
     labs: [lab(P.poldrack99, 'Poldrack Lab')],
     modern: [P.hickok],
@@ -195,8 +195,8 @@ export const BEATS = [
   },
   {
     id: 'l-surface', region: 'language', step: 'Surface', depth: 'Cortical surface · speech motor cortex', side: 'right',
-    title: 'The surface: articulators, tile by tile',
-    text: 'A grid with hundreds of tiny contacts over the ventral sensorimotor cortex sees the lips, jaw, tongue and larynx at work. Decoders trained on it have synthesised speech and turned attempted words into text and a talking avatar.',
+    title: 'On the surface, lips, jaw and tongue',
+    text: 'Lay a grid with hundreds of small contacts over the speech part of the motor cortex and you can watch the lips, jaw, tongue and voice box at work. Decoders trained on those signals have turned attempted speech into text, into a synthesised voice, and even into a talking avatar.', comic: 'tongue',
     first: { kind: 'first', note: 'Speech articulators laid out on human cortex, recorded with ECoG.', ...P.bouchard },
     labs: [lab(P.ramezani, 'Kuzum & Cubukcu Labs'), lab(P.cubukcuReview, 'Kuzum & Cubukcu Labs')],
     modern: [P.anumanchipalli, P.moses, P.metzger],
@@ -204,8 +204,8 @@ export const BEATS = [
   },
   {
     id: 'l-deep', region: 'language', step: 'Deeper', depth: 'Deeper · depth leads and arrays', side: 'left',
-    title: 'Deeper: single neurons and depth leads',
-    text: 'sEEG leads pass through the cortex to deep structures such as the hippocampus and insula. Intracortical arrays in speech motor cortex have decoded attempted speech into text with a large vocabulary.',
+    title: 'Deeper still',
+    text: 'Some recordings go further in. Thin sEEG leads, used to find where epileptic seizures start, pass through the cortex to deep structures like the hippocampus. And arrays placed in the speech motor cortex have turned attempted speech into text with a vocabulary of more than 100,000 words.', comic: 'speech',
     first: { kind: 'landmark', note: 'Intracortical speech decoding with a large vocabulary.', ...P.willett23 },
     labs: [lab(P.poldrack11, 'Poldrack Lab')],
     modern: [P.moses],
@@ -215,12 +215,12 @@ export const BEATS = [
 
 export const FOUNDATIONS = {
   kicker: 'The basics',
-  title: 'How the brain makes a signal',
+  title: 'Where the signal comes from',
   blocks: [
-    ['A neuron fires', 'Ions rush through channels in the cell membrane and produce a pulse about a millisecond long and roughly 100 mV across the membrane: the action potential. Recorded from just outside the cell, the same spike is only tens to hundreds of microvolts.'],
-    ['Fields add up', 'When thousands of neurons are active together, their currents sum into slower field potentials. An ECoG grid on the cortex picks these up cleanly. Through the skull, EEG sees a blurred, smaller version, and MEG senses the magnetic field of the same currents.'],
-    ['Blood follows', 'Active tissue calls in oxygenated blood a few seconds later. Near-infrared light (fNIRS and HD-DOT) tracks that change in oxygenation from the scalp.'],
-    ['The trade-off', 'Closer to the neurons means sharper space and time, and more surgery. Every layer you just scrolled through is a different point on that curve.'],
+    ['A neuron fires', 'A neuron fires when ions rush across its membrane. The pulse, called an action potential, lasts about a millisecond and measures about 100 mV inside the cell. From just outside the cell, the same spike is only tens to hundreds of microvolts.'],
+    ['Fields add up', 'When thousands of neurons are active together, their currents add up into slower waves. A grid on the brain picks these up clearly. EEG sees a smaller, blurrier version through the skull, and MEG picks up the magnetic field the same currents make.'],
+    ['Blood follows', 'A few seconds after a region gets busy, fresh oxygen-rich blood flows in. Near-infrared light (fNIRS and HD-DOT) can measure that from the scalp.'],
+    ['The trade-off', 'The closer you get to the neurons, the sharper the picture and the more surgery it takes. Each layer you scrolled through sits at a different point on that line.'],
   ],
   tags: [['EEG', 'non', true], ['MEG', 'non', true], ['HD-DOT', 'non', true], ['Intracortical', 'inv', true], ['ECoG', 'inv']],
   papers: [
@@ -237,26 +237,26 @@ export const FOUNDATIONS = {
 export const CHIP_INTRO = {
   kicker: 'Chip design',
   title: 'How a recording chip listens',
-  text: 'A neuron’s spike reaches the electrode as a few tens of microvolts. A chip has to amplify it without adding noise, turn it into numbers, throw away everything that does not matter and send the rest out, all on tissue that must stay cool. Seven steps, each one an idea you can play with: why quiet costs power, how few bits are enough, why computing only on spikes is neuromorphic, and how adiabatic circuits recycle charge instead of burning it.',
+  text: 'By the time a spike reaches the electrode it’s a few tens of microvolts. The chip has to amplify it without adding noise, turn it into numbers, keep only what matters and send it out, all without warming the brain. These steps walk through how, with a drawing to play with at each one.',
 };
 
 export const WORLDS = [
-  { id: 'brain', href: '/learn/', name: 'Neuroscience', line: 'The brain, layer by layer: motor, visual and language cortex, with the paper that first described each.', k: 'brain' },
-  { id: 'sensor', href: '/learn/sensors/', name: 'Sensor design', line: 'How an electrode hears a neuron: the field, the metal–saline interface, size, softness and transparency.', k: 'sensor' },
-  { id: 'chip', href: '/learn/chip/', name: 'Chip design', line: 'Noise, bits, events, in-memory compute and adiabatic charging, inside a recording chip.', k: 'chip' },
+  { id: 'brain', href: '/learn/', name: 'Neuroscience', line: 'From the scalp down to single neurons, in the motor, visual and language areas, with the paper behind each step.', k: 'brain' },
+  { id: 'sensor', href: '/learn/sensors/', name: 'Sensor design', line: 'How an electrode picks up a neuron, and why its size, stiffness and material matter.', k: 'sensor' },
+  { id: 'chip', href: '/learn/chip/', name: 'Chip design', line: 'How a recording chip amplifies, digitises and sends out spikes on a tiny power budget.', k: 'chip' },
 ];
 
 export const SENSOR_INTRO = {
   kicker: 'Sensor design',
   title: 'How an electrode hears a neuron',
-  text: 'Before a chip can amplify anything, a piece of metal has to catch it. A spike is a brief pulse of ionic current across a cell about 20 µm wide, and the electrode that hears it is a different material sitting in salt water. Seven steps follow the signal from the cell to the amplifier input: where the field comes from, what the metal–saline interface does to it, how big an electrode should be, where to put it, why soft is better than stiff, how to see through it, and how fast the number of electrodes is growing.',
+  text: 'Before a chip can do anything, a piece of metal has to pick up the spike. That metal sits in salty fluid next to a cell about 20 µm wide. These seven steps follow the signal from the cell to the amplifier.',
 };
 
 export const SENSOR_BEATS = [
   {
     id: 's-field', step: 'The field', widget: 'field', depth: 'A neuron · the extracellular potential',
     title: 'A spike is a tiny electric field',
-    text: 'When a neuron fires, current pours into the cell body and flows back out along the dendrite. That pair of currents drives a small voltage through the salty fluid around the cell. It falls steeply with distance: close to the cell it is about a hundred microvolts, but a couple of hundred micrometres away it is buried in noise. Drag the electrode and watch the spike sink under the detection line.',
+    text: 'When a neuron fires, current flows into the cell body and back out along its branches. That current sets up a small voltage in the salty fluid around the cell. Right next to the cell it’s about 100 µV. A couple of hundred micrometres away it’s lost in the noise. Drag the electrode away from the cell and watch the spike fade.', comic: 'field',
     hint: 'Drag the electrode.',
     first: { kind: 'landmark', note: 'The standard account of where EEG, ECoG, LFP and spike signals come from, and why they differ.', ...P.buzsaki },
     labs: [lab(P.shukla25, 'ISNL · Cauwenberghs', true)],
@@ -264,8 +264,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-interface', step: 'The interface', widget: 'interface', depth: 'The metal–saline interface · impedance',
-    title: 'The electrode is a capacitor in salt water',
-    text: 'Where metal meets tissue fluid, charge piles up in a thin layer, so an electrode behaves like a small capacitor in series with the resistance of the fluid. A smaller electrode means a smaller capacitance and a larger impedance, and that impedance forms a divider with the amplifier’s input: a tiny, smooth platinum site can lose more than half the signal before the chip sees it. Rough or conducting-polymer coatings add surface area and bring the impedance back down.',
+    title: 'The electrode acts like a capacitor',
+    text: 'Where metal meets salty fluid, charge builds up in a very thin layer, so the electrode behaves like a small capacitor. The smaller the electrode, the higher its impedance. A small, smooth platinum electrode can lose more than half the signal before it even reaches the amplifier. Roughening the surface or coating it with a conducting polymer adds area and wins most of that back.', comic: 'pool',
     hint: 'Change the material and the diameter.',
     first: { kind: 'landmark', note: 'The classic analysis of what a metal microelectrode looks like electrically.', ...P.robinson68 },
     labs: [lab(P.kuzum14, 'Kuzum Lab')],
@@ -273,8 +273,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-size', step: 'Size', widget: 'size', depth: 'Electrode size · what it averages',
-    title: 'The size of the electrode decides what you see',
-    text: 'A small electrode hears the one or two cells next to it, spike by spike. A bigger one averages thousands or millions of neurons, so fast spikes cancel and only slow, shared rhythms remain. That is the difference between a Neuropixels site, a Utah-array tip, a graphene µECoG contact, a clinical ECoG disc and an EEG cup. None is better; each answers a different question.',
+    title: 'Size decides what you hear',
+    text: 'A tiny electrode hears the one or two neurons right next to it. A big one averages thousands or millions of them, so single spikes cancel out and only slow rhythms are left. That’s why a Neuropixels site and an EEG cup record such different things. Each size is good for a different question.', comic: 'crowd',
     hint: 'Pick a device.',
     first: { kind: 'landmark', note: 'How far a recording electrode can hear, and how large neural ensembles are recorded.', ...P.buzsaki04 },
     labs: [lab(P.chi10, 'ISNL · Cauwenberghs'), lab(P.chi09, 'ISNL · Cauwenberghs')],
@@ -282,8 +282,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-forms', step: 'Five ways in', widget: 'forms', depth: 'Form factors · outside in',
-    title: 'Five ways in, from the scalp to the cortex',
-    text: 'Every step closer to the neurons buys a cleaner signal and costs surgery. EEG sits on the scalp with nothing in the head. A subdural ECoG grid lies on the brain surface, a stereo-EEG lead goes deep, a Utah array puts a hundred tips among the cortical cells, and a Neuropixels shank runs through every layer. I work with the scalp and the intracortical ends of that ladder.',
+    title: 'From the scalp into the cortex',
+    text: 'Each step closer to the neurons gives a cleaner signal and takes more surgery. EEG sits on the scalp. An ECoG grid lies on the surface of the brain, and a stereo-EEG lead reaches deep inside. A Utah array puts 100 tips right among the cells, and a Neuropixels probe runs through every layer of the cortex. My own work is at the two ends, on the scalp and inside the cortex.', comic: 'ladder',
     hint: 'Click a device.',
     first: { kind: 'first', note: 'Described the silicon-based array of needles that became the Utah array.', ...P.campbell91 },
     labs: [lab(P.chi10, 'ISNL · Cauwenberghs'), lab(P.shukla25, 'ISNL · Cauwenberghs', true), lab(P.kuzum14, 'Kuzum Lab')],
@@ -291,8 +291,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-soft', step: 'Soft', widget: 'soft', depth: 'Mechanics · the tissue response',
-    title: 'Stiff probes fight a moving brain',
-    text: 'The brain is as soft as set jelly and it shifts by micrometres to tens of micrometres with every heartbeat and breath. A silicon shank is tens of millions of times stiffer, so it rubs against the tissue all day. The brain answers with a scar of glial cells that pushes neurons away and weakens the signal over months. Thinner, softer probes that move with the brain scar less, which is why flexible polymer and graphene arrays matter.',
+    title: 'The brain is softer than the probe',
+    text: 'The brain is about as soft as jelly, and it shifts a little with every heartbeat and breath. A silicon probe is millions of times stiffer, so the two rub against each other all day. Over months the brain builds a scar around the probe, which pushes neurons away and weakens the signal. Thin, flexible probes that move with the brain cause much less scarring.', comic: 'jelly',
     hint: 'Switch the probe and slide the weeks.',
     first: { kind: 'landmark', note: 'The review of how brain tissue reacts to a chronic implant.', ...P.polikov05 },
     labs: [lab(P.ramezani, 'Kuzum & Cubukcu Labs')],
@@ -300,8 +300,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-clear', step: 'See through', widget: 'clear', depth: 'Transparency · light and electricity together',
-    title: 'Make the electrode transparent',
-    text: 'Metal contacts cast shadows over exactly the neurons you want to image. A single sheet of graphene is a conductor that absorbs only about two percent of light, so a graphene electrode array lets a microscope and an amplifier watch the same cells at the same moment: calcium flashes in light, spikes in voltage. Light can even stimulate the cells through the electrode with far fewer of the artefacts that a metal contact adds.',
+    title: 'See-through electrodes',
+    text: 'Metal electrodes block light, right over the cells you’d want to look at under a microscope. Graphene is a single layer of carbon atoms. It conducts electricity and lets about 98% of light through. With graphene electrodes you can record spikes and image the same cells at the same time, and even shine light through them to stimulate cells without the artefacts metal causes.', comic: 'graphene',
     hint: 'Switch between gold and graphene.',
     first: { kind: 'first', note: 'First transparent, flexible, low-noise graphene electrodes for recording while imaging.', ...P.kuzum14 },
     labs: [lab(P.thunemann, 'Kuzum Lab'), lab(P.ramezani, 'Kuzum & Cubukcu Labs'), lab(P.cubukcuReview, 'Kuzum & Cubukcu Labs')],
@@ -309,8 +309,8 @@ export const SENSOR_BEATS = [
   },
   {
     id: 's-scale', step: 'Scale', widget: 'scale', depth: 'Scaling · the number of electrodes',
-    title: 'The count keeps doubling, and so does the power bill',
-    text: 'The number of neurons recorded at once has doubled roughly every seven years since the 1950s, from a single tungsten wire to thousands of electrodes on a device. Each electrode needs its own amplifier, converter and slice of a chip. If every channel burns the same power, a thousand times more channels is a thousand times more heat in the skull. The next page is about how a chip keeps that bill small.',
+    title: 'More channels, more heat',
+    text: 'Since the 1950s, the number of neurons we can record at once has doubled about every seven years, from one wire to thousands of electrodes. But every electrode needs its own amplifier and converter, and each of those uses power. A thousand times more channels at the same power each means a thousand times more heat in the head. The chip page is about how to avoid that.', comic: 'graph',
     hint: 'Slide the year and the power per channel.',
     first: { kind: 'first', note: 'Showed that simultaneously recorded neurons double about every seven years.', ...P.stevenson11 },
     labs: [lab(P.shukla25, 'ISNL · Cauwenberghs', true), lab(P.bansal26, 'ISNL · Cauwenberghs', true)],
@@ -320,8 +320,8 @@ export const SENSOR_BEATS = [
 export const CHIP_BEATS = [
   {
     id: 'c-chain', step: 'The chain', widget: 'chain', depth: 'One channel, end to end',
-    title: 'From a spike to a stream of bits',
-    text: 'A spike reaches the electrode as a few tens of microvolts. It has to be amplified, digitised, reduced to what matters and sent out, and the chip sits on living tissue, so it has to stay cool. Every block spends power; the whole game is spending as little as the science allows. Click a block, or scroll, to open it.',
+    title: 'From a spike to bits',
+    text: 'A spike arrives as a few tens of microvolts. The chip amplifies it, turns it into numbers, keeps the useful parts and sends them out. It does all this while sitting on living tissue, so it can’t get warm. Every block uses power, and the goal is to use as little as possible. Click a block, or scroll, to look inside.', comic: 'brigade',
     hint: 'Click a block to jump to it.',
     first: null,
     labs: [lab(P.ha14, 'ISNL · Cauwenberghs'), lab(P.chi09, 'ISNL · Cauwenberghs')],
@@ -329,8 +329,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-signal', step: 'Signal', widget: 'signal', depth: 'The electrode · microvolts',
-    title: 'The signal is a few tens of microvolts',
-    text: 'Right outside a neuron, a spike is only about 50 to 150 µV, sitting on thermal noise from the electrode and noise from the amplifier. Raise the noise and watch spikes sink under the detection line. A quieter amplifier hears more neurons, but quiet costs power.',
+    title: 'The signal is tiny',
+    text: 'Right next to a neuron, a spike is only 50 to 150 µV, and it sits on top of noise from the electrode and the amplifier. Turn up the noise and the spikes disappear into it. A quieter amplifier picks up more neurons, but quiet costs power.', comic: 'noise',
     hint: 'Drag the noise slider.',
     first: { kind: 'landmark', note: 'Why extracellular spikes are so small, and what the field around a neuron looks like.', ...P.buzsaki },
     labs: [lab(P.shukla25, 'ISNL · Cauwenberghs', true), lab(P.kuzum14, 'Kuzum Lab')],
@@ -338,8 +338,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-amp', step: 'Amplifier', widget: 'nef', depth: 'The low-noise amplifier · NEF',
-    title: 'Quiet costs power, and the price is a square',
-    text: 'An amplifier’s noise falls only as the square root of the current you feed it: halve the noise and you pay four times the power. The noise efficiency factor (NEF) compares a real amplifier with the ideal single transistor, so NEF 1 is the floor. The chip I work on is designed around NEF 1.8 at about 1 µW per channel.',
+    title: 'Half the noise costs four times the power',
+    text: 'An amplifier’s noise only drops with the square root of the current you give it, so halving the noise takes four times the power. The noise efficiency factor (NEF) compares a real amplifier with an ideal single transistor, which would score 1. The chip I work on aims for an NEF of 1.8 at about 1 µW per channel.', comic: 'shop',
     hint: 'Drag the power slider along the NEF 1.8 curve.',
     first: { kind: 'first', note: 'Introduced the noise efficiency factor for micropower biopotential amplifiers.', ...P.steyaert },
     labs: [lab(P.ha14, 'ISNL · Cauwenberghs')],
@@ -347,8 +347,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-adc', step: 'Digitise', widget: 'adc', depth: 'The converter · bits',
-    title: 'Digitise only what you need',
-    text: 'The ADC turns a voltage into a number. Each extra bit halves the step size but roughly doubles the energy of every conversion, so the cheapest chip uses the fewest bits that still keep the spike. Slide the bits and see what survives.',
+    title: 'Use only the bits you need',
+    text: 'The ADC turns a voltage into a number. Every extra bit makes the steps half as big, but it also roughly doubles the energy of each conversion. So the cheapest design uses the fewest bits that still keep the spike. Slide the bits and see what’s left.', comic: 'bits',
     hint: 'Drag the bits slider.',
     first: { kind: 'landmark', note: 'The survey of converter speed, resolution and power that most ADC comparisons still build on.', ...P.walden },
     labs: [lab(P.leugering25, 'ISNL · Cauwenberghs', true)],
@@ -356,8 +356,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-event', step: 'Neuromorphic', widget: 'events', depth: 'Event-driven · neuromorphic',
-    title: 'Neuromorphic: only work when something spikes',
-    text: 'A clocked chip updates every neuron on every tick, whether anything happened or not. The brain is sparse (well under one percent of neurons fire in any millisecond), so neuromorphic chips send events instead: an address and a time for each spike, and nothing is computed for silent neurons. Slide the activity and compare the work.',
+    title: 'Only work when something happens',
+    text: 'A normal chip updates every neuron on every clock tick, even when nothing happened. In the brain, fewer than 1% of neurons fire in any given millisecond. Neuromorphic chips only send a message when a neuron spikes, with its address and the time, so silent neurons cost nothing. Slide the activity to compare.', comic: 'events',
     hint: 'Drag the activity slider.',
     first: { kind: 'first', note: 'Founded neuromorphic engineering: build circuits that compute like neurons, in analog and with events.', ...P.mead },
     labs: [lab(P.hota23, 'ISNL · Cauwenberghs', true), lab(P.frank24, 'ISNL · Cauwenberghs'), lab(P.park17, 'ISNL · Cauwenberghs')],
@@ -365,8 +365,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-cim', step: 'In-memory', widget: 'cim', depth: 'Compute-in-memory',
-    title: 'Compute where the data lives',
-    text: 'Fetching a number from far-away memory costs far more energy than doing arithmetic on it: in a 45 nm process, a 32-bit DRAM read is about 640 pJ and an 8-bit add about 0.03 pJ. Compute-in-memory does the multiply-accumulate inside the memory array, so the weights never travel. I use it to cross-correlate every pair of channels: 256 channels make 32,640 pairs at every time lag.',
+    title: 'Compute where the data is',
+    text: 'Moving a number around costs much more energy than doing maths with it. On a 45 nm chip, reading 32 bits from DRAM takes about 640 pJ, while an 8-bit addition takes about 0.03 pJ. Compute-in-memory does the maths inside the memory, so the data never has to travel. I use it to compare every pair of channels. With 256 channels that’s 32,640 pairs, at every time lag.', comic: 'commute',
     hint: 'Switch between the two designs.',
     first: { kind: 'landmark', note: 'The energy-per-operation table everyone quotes: moving data costs far more than computing on it.', ...P.horowitz },
     labs: [lab(P.bansal26, 'ISNL · Cauwenberghs', true), lab(P.gennis25, 'ISNL · Cauwenberghs', true), lab(P.patent, 'ISNL · Cauwenberghs', true)],
@@ -374,8 +374,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-radio', step: 'Radio', widget: 'radio', depth: 'Wireless · power in, data out',
-    title: 'One coil brings the power in and the bits out',
-    text: 'An implant has no battery and no cable, so the same pair of coils has to carry power in and data out. The usual trick, load-shift keying, wiggles the load and pays for it: the high-Q coil that transfers power well also rings slowly, so it caps the data rate. Cyclic on-off keying shorts the implant coil for exactly one carrier cycle out of four, in a position that encodes two bits. The energy stays in the resonant tank, power keeps flowing during the other cycles, and the data rate rises to half the carrier: 6.78 Mb/s on a 13.56 MHz link.',
+    title: 'One coil for power and data',
+    text: 'An implant has no battery and no wires, so one pair of coils has to bring power in and send data out. The usual method signals bits by changing the implant’s load. The trouble is that a coil that’s good at delivering power responds slowly, which limits the data rate. Cyclic on-off keying shorts the implant coil for one carrier cycle out of every four, and which cycle it picks encodes two bits. Power keeps flowing during the other three, and data runs at half the carrier frequency, 6.78 Mb/s on a 13.56 MHz link.', comic: 'coils',
     hint: 'Click a symbol to change its bits, then drag the coil Q.',
     first: { kind: 'first', note: 'Introduced cyclic on-off keying: power and a broadband backward data link on a single inductive link.', ...P.cook14 },
     labs: [lab(P.cook16, 'ISNL · Cauwenberghs'), lab(P.sauer05, 'ISNL · Cauwenberghs')],
@@ -383,8 +383,8 @@ export const CHIP_BEATS = [
   },
   {
     id: 'c-adiab', step: 'Adiabatic', widget: 'adiabatic', depth: 'Adiabatic · energy recycling',
-    title: 'Adiabatic: stop throwing the charge away',
-    text: 'Charging a capacitor from a fixed supply always burns half the energy as heat in the switch, however small the resistance. Charge it in N small steps from a staircase of voltages instead and the loss falls to 1/N; run the staircase backwards to discharge and the charge is handed back to be reused. My charge-redistribution array shares charge between its own capacitors instead of dumping it, the same idea inside the array.',
+    title: 'Stop throwing charge away',
+    text: 'Charge a capacitor straight from the supply and half the energy turns into heat, however small the resistance. Charge it in N small steps instead and the loss drops to 1/N. Step back down and most of the charge goes back to be used again. My charge-redistribution array uses the same idea, passing charge between its own capacitors instead of throwing it away.', comic: 'stairs',
     hint: 'Drag the number of steps.',
     first: { kind: 'landmark', note: 'Why computing can in principle cost almost nothing: only erasing information has a minimum price.', ...P.landauer },
     labs: [lab(P.bansal26, 'ISNL · Cauwenberghs', true)],

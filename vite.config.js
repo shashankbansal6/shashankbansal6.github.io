@@ -17,16 +17,8 @@ function preloadFonts() {
         const want = ctx.path === '/index.html' ? [...FIRST_SCREEN, /noto-serif-devanagari-devanagari-400/] : FIRST_SCREEN;
         const tags = Object.keys(ctx.bundle).filter((f) => want.some((r) => r.test(f)))
           .map((f) => ({ tag: 'link', attrs: { rel: 'preload', as: 'font', type: 'font/woff2', crossorigin: '', href: `/${f}` }, injectTo: 'head-prepend' }));
-        // the 3D scene is imported right after the first paint; start fetching (not running) it with the page
-        if (ctx.path === '/index.html') {
-          const scene = Object.values(ctx.bundle).find((c) => c.type === 'chunk' && c.isDynamicEntry && /src\/main\.js$/.test(c.facadeModuleId || ''));
-          if (scene) {
-            const seen = new Set();
-            const walk = (name) => { if (seen.has(name)) return; seen.add(name); (ctx.bundle[name]?.imports || []).forEach(walk); };
-            walk(scene.fileName);
-            seen.forEach((f) => !html.includes(f) && tags.push({ tag: 'link', attrs: { rel: 'modulepreload', crossorigin: '', href: `/${f}` }, injectTo: 'head' }));
-          }
-        }
+        // (the 3D scene is not preloaded: it is fetched right after the first paint, so it never competes with the
+        // fonts and styles the first screen needs on a slow connection)
         return tags;
       },
     },

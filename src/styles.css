@@ -132,7 +132,7 @@ h1 {
 /* the hero text rises in as soon as the page paints; the 3D brain fades in behind it once the scene is ready */
 .hero-inner > * { animation: heroIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(var(--i, 0) * 0.07s + 0.02s); }
 .hero-inner > :nth-child(2) { --i: 1; } .hero-inner > :nth-child(3) { --i: 2; } .hero-inner > :nth-child(4) { --i: 3; } .hero-inner > :nth-child(5) { --i: 4; }
-@keyframes heroIn { from { opacity: 0; transform: translateY(1.5rem); } }
+@keyframes heroIn { from { opacity: 0.25; transform: translateY(1.5rem); } } /* already readable on the first frame, then settles */
 @media (prefers-reduced-motion: reduce) { .hero-inner > * { animation: none; } }
 
 .card {

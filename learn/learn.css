@@ -13,16 +13,10 @@ html { scroll-behavior: auto; }
 .regions .motor:hover { border-color: var(--accent); }
 .regions .visual:hover { border-color: var(--non); }
 .regions .language:hover { border-color: #8a5bd0; }
-.regions a.reg { text-decoration: none; }
-.regions .sensor:hover { border-color: var(--non); }
-.regions .chip:hover { border-color: var(--stim); }
 .regions .motor b::before, .regions .visual b::before, .regions .language b::before { content: ''; display: inline-block; width: 0.55rem; height: 0.55rem; border-radius: 50%; margin-right: 0.5rem; vertical-align: 0.05em; }
 .regions .motor b::before { background: var(--accent); }
 .regions .visual b::before { background: var(--non); }
 .regions .language b::before { background: #8a5bd0; }
-.regions .sensor b::before, .regions .chip b::before { content: ''; display: inline-block; width: 0.55rem; height: 0.55rem; margin-right: 0.5rem; vertical-align: 0.05em; border-radius: 1px; }
-.regions .sensor b::before { background: var(--non); }
-.regions .chip b::before { background: var(--stim); transform: rotate(45deg); }
 .hero-inner h1 { font-size: clamp(3rem, 7vw, 6rem); }
 
 /* layer stepper: where you are in the dive */
@@ -106,3 +100,18 @@ div.first .by { font: 0.8rem var(--ui); color: var(--muted); margin-top: 0.15rem
   .popvec { height: 11rem; }
 }
 
+
+/* stick-figure comics in the cards (learn/doodles.js) */
+@font-face { font-family: 'Patrick Hand'; font-style: normal; font-weight: 400; font-display: swap; src: url(../node_modules/@fontsource/patrick-hand/files/patrick-hand-latin-400-normal.woff2) format('woff2'); }
+.doodle { margin: 0.2rem 0 1rem; color: var(--text); }
+.doodle svg { display: block; width: 100%; max-width: 21rem; height: auto; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.doodle text { fill: currentColor; stroke: none; font-family: 'Patrick Hand', 'Comic Sans MS', cursive; }
+.doodle .fill { fill: var(--panel); }
+.doodle .dot { fill: currentColor; stroke: none; }
+.doodle .ink { fill: currentColor; }
+.doodle .accent { stroke: var(--accent); }
+.doodle text.accent { fill: var(--accent); stroke: none; }
+.doodle .accentfill { fill: color-mix(in srgb, var(--accent) 35%, transparent); }
+.doodle .muted { stroke: var(--muted); }
+.doodle text.muted { fill: var(--muted); stroke: none; }
+.doodle figcaption { max-width: 21rem; margin-top: 0.35rem; font: 1.02rem/1.3 'Patrick Hand', 'Comic Sans MS', cursive; color: var(--muted); }

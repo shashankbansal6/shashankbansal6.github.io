@@ -37,14 +37,24 @@ fillPages();
 // ── renderer / scene ─────────────────────────────────────────────────────────
 const canvas = $('#gl');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
-let dpr = Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
+// No graphics hardware (a machine without a GPU, a virtual machine, a test runner): WebGL then draws on the CPU, and
+// every frame takes a good part of a second. Only there, draw a lighter brain at a lower resolution, and only while
+// the page moves, so the page itself stays responsive. With a GPU nothing changes.
+const soft = (() => {
+  try {
+    const gl = renderer.getContext();
+    const ext = gl.getExtension('WEBGL_debug_renderer_info');
+    return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER));
+  } catch { return false; }
+})();
+let dpr = soft ? 0.6 : Math.min(window.devicePixelRatio, mobile ? 1.5 : 2);
 renderer.setPixelRatio(dpr);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(38, innerWidth / innerHeight, 0.005, 200);
 const root = new THREE.Group();
 scene.add(root);
 
-const brain = buildBrain(mobile ? 60000 : 125000);
+const brain = buildBrain(soft ? 30000 : mobile ? 60000 : 125000);
 root.add(brain.points);
 await yieldToMain();
 // watercolor underpainting: large, faint washes scattered over the cortex (paper theme only)
@@ -117,7 +127,7 @@ function buildPipeline(wcTheme) {
     c.addPass(paperOutputPass());
     return { composer: c, wc: pass, bloom: null };
   }
-  if (mobile || new URLSearchParams(location.search).get('bloom') === '0') return { composer: null, wc: null, bloom: null };
+  if (mobile || soft || new URLSearchParams(location.search).get('bloom') === '0') return { composer: null, wc: null, bloom: null };
   const c = new EffectComposer(renderer);
   c.addPass(new RenderPass(scene, camera));
   // Thousands of additive particles push HDR values far above 1; clamp them so
@@ -476,7 +486,7 @@ const camPos = new THREE.Vector3();
 const camTarget = new THREE.Vector3();
 const camOff = new THREE.Spherical();
 let shift = { x: 0, y: 0 };
-let intro = reduced ? 1 : 0;
+let intro = reduced || soft ? 1 : 0;
 let first = true;
 const clock = new THREE.Timer();
 const tmpV = new THREE.Vector3();
@@ -505,8 +515,10 @@ function sample(scroll) {
 }
 
 const scaleDown = adaptiveScale({ start: dpr, min: 1, apply: (q) => { dpr = q; renderer.setPixelRatio(q); lastW = 0; resize(); } });
+// software rendering: redraw only when the page has moved (and a few times after, while the scene settles)
+let drawnAt = -1, lastDraw = -1e9, movedAt = -1e9, lastScroll = -1;
 function frame(time) {
-  scaleDown(time);
+  if (!soft) scaleDown(time);
   clock.update(time);
   const dt = Math.max(0, Math.min(0.05, clock.getDelta()));
   uTime.value += dt;
@@ -618,8 +630,14 @@ function frame(time) {
   root.updateMatrixWorld();
   labels.update(viewW, viewH, 1 - Math.max(byId.decode.vis, byId.chip.vis));
 
-  if (composer) composer.render(dt);
-  else renderer.render(scene, camera);
+  if (scroll !== lastScroll || dragging) { lastScroll = scroll; movedAt = time; }
+  const draw = !soft || first || (time - lastDraw > 250 && (scroll !== drawnAt || dragging || time - movedAt < 1500));
+  if (draw) {
+    if (composer) composer.render(dt);
+    else renderer.render(scene, camera);
+    drawnAt = scroll;
+    lastDraw = time;
+  }
 
   if (first) {
     first = false;
